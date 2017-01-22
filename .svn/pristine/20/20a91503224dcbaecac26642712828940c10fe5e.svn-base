@@ -1,0 +1,225 @@
+﻿table.creditWorthiness th{
+	FONT-SIZE: small;
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color: #ffffff;
+	background: #5C74A9;
+	font-weight: bold;
+	text-align : left;
+	padding: 3px 7px 3px 7px;
+}
+
+table.creditWorthiness td {
+	FONT-SIZE: small;
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	background: #efefef;
+	padding: 3px 7px 3px 7px;
+}
+
+table.creditWorthiness caption {
+	font-weight: bold;
+	text-align: left;
+	font-size: medium;
+	padding-bottom: 5px;
+}
+
+.active {
+	color: #ffffff;
+	background: #5C74A9;
+	text-decoration: none;
+	padding: 1px;
+	font-size: 12px;
+}
+
+.inactive {
+	color: #253781;
+	background: #eef0f7;
+	text-decoration: none;
+	font-size: 12px;
+}
+
+.disabled {
+	color: #253781;
+	background: #eef0f7;
+	text-decoration: line-through;
+	font-size: 12px;
+}
+
+.hidden {
+	display: none;
+}
+
+.lgap {
+	float: left;
+	padding-left: 15px;
+}
+
+.blank {
+	color: #000000;
+	background: #ffffff;
+	text-decoration: none;
+	font-weight: normal;
+}
+
+.formrow {
+	padding: 2px 5px;
+	font-size: 12px;
+	vertical-align: middle;
+}
+
+table.datagrid td {
+	padding: 2px 5px;
+	font-size: 12px;
+}
+
+table.datagrid div {
+	padding: 2px 5px;
+	font-size: 12px;
+}
+
+table.datagrid a {
+	font-size: 12px;
+}
+
+table.datagrid th {
+	/* text-decoration: underline; */
+	text-align: center;
+	font-weight: bold;
+	padding: 2px 5px;
+	font-size: 12px;
+}
+
+table.datagrid {
+	border-spacing: 3px 0px;
+	padding: 2px 5px;
+	font-size: 10px;
+}
+
+.standard {
+	font-weight: normal;
+	font-size: 12px;
+}
+
+table.standard {
+	font-weight: normal;
+	font-size: 12px;
+}
+
+table.standard div, table.standard th, table.standard tr, table.standard td,
+table.standard input, table.standard textarea, table.standard select {
+	font-weight: normal;
+	font-size: 12px;
+}
+
+table.standard legend {
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.legend {
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.datagrid {
+	border-spacing: 3px 0px;
+	padding: 2px 5px;
+}
+
+.hilight {
+	background-color: #5c74a9;
+	color: #eeeeee;
+}
+
+.hilight A {
+	background-color: #5c74a9;
+	color: #eeeeee;
+}
+
+.tab_selected A {
+	background-color: lightgrey;
+	color: black;
+	text-align: center;
+	text-decoration: none;
+	font-weight: bold;
+	padding: 2px 5px;
+	font-size: 12px;
+	margin: 0px 3px;
+}
+	
+.tab_deselected A {
+	background-color: lightgrey;
+	color: black;
+	text-align: center;
+	text-decoration: none;
+	font-weight: none;
+	padding: 2px 5px;
+	font-size: 12px;
+	margin: 0px 3px;
+}
+	
+.tab A {
+	background-color: lightgrey;
+	color: black;
+	text-align: center;
+	text-decoration: none;
+	padding: 2px 5px;
+	font-size: 12px;
+	margin: 0px 3px;
+}
+	
+.disabled_label {
+	color: darkgrey;
+	font-style: italic;
+}
+
+div.spacer {clear:both; width: 100%; height:20px; display:block;}
+div.spacer10 {clear:both; width: 100%; height:10px; display:block;}
+
+select.t-error {
+	border-color: red;
+	filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2,color=#FF0000);
+}
+
+DIV.t-autocomplete-menu UL {
+	border: none;
+	color: #000000;
+	font-size: 11px;
+	background: #eef0f7;
+	/* white-space: nowrap; */
+}
+
+DIV.t-autocomplete-menu LI {
+	border: none;
+	color: #000000;
+	font-size: 11px;
+	background: #eef0f7;
+	/* white-space: nowrap; */
+}
+
+DIV.t-autocomplete-menu LI.selected {
+	border: none;
+	color: #000000;
+	font-size: 11px;
+	background: #d1dceb;;
+	/* white-space: nowrap; */
+}
+
+@media print {
+	.dvBlueWhite {
+		font-size: 150%;
+	}
+	table.creditWorthiness {
+		border: 1px solid black;
+		with: 98%;
+	}
+	table.creditWorthiness td,  table.addressSummary td, table.collectionCaseStatistics td {
+		font-size: 8pt;
+	}
+	table.creditWorthiness th {
+		font-size: 8pt;
+		font-weight: bold;
+	}
+	table.creditWorthiness a {
+		font-size: 8pt;
+	}
+}

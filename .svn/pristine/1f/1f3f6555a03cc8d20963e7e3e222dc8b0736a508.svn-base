@@ -1,0 +1,122 @@
+=== BEGIN MESSAGE ===
+Client IP:
+192.168.0.254
+
+Host:
+80.120.63.157
+
+Requested URI:
+/v2/intranet/test.asp
+
+Date
+30.06.2005 19:31:43
+
+Error:
+ SQL-Fehler: [Microsoft][ODBC SQL Server Driver][SQL Server]Cannot insert explicit value for identity column in table 'tblState' when IDENTITY_INSERT is set to OFF..
+
+Developer Details:
+SQL error: INSERT INTO tblState (tblStateID, tblStateCaption) VALUES (null, null). (SQL_ERROR)
+
+tNG Execution Trace:
+
+  tNG_insert.executeTransaction
+    STARTER.Trigger_Default_Starter
+    tNG_insert.doTransaction
+      tNG_insert.prepareSQL
+      tNG_insert.executeTransaction - execute sql*
+      ERROR.Trigger_Default_Insert_RollBack
+  tNG_insert.getRecordset
+  tNG_insert.getFakeRsArr
+  tNG_insert.getLocalRecordset
+  tNG_insert.getFakeRecordset
+  tNG_insert.getFakeRecordset
+
+=== END MESSAGE ===
+
+
+=== BEGIN MESSAGE ===
+Client IP:
+192.168.0.254
+
+Host:
+80.120.63.157
+
+Requested URI:
+/v2/intranet/test.asp
+
+Date
+30.06.2005 19:42:27
+
+Error:
+ Beim Einfügen der Datensätze ist ein Fehler aufgetreten.<br />SQL-Fehler: [Microsoft][ODBC SQL Server Driver][SQL Server]Syntax error converting datetime from character string..
+
+Developer Details:
+tNG_multipleInsert error.<br />An error occurred while inserting the records. (MINS_ERROR)<br />SQL error: INSERT INTO tblBug (BugCaption, BugMemo, BugEntryDate, BugReleaseDate, BugStatus, BugPrio, BugAttachment1, BugAttachment2, BugAttachment3, BugEntryUser, BugType, BugSB) VALUES (null, null, null, 'saads', null, null, null, null, null, null, null, null). (SQL_ERROR)
+
+tNG Execution Trace:
+
+  tNG_multipleInsert.executeTransaction
+    STARTER.Trigger_Default_Starter
+    tNG_multipleInsert.doTransaction
+      tNG_multipleInsert.prepareSQL
+        tNG_insert.doTransaction
+          BEFORE.Trigger_Default_FormValidation
+          tNG_insert.prepareSQL
+          tNG_insert.executeTransaction - execute sql*
+          ERROR.Trigger_Default_Insert_RollBack
+  tNG_multipleUpdate.executeTransaction
+    STARTER.Trigger_Default_Starter
+  tNG_multipleDelete.executeTransaction
+    STARTER.Trigger_Default_Starter
+  tNG_multipleInsert.getRecordset
+  tNG_insert.getFakeRsArr
+  tNG_insert.getLocalRecordset
+  tNG_insert.getFakeRecordset
+  tNG_multipleInsert.getFakeRecordset
+
+=== END MESSAGE ===
+
+
+=== BEGIN MESSAGE ===
+Client IP:
+192.168.0.254
+
+Host:
+80.120.63.157
+
+Requested URI:
+/v2/intranet/test1.asp?BugID=320
+
+Date
+30.06.2005 19:54:35
+
+Error:
+ Beim Aktualisieren der Datensätze ist ein Fehler aufgetreten.<br />SQL-Fehler: [Microsoft][ODBC SQL Server Driver][SQL Server]Syntax error converting datetime from character string..
+
+Developer Details:
+tNG_multipleUpdate error.<br />An error occurred while updating the records. (MUPD_ERROR)<br />SQL error: UPDATE tblBug SET BugCaption='&quot;X&quot; Button Funktionalität',BugMemo='&quot;X&quot; Button Funktionalität',BugEntryDate='cvbncvbncvnbcb15:06:54',BugReleaseDate='07.04.2005',BugStatus=0,BugAttachment1=null,BugAttachment2=null,BugAttachment3=null,BugEntryUser=62,BugType=3,BugSB=62 WHERE BugID = 320. (SQL_ERROR)
+
+tNG Execution Trace:
+
+  tNG_multipleInsert.executeTransaction
+    STARTER.Trigger_Default_Starter
+  tNG_multipleUpdate.executeTransaction
+    STARTER.Trigger_Default_Starter
+    tNG_multipleUpdate.doTransaction
+      tNG_multipleUpdate.prepareSQL
+        tNG_update.doTransaction
+          BEFORE.Trigger_Default_saveData
+            tNG_update.saveData
+          BEFORE.Trigger_Default_FormValidation
+          tNG_update.prepareSQL
+          tNG_update.executeTransaction - execute sql*
+  tNG_multipleDelete.executeTransaction
+    STARTER.Trigger_Default_Starter
+  tNG_multipleUpdate.getRecordset
+  tNG_update.getFakeRsArr
+  tNG_update.getLocalRecordset
+  tNG_multipleUpdate.getFakeRecordset
+
+=== END MESSAGE ===
+
+

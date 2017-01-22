@@ -1,0 +1,123 @@
+/* Copyright 2001-2005 Interakt Online. All rights reserved. */
+
+/* spin control : this is very very fragile !
+ * any difference in dimensions of the background-pictures / container will cause them, 
+ * to float away / dissapear*/
+.MXW_Spin {
+	border-width: 0px;
+	padding: 0px;
+	margin: 0px;
+}
+.seldrop {
+	float:none;
+	clear:both;
+	position:absolute;
+}
+	.MXW_Spin_table {
+		border: 0px ! important;
+		margin:0px ! important;
+		padding: 0px ! important;
+		float: left;
+		clear: both;
+	}
+		.MXW_Spin_table tr {
+			border: 0px ! important;
+			margin:0px ! important;
+			padding: 0px ! important;
+		}
+		.MXW_Spin_table td {
+			vertical-align: middle ! important;
+			border: 0px ! important; 
+			margin:0px ! important;
+			padding: 0px ! important;
+		}
+	.MXW_Spin_td_btnup {
+		background-image: url(images/wdg_up.gif);
+		background-repeat: no-repeat;
+		background-position: 50% 50%;
+		background-color: #cccccc;
+		line-height: 8px;
+		font-size: 1px;
+	}
+	.MXW_Spin_td_btndown {
+		background-image: url(images/wdg_down.gif);
+		background-repeat: no-repeat;
+		background-position: 50% 50%;
+		background-color: #cccccc;
+		line-height: 8px;
+		font-size: 1px;
+	}
+	
+	.MXW_Spin_div_up {
+		width:17px;
+		cursor:default;
+		border-left: 1px solid #ddd; border-top: 1px solid #ddd;
+		border-bottom: 1px solid #000; border-right: 1px solid #000;
+	}
+	.MXW_Spin_div_down {
+		width:17px;
+		cursor:default;
+		border-left: 1px solid #000; border-top: 1px solid #000;
+		border-bottom: 1px solid #ddd; border-right: 1px solid #ddd;
+	}
+
+/* effects of the alert message on the widget element ( when mask is incorrect) */
+.MXW_RTE_visual_alert_on, 
+.MXW_RTE_visual_alert_input, 
+.MXW_MIN_visual_alert_input, 
+.MXW_SMD_visual_alert_input, 
+.MXW_ICT_visual_alert_input {
+		border-left: 2px solid #4C7ECF;
+		border-top: 2px solid #4C7ECF;
+		border-bottom: 2px solid #3c63a2;
+		border-right: 2px solid #3c63a2;
+}
+
+.MXW_RTE_visual_alert_off {
+}
+
+/*
+ * visual effect on explanatory div floating next to an element ( when mask is incorrect) */
+.MXW_MIN_visual_alert_div, 
+.MXW_SMD_visual_alert_div, 
+.MXW_SMDCAL_visual_alert_div, 
+.MXW_ICT_visual_alert_div, 
+.MXW_RTE_visual_alert_div {
+	white-space: nowrap ! important;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 12px;
+	margin: 0px;
+	padding:2px 4px; 
+	color: #fff; 
+	background-color: #3c63a2;
+}
+
+	.MXW_ICT_visual_alert_div {
+		padding: 0px;
+		margin-left: 0px;
+	}
+
+	.MXW_RTE_visual_alert_div {
+		padding: 0px;
+		margin-left: 20px;
+	}
+	.MXW_SMDCAL_visual_alert_div {
+		padding: 0px;
+		margin-left: 20px;
+	}
+
+
+.MXW_MMO_container td {
+	vertical-align: middle ! important;
+}
+
+/* ensure menu mover stays the same width even when it is empty */
+.MenuMover_select {
+	width:150px;
+}
+.MenuMover_button {
+	width:32px;
+}
+
+

@@ -1,0 +1,503 @@
+﻿using System;
+using System.Collections;
+using System.Data;
+using System.IO;
+using System.Text;
+using System.Web.Services;
+using HTB.Database;
+using HTB.Database.Views;
+using HTB.v2.intranetx.util;
+using HTBExtras.KingBill;
+using HTBInvoiceManager;
+using HTBUtilities;
+
+namespace HTB.v2.intranetx.WS
+{
+//    [WebService(Namespace = "http://localhost/v2/intranetx/WS/WsInkasso.asmx")]
+    [WebService(Namespace = "http://htb.ecp.or.at/v2/intranetx/WS/WsInkasso.asmx")]
+    [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
+    [System.ComponentModel.ToolboxItem(false)]
+    // To allow this Web Service to be called from script, using ASP.NET AJAX, uncomment the following line. 
+    // [System.Web.Script.Services.ScriptService]
+    public class WsNewInkasso : System.Web.Services.WebService
+    {
+        [WebMethod]
+        public string CreateNewAkt(string xmlData)
+        {
+            InkassoAkt inputAkt;
+            tblGegner gegner;
+            tblKlient klient;
+            tblCustInkAkt akt;
+
+            HTBUtils.SaveTextFile("c:\\temp\\NewAktData.txt", xmlData);
+            /* No need for encoding. It works in production.
+            HTBUtils.SaveTextFile("c:\\temp\\NewAktData_Before_Encoding.txt", xmlData);
+
+            byte[] bytes = Encoding.Default.GetBytes(xmlData);
+            xmlData = Encoding.Default.GetString(bytes);
+             */
+            try
+            {
+                //HTBUtils.SaveTextFile("c:\\temp\\NewAktData_After_Encoding.txt", xmlData);
+                
+                inputAkt = GetAkt(xmlData);
+
+                var sb = new StringBuilder();
+
+                if (!IsAktValid(inputAkt, sb))
+                    return sb.ToString();
+
+                var control = HTBUtils.GetControlRecord();
+
+                #region gegner
+                gegner = HTBUtils.GetGegner(inputAkt.SchuldnerNachname.Trim(), inputAkt.SchuldnerVorname.Trim(), inputAkt.SchuldnerStrasse.Trim(), inputAkt.SchuldnerPLZ.Trim(), inputAkt.SchuldnerGeburtsdatum)
+                         ??
+                         HTBUtils.CreateGegner(new tblGegner
+                                                   {
+                                                       GegnerAnrede = inputAkt.SchuldnerAnrede,
+                                                       GegnerType = inputAkt.SchuldnerGeschlecht,
+                                                       GegnerName1 = inputAkt.SchuldnerNachname,
+                                                       GegnerName2 = inputAkt.SchuldnerVorname,
+                                                       GegnerName3 = "",
+                                                       GegnerStrasse = inputAkt.SchuldnerStrasse,
+                                                       GegnerZipPrefix = inputAkt.SchuldnerLKZ,
+                                                       GegnerZip = inputAkt.SchuldnerPLZ,
+                                                       GegnerOrt = inputAkt.SchuldnerOrt,
+
+                                                       GegnerLastStrasse = inputAkt.SchuldnerStrasse,
+                                                       GegnerLastZipPrefix = inputAkt.SchuldnerLKZ,
+                                                       GegnerLastZip = inputAkt.SchuldnerPLZ,
+                                                       GegnerLastOrt = inputAkt.SchuldnerOrt,
+
+                                                       GegnerGebDat = inputAkt.SchuldnerGeburtsdatum,
+                                                       GegnerCreateDate = DateTime.Now,
+//                                                       GegnerPhoneCountry = inputAkt.SchuldnerTelefonVorwahlLand,
+//                                                       GegnerPhoneCity = inputAkt.SchuldnerTelefonVorwahl,
+                                                       GegnerPhone = inputAkt.SchuldnerTelefonNummer,
+                                                       GegnerEmail = inputAkt.SchuldnerEMail,
+                                                       GegnerCreateSB = control.AutoUserId,
+                                                       GegnerMemo = inputAkt.SchuldnerMemo,
+                                                   });
+                if(gegner == null)
+                    return GetErrorMessage("Schuldner konnte nicht gespeichert werden!");
+                #endregion
+
+                #region klient
+                klient = HTBUtils.GetEntireKlientRecord(inputAkt.KlientNachname, inputAkt.KlientStrasse, inputAkt.KlientPLZ);
+                if (klient == null)
+                {
+                    klient = HTBUtils.CreateKlient(
+                        new tblKlient
+                            {
+                                KlientAnrede = inputAkt.KlientAnrede,
+                                KlientTitel = inputAkt.KlientTitel,
+                                KlientName1 = inputAkt.KlientNachname,
+                                KlientName2 = inputAkt.KlientVorname,
+                                KlientStrasse = inputAkt.KlientStrasse,
+                                KlientLKZ = inputAkt.KlientLKZ,
+                                KlientPLZ = inputAkt.KlientPLZ,
+                                KlientOrt = inputAkt.KlientOrt,
+                                KlientStaat = GetClientStateId(inputAkt.KlientLKZ),
+//                                KlientPhoneCountry = inputAkt.KlientTelefonVorwahlLand,
+//                                KlientPhoneCity = inputAkt.KlientTelefonVorwahl,
+                                KlientPhone = inputAkt.KlientTelefonNummer,
+                                KlientEMail = inputAkt.KlientEMail,
+                                KlientBLZ1 = inputAkt.KlientBLZ,
+                                KlientKtoNr1 = inputAkt.KlientKontonummer,
+                                KlientBankCaption1 = inputAkt.KlientBank,
+                                KlientIBAN = inputAkt.KlientIBAN,
+                                KlientBIC = inputAkt.KlientBIC,
+                                KlientFirmenbuchnummer = inputAkt.KlientFirmenbuchnummer,
+//                                KlientVersicherung = inputAkt.KlientVersicherungnummer,
+//                                KlientPolizzennummer = inputAkt.KlientPolizzennummer,
+                                KlientAccountManager = control.AutoUserId,
+                                KlientAccountManager2 = control.AutoUserId,
+                                KlientSalesPromoter = 604,
+                                KlientContacter = 604,
+//                                KlientMemo = inputAkt.KlientMemo,
+                                KlientLawyerId = HTBUtils.GetControlRecord().DefaultLawyerId,
+                                KlientType = 15
+                            });
+                    
+                    if(klient == null)
+                        return GetErrorMessage("Klient konte nicht gespeichert werden!");
+                    
+                    RecordSet.Insert(new tblAnsprechpartner
+                                         {
+                                             AnsprechBriefanrede = inputAkt.KlientAnschprechPartnerAnrede,
+                                             AnsprechNachname = inputAkt.KlientAnschprechPartnerNachname,
+                                             AnsprechVorname = inputAkt.KlientAnschprechPartnerVorname,
+                                             AnsprechEMail = inputAkt.KlientAnschprechPartnerEMail,
+//                                             AnsprechTelCountry = inputAkt.KlientAnschprechPartnerTelefonVorwahlLand,
+//                                             AnsprechTelCity = inputAkt.KlientAnschprechPartnerTelefonVorwahl,
+                                             AnsprechTel = inputAkt.KlientAnschprechPartnerTelefonNummer,
+                                             AnsprechKlient = klient.KlientID
+                                         });
+
+                    SaveWorkFlow(inputAkt, klient.KlientID, false);
+                }
+                else
+                {
+                    klient.KlientAnrede = inputAkt.KlientAnrede;
+                    klient.KlientTitel = inputAkt.KlientTitel;
+                    klient.KlientName1 = inputAkt.KlientNachname;
+                    klient.KlientName2 = inputAkt.KlientVorname;
+                    klient.KlientStrasse = inputAkt.KlientStrasse;
+                    klient.KlientLKZ = inputAkt.KlientLKZ;
+                    klient.KlientPLZ = inputAkt.KlientPLZ;
+                    klient.KlientOrt = inputAkt.KlientOrt;
+//                    klient.KlientPhoneCountry = inputAkt.KlientTelefonVorwahlLand;
+//                    klient.KlientPhoneCity = inputAkt.KlientTelefonVorwahl;
+                    klient.KlientPhone = inputAkt.KlientTelefonNummer;
+                    klient.KlientEMail = inputAkt.KlientEMail;
+                    klient.KlientBLZ1 = inputAkt.KlientBLZ;
+                    klient.KlientKtoNr1 = inputAkt.KlientKontonummer;
+                    klient.KlientBankCaption1 = inputAkt.KlientBank;
+                    klient.KlientFirmenbuchnummer = inputAkt.KlientFirmenbuchnummer;
+//                    klient.KlientVersicherung = inputAkt.KlientVersicherungnummer;
+//                    klient.KlientPolizzennummer = inputAkt.KlientPolizzennummer;
+                    klient.KlientAccountManager = control.AutoUserId;
+                    klient.KlientAccountManager2 = control.AutoUserId;
+//                    klient.KlientMemo = inputAkt.KlientMemo;
+                    RecordSet.Update(klient);
+                }
+                #endregion
+
+                #region akt
+                akt = new tblCustInkAkt
+                              {
+                                  CustInkAktAuftraggeber = 41,
+                                  // ECP
+                                  CustInkAktKlient = klient.KlientID,
+                                  CustInkAktGegner = gegner.GegnerID,
+                                  CustInkAktAZ = inputAkt.RechnungNummer,
+                                  CustInkAktKunde = string.IsNullOrEmpty(inputAkt.RechnungReferencenummer) ? inputAkt.RechnungNummer : inputAkt.RechnungReferencenummer,
+//                                  CustInkAktKunde = inputAkt.RechnungNummer,
+                                  CustInkAktEnterDate = DateTime.Now,
+                                  CustInkAktLastChange = DateTime.Now,
+                                  CustInkAktEnterUser = control.AutoUserId,
+                                  CustInkAktGothiaNr = string.IsNullOrEmpty(inputAkt.RechnungReferencenummer) ? inputAkt.RechnungNummer : inputAkt.RechnungReferencenummer,
+                                  CustInkAktInvoiceDate = inputAkt.RechnungDatum,
+                                  CustInkAktForderung = inputAkt.RechnungForderungOffen,
+                                  CustInkAktBetragOffen = inputAkt.RechnungForderungOffen,
+                                  CustInkAktSB = HTBUtils.GetGegnerSB(gegner),
+                                  CustInkAktNextWFLStep = DateTime.Now.AddMinutes(5),
+                                  CustInkAktStatus = 1,
+                                  CustInkAktCurStatus = 1,
+                                  CustInkAktIsPartial = false,
+                                  CustInkAktSendBericht = true,
+                                  CustInkAktMemo = inputAkt.RechnungMemo,
+                                  CustInkAktLawyerId = klient.KlientLawyerId,
+                                  CustInkAktSource = string.IsNullOrEmpty(inputAkt.AktSource) ? "King Bill" : inputAkt.AktSource
+                              };
+
+                RecordSet.Insert(akt);
+                akt = (tblCustInkAkt) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblCustInkAkt ORDER BY CustInkAktID DESC", typeof (tblCustInkAkt));
+                if(akt == null)
+                    return GetErrorMessage("Akt konte nicht gespeichert werden!");
+                #endregion
+
+                CreateInvoices(akt, inputAkt);
+                foreach (InkassoAktDokument dok in inputAkt.Dokumente)
+                    CreateDocument(akt, dok, control.AutoUserId);
+
+                SaveWorkFlow(inputAkt, akt.CustInkAktID, false);
+
+                var res = new InkassoAktResponse
+                                  {
+                                      EcpResponseBeschreibung = "OK",
+                                      EcpAktNummer = akt.CustInkAktID,
+                                      RechnungNummer = inputAkt.RechnungNummer
+                                  };
+                return res.ToXmlString(true, true);
+            }
+            catch (Exception ex)
+            {
+                var res = new InkassoAktResponse
+                {
+                    ResponeCode = -1,
+                    EcpAktNummer = -1,
+                    ErrorMessage = ex.Message
+                };
+                return res.ToXmlString(true, true);
+            }
+
+            
+//            return string.Format("Gegner Name: {0}\nGegnerStrasse: {1}\nGegnerPhone: {2}\nKlientName: {3}\nAkt: {4}", gegner.GegnerName1, gegner.GegnerStrasse, gegner.GegnerPhone, klient.KlientName1, akt.CustInkAktID);
+        }
+
+        [WebMethod]
+        public string GetAktStatus(int aktId)
+        {
+            try
+            {
+                var res = new InkassoAktStatusResponse();
+                var inkAkt = (qryCustAktStatus)HTBUtils.GetSqlSingleRecord("SELECT * FROM qryCustAktStatus WHERE CustInkAktID = " + aktId, typeof(qryCustAktStatus));
+                if (inkAkt == null)
+                {
+                    res.ErrorMessage = "Inkassoakt nicht gefunden!";
+                    res.ResponeCode = 404;
+                    return res.ToXmlString(true, true);
+                }
+                
+                res.EcpAktNummer = aktId;
+                res.AktHauptStatusCode = inkAkt.CustInkAktStatus;
+                res.AktHauptStatusBeschreibung = inkAkt.CustInkAktStatusCaption;
+                res.AktSecundaerenStatusCode = inkAkt.CustInkAktCurStatus;
+                res.AktSecundaerenStatusBeschreibung = inkAkt.KZCaption;
+                
+                ArrayList docsList = HTBUtils.GetSqlRecords("SELECT * FROM qryDoksInkAkten WHERE CustInkAktID = " + aktId, typeof (qryDoksInkAkten));
+                ArrayList intAktList = HTBUtils.GetSqlRecords("SELECT * FROM tblAktenInt WHERE AktIntCustInkAktID = " + aktId + " ORDER BY AktIntID DESC", typeof(tblAktenInt));
+                ArrayList inkassoActions = HTBUtils.GetSqlRecords("SELECT * FROM qryCustInkAktAktionen WHERE CustInkAktAktionAktID = " + aktId, typeof (qryCustInkAktAktionen));
+                ArrayList meldeResults = HTBUtils.GetSqlRecords("SELECT * FROM qryMeldeResult WHERE AMNr = '" + aktId + "'", typeof (qryMeldeResult));
+                var interventionAktions = new ArrayList();
+
+                res.Inkassomemo = inkAkt.CustInkAktMemo;
+
+                if (intAktList != null && intAktList.Count > 0)
+                {
+                    foreach (tblAktenInt intAkt in intAktList)
+                    {
+                        if(res.Interventionsmemo == string.Empty)
+                        {
+                            res.Interventionsmemo = intAkt.AKTIntMemo;
+                        }
+                        HTBUtils.AddListToList(HTBUtils.GetSqlRecords("SELECT * FROM qryInktAktAction WHERE AktIntActionAkt = " + intAkt.AktIntID + " ORDER BY AktIntActionDate DESC", typeof (qryInktAktAction)), interventionAktions);
+                        HTBUtils.AddListToList(HTBUtils.GetSqlRecords("SELECT * FROM qryDoksIntAkten WHERE AktIntID = " + intAkt.AktIntID, typeof (qryDoksIntAkten)), docsList);
+                    }
+                }
+
+                HTBUtils.AddListToList(CombineActions(intAktList, inkassoActions, interventionAktions, meldeResults), res.Aktionen);
+                foreach (Object doc in docsList)
+                {
+                    if (((doc is qryDoksIntAkten) && IsDocumentVisibleToClient(((qryDoksIntAkten)doc).DokCaption)) ||
+                       ((doc is qryDoksInkAkten) && IsDocumentVisibleToClient(((qryDoksInkAkten)doc).DokCaption)))
+                    {
+                        res.Dokumente.Add(new InkassoAktDokument(doc));
+                    }
+                }
+                return res.ToXmlString(true, true);
+            }
+            catch (Exception ex)
+            {
+                var res = new InkassoAktStatusResponse
+                {
+                    ErrorMessage = ex.Message,
+                    ResponeCode = -1
+                };
+                return res.ToXmlString(true, true);
+            }
+        }
+
+        private ArrayList CombineActions(ArrayList intAktList, ArrayList inkassoAktions, ArrayList interventionAktions, ArrayList meldeResults)
+        {
+
+            var aktionsList = new ArrayList();
+
+            tblAktenInt intAkt = intAktList.Count == 0 ? null : (tblAktenInt)intAktList[0];
+            foreach (qryCustInkAktAktionen inkAction in inkassoAktions)
+                aktionsList.Add(new InkassoActionRecord(inkAction, intAkt));
+
+            foreach (qryInktAktAction intAction in interventionAktions)
+            {
+                intAction.AktIntActionLatitude = 0;     // KB does not like the coordinates
+                intAction.AktIntActionLongitude = 0;    // KB does not like the coordinates
+                aktionsList.Add(new InkassoActionRecord(intAction, intAkt));
+            }
+            foreach (qryMeldeResult melde in meldeResults)
+                aktionsList.Add(new InkassoActionRecord(melde, intAkt));
+
+            aktionsList.Sort(new InkassoActionRecordComparer());
+
+            var list = new ArrayList();
+            foreach (InkassoActionRecord rec in aktionsList)
+                list.Add(new Aktion(rec));
+
+            return list;
+        }
+
+        private void CreateInvoices(tblCustInkAkt akt, InkassoAkt inputAkt)
+        {
+            var invMgr = new InvoiceManager();
+            invMgr.CreateAndSaveInvoice(akt.CustInkAktID, tblCustInkAktInvoice.INVOICE_TYPE_ORIGINAL, akt.CustInkAktForderung, "Kapital - Forderung", false);
+            if (inputAkt.RechnungMahnKosten > 0)
+            {
+                invMgr.CreateAndSaveInvoice(akt.CustInkAktID, tblCustInkAktInvoice.INVOICE_TYPE_CLIENT_COST, inputAkt.RechnungMahnKosten, "Klient - Kosten", false);
+            }
+        }
+
+        private bool CreateDocument(tblCustInkAkt akt, InkassoAktDokument dok, int creator)
+        {
+            try
+            {
+                string folderPath = HTBUtils.GetConfigValue("DocumentsFolder");
+                // Get the HttpFileCollection
+                RecordSet.Insert(new tblDokument
+                                     {
+                                         // CollectionInvoice
+                                         DokDokType = 25,
+                                         DokCaption = dok.DokumentBeschreibung,
+                                         DokInkAkt = akt.CustInkAktID,
+                                         DokCreator = creator,
+                                         DokAttachment = dok.DokumentURL,
+                                         DokCreationTimeStamp = DateTime.Now,
+                                         DokChangeDate = DateTime.Now
+                                     });
+                var doc = (tblDokument) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblDokument ORDER BY DokID DESC", typeof (tblDokument));
+                if (doc != null)
+                {
+                    RecordSet.Insert(new tblAktenDokumente {ADAkt = akt.CustInkAktID, ADDok = doc.DokID, ADAkttyp = 1});
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        private void SaveWorkFlow(InkassoAkt inputAkt, int id, bool isClient)
+        {
+            int position = 1;
+            int preTime = 0;
+            if (inputAkt.WorkflowErsteMahnung)
+            {
+                CreateWorkFlowRecord(id, 1, position, preTime, isClient);
+                position++;
+                preTime = GlobalUtilArea.GetZeroIfConvertToIntError(inputAkt.WorkflowErsteMahnungsfrist);
+            }
+            if (!inputAkt.WorkflowIntervention || !inputAkt.SchuldnerLKZ.Equals("AT", StringComparison.CurrentCultureIgnoreCase))
+            {
+                CreateWorkFlowRecord(id, 18, position, preTime, isClient);
+                position++;
+                preTime = GlobalUtilArea.GetZeroIfConvertToIntError(5);
+            }
+            if (inputAkt.WorkflowIntervention && inputAkt.SchuldnerLKZ.Equals("AT", StringComparison.CurrentCultureIgnoreCase))
+            {
+                CreateWorkFlowRecord(id, 6, position, preTime, isClient);
+                position++;
+                preTime = GlobalUtilArea.GetZeroIfConvertToIntError(inputAkt.WorkflowInterventionsfrist);
+            
+                CreateWorkFlowRecord(id, 18, position, preTime, isClient);
+                position++;
+                preTime = GlobalUtilArea.GetZeroIfConvertToIntError(5);
+            }
+            if (inputAkt.WorkflowZweiteMahnung)
+            {
+                CreateWorkFlowRecord(id, 2, position, preTime, isClient);
+                position++;
+                preTime = GlobalUtilArea.GetZeroIfConvertToIntError(inputAkt.WorkflowZweiteMahnungsfrist);
+            }
+            if (inputAkt.WorkflowDritteMahnung)
+            {
+                CreateWorkFlowRecord(id, 3, position, preTime, isClient);
+                position++;
+                preTime = GlobalUtilArea.GetZeroIfConvertToIntError(inputAkt.WorkflowDritteMahnungsfrist);
+            }
+            if (inputAkt.WorkflowRechtsanwaltMahnung)
+            {
+                CreateWorkFlowRecord(id, 14, position, preTime, isClient);
+                position++;
+                preTime = GlobalUtilArea.GetZeroIfConvertToIntError(28);
+            
+                CreateWorkFlowRecord(id, 19, position, preTime, isClient);
+                position++;
+                preTime = GlobalUtilArea.GetZeroIfConvertToIntError(0);
+            }
+            if (!isClient)
+                CreateWorkFlowRecord(id, 68, position, preTime, false);
+        }
+        private void CreateWorkFlowRecord(int id, int action, int position, int preTime, bool isClient)
+        {
+            if (isClient)
+                RecordSet.Insert(new tblWFK { WFPKlient = id, WFPAktion = action, WFPPosition = position, WFPPreTime = preTime });
+            else
+                RecordSet.Insert(new tblWFA { WFPAkt = id, WFPAktion = action, WFPPosition = position, WFPPreTime = preTime });
+        }
+
+        private InkassoAkt GetAkt(string xmlData)
+        {
+            var ds = new DataSet();
+            ds.ReadXml(new StringReader(xmlData.Replace(Environment.NewLine, " ")));
+            var rec = new InkassoAkt();
+            foreach (DataTable tbl in ds.Tables)
+            {
+                if (tbl.TableName.ToUpper().Trim() == typeof(InkassoAkt).Name.ToUpper().Trim())
+                {
+                    foreach (DataRow dr in tbl.Rows)
+                    {
+                        rec.LoadFromDataRow(dr);
+                    }
+                }
+                else if (tbl.TableName.ToUpper().Trim() == typeof(InkassoAktDokument).Name.ToUpper().Trim())
+                {
+
+                    foreach (DataRow dr in tbl.Rows)
+                    {
+                        var rate = new InkassoAktDokument();
+                        rate.LoadFromDataRow(dr);
+                        rec.Dokumente.Add(rate);
+                    }
+                }
+            }
+            return rec;
+        }
+
+        private bool IsAktValid(InkassoAkt akt, StringBuilder sb)
+        {
+            
+            bool ok = true;
+            if (akt.RechnungForderungOffen <= 0)
+            {
+                ok = false;
+                sb.Append("Offene Forderung falsch!");
+            }
+            if(akt.Dokumente.Count <= 0)
+            {
+                ok = false;
+                sb.Append("Keine Dokumente!");
+            }
+            return ok;
+        }
+        private bool IsDocumentVisibleToClient(string docCaption)
+        {
+            string str = docCaption.ToLower();
+            return !str.StartsWith("mahnung") &&
+                    !str.StartsWith("terminverlust") &&
+                    !str.StartsWith("rechtsanwalt kosten");
+        }
+        private string GetErrorMessage(string message)
+        {
+            return "ERROR: " + message;
+        }
+        /// <summary>
+        /// This method should be refactored and a DB solution put in place
+        /// </summary>
+        /// <returns>Client State Id <!--see tblState--></returns>
+        private int GetClientStateId(string clientStateCode)
+        {
+            switch (clientStateCode)
+            {
+                case "A":
+                case "AT":
+                    return 1;
+                case "D":
+                case "DE":
+                    return 2;
+                case "F":
+                case "FR":
+                    return 4;
+                case "B":
+                case "BE":
+                    return 5;
+                case "CH":
+                case "CHE":
+                    return 6;
+                case "S":
+                case "SE":
+                    return 11;
+            }
+            return 1; // Default Austria
+        }
+    }
+}

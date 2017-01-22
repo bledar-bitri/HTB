@@ -1,0 +1,733 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Web;
+using HTB.Database;
+using HTB.Database.Views;
+using HTB.v2.intranetx.aktenintprovfix;
+using HTB.v2.intranetx.util;
+using HTBExtras;
+using HTBExtras.XML;
+using HTBReports;
+using HTBUtilities;
+
+using ActionRecord = HTBExtras.ActionRecord;
+using File = System.IO.File;
+
+namespace HTB.v2.intranetx.upload
+{
+    public partial class SyncAkt : System.Web.UI.Page
+    {
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private readonly string _subjectOut = HTBUtils.GetConfigValue("InstallmentSignedSubjectOut");
+        private readonly string _signedInstallmentFilePrefix = HTBUtils.GetConfigValue("SignedInstallmentFilePrefix");
+        private readonly string _documentsFolder = HTBUtils.GetConfigValue("DocumentsFolder");
+        private readonly string _defaultEmailAddr = HTBUtils.GetConfigValue("Default_EMail_Addr");
+        private readonly string _body = HTBUtils.GetFileText(HTBUtils.GetConfigValue("Klient_Signed_Installment_Text"));
+        private readonly string _adminEmailAddress = HTBUtils.GetConfigValue("Admin_Email_Address");
+
+        private readonly List<string> _emailAddresses = new List<string>();
+
+        private int _oldAktStatus = -1;
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            int aktId = GlobalUtilArea.GetZeroIfConvertToIntError(Request.Params[GlobalHtmlParams.ID]);
+            if (aktId <= 0)
+            {
+                Response.Write("Kein Aktenzahl!");
+                return;
+            }
+            var akt = HTBUtils.GetInterventionAktQry(aktId);
+            if (akt == null)
+            {
+                Response.Write("Akt [" + aktId + "] Nicht Gefunden");
+                return;
+            }
+            try
+            {
+                var recs = new List<Record>();
+                HttpFileCollection uploadFiles = Request.Files;
+                _emailAddresses.Clear();
+                _oldAktStatus = akt.AktIntStatus;
+                // Loop over the uploaded files and save to disk.
+                for (int i = 0; i < uploadFiles.Count; i++)
+                {
+                    HttpPostedFile postedFile = uploadFiles[i];
+                    if (!postedFile.FileName.EndsWith("xml"))
+                    {
+                        // Access the uploaded file's content in-memory:
+                        Stream inStream = postedFile.InputStream;
+                        var fileData = new byte[postedFile.ContentLength];
+                        inStream.Read(fileData, 0, postedFile.ContentLength);
+                        // Save the posted file.
+                        var filePath = HTBUtils.GetConfigValue("DocumentsFolder") + postedFile.FileName;
+                        postedFile.SaveAs(filePath);
+                        ValidateFile(aktId, filePath);
+                        
+                    }
+                }
+                // Loop over the uploaded files and process the .xml one
+                for (int i = 0; i < uploadFiles.Count; i++)
+                {
+                    HttpPostedFile postedFile = uploadFiles[i];
+
+                    // Access the uploaded file's content in-memory:
+                    if (postedFile.FileName.EndsWith("xml"))
+                    {
+                        Stream inStream = postedFile.InputStream;
+                        var fileData = new byte[postedFile.ContentLength];
+                        inStream.Read(fileData, 0, postedFile.ContentLength);
+
+                        String xmlData = Encoding.UTF8.GetString(fileData);
+                        recs = GetRecords(xmlData);
+                        ProcessRecords(akt, recs);
+                        i = uploadFiles.Count; // exit the loop;
+                    }
+                }
+                
+                /* email document */
+                List<AktDocument> documents = GetDocumentRecords(recs);
+                foreach (var doc in documents)
+                {
+                    if (doc.DocCaption.Equals("Ratenansuchen", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        SendInstallmentEmail(akt.AktIntID, doc.DocURL);
+                    }
+                    else if (!string.IsNullOrEmpty(doc.DocEmail))
+                    {
+                        SendEmail(akt.AktIntID, doc.DocURL, "ECP Dokument", doc.DocEmail);
+                    }
+                }
+
+                if (akt.IsAuto()) // is auto akt?
+                {
+                    if (_oldAktStatus == 1 && akt.AktIntStatus == 2) // is akt currently submited (abgegeben)
+                    {
+                        SendAutoProtocolEmails(akt);
+                    }
+                }
+                Response.Write("OKK");
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+                Response.Write(ex.StackTrace);
+                Log.Error(ex);
+            }
+        }
+
+        private bool ProcessRecords(qryAktenInt qryIntAkt, List<Record> records)
+        {
+            var set = new RecordSet();
+            bool ok = true;
+            try
+            {
+                int docCount = 1;
+                
+                #region Process records and store them into database
+                var akt = HTBUtils.GetInterventionAkt(qryIntAkt.AktIntID);
+                foreach (var record in records)
+                {
+                    var interventionAkt = record as XmlInterventionAkt;
+                    if (interventionAkt != null)
+                    {
+                        #region Interverntion Akt
+
+                        var rec = interventionAkt;
+                        akt.AktIntStatus = rec.AktIntStatus;
+                        akt.AKTIntMemo = rec.AKTIntMemo;
+                        akt.AktIntHasTransferReceiptAttached = rec.AktIntHasTransferReceiptAttached;
+
+                        qryIntAkt.AktIntStatus = akt.AktIntStatus; // we need the new status to determine wether to send email to AG or not
+
+                        set.UpdateRecord(akt);
+
+                        #endregion
+                    }
+                    else
+                    {
+                        var document = record as AktDocument;
+                        if (document != null)
+                        {
+                            #region Documents
+
+                            var rec = document;
+                            string caption = "IPad_Dokument_" + (docCount++);
+                            if (rec.DocCaption != null && !rec.DocCaption.Trim().Equals(""))
+                            {
+                                caption = rec.DocCaption;
+                            }
+
+                            SaveDocumentRecord(akt.AktIntID, akt.AktIntSB, caption, rec.DocURL);
+
+                            if (!string.IsNullOrEmpty(rec.DocEmail) && HTBUtils.GetValidEmailAddressesFromString(rec.DocEmail).Any())
+                            {
+                                var gegner = (tblGegner)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblGegner WHERE GegnerOldID = " + akt.AktIntGegner, typeof(tblGegner));
+                                if (gegner != null)
+                                {
+                                    gegner.GegnerEmail = rec.DocEmail;
+                                    _emailAddresses.AddRange(HTBUtils.GetValidEmailAddressesFromString(gegner.GegnerEmail));
+                                    RecordSet.Update(gegner);
+                                }
+                            }
+                            #endregion
+                        }
+                        else
+                        {
+                            var actionRecord = record as ActionRecord;
+                            if (actionRecord != null)
+                            {
+                                #region Action and Receipt
+                                Log.Info("Processing Action...");
+                                var rec = actionRecord;
+                                var aktAction = new tblAktenIntAction();
+                                var actionType = (tblAktenIntActionType) HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAktenIntActionType WHERE AktIntActionTypeID = " + rec.ActionTypeId, typeof (tblAktenIntActionType));
+                                var ag = (tblAuftraggeber)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeber WHERE AuftraggeberID = " + akt.AktIntAuftraggeber, typeof(tblAuftraggeber));
+
+                                var receipt = GetReceiptRecord(akt, rec.ActionNumber, actionType, records);
+                                if (receipt != null)
+                                {
+                                    var provisionCalc = new ProvisionCalc();
+                                    double balance = GlobalUtilArea.GetAktBalance(akt);
+                                    aktAction.AktIntActionProvision = provisionCalc.GetProvision(receipt.AktIntReceiptAmount, balance, akt.AktIntAuftraggeber, akt.AktIntAktType, akt.AktIntSB, actionType.AktIntActionTypeID);
+                                    aktAction.AktIntActionPrice = provisionCalc.GetPrice(receipt.AktIntReceiptAmount, balance, akt.AktIntAuftraggeber, akt.AktIntAktType, akt.AktIntSB, actionType.AktIntActionTypeID);
+                                    aktAction.AktIntActionReceiptID = GlobalUtilArea.GetZeroIfConvertToIntError(receipt.AktIntReceiptID);
+                                    aktAction.AktIntActionBetrag = receipt.AktIntReceiptAmount;
+
+                                    aktAction.AktIntActionBeleg = receipt.AktIntReceiptNumber;
+                                    Log.Info("AktTypeCode = "+qryIntAkt.AktTypeINTCode);
+                                    if (qryIntAkt.AktTypeINTCode != 2 && qryIntAkt.AktTypeINTCode != 10) // is NOT auto akt?
+                                        GlobalUtilArea.InsertPosRecord(akt.AktIntID, "Zahlung an Aussendienst", receipt.AktIntReceiptAmount * -1, tblAktenIntPosType.INVOICE_TYPE_PAYMENT_CASH_ORIGINAL, DateTime.Now);
+                                }
+                                aktAction.AktIntActionAkt = akt.AktIntID;
+                                aktAction.AktIntActionSB = akt.AktIntSB;
+
+                                aktAction.AktIntActionType = rec.ActionTypeId;
+                                aktAction.AktIntActionHonorar = 0; // no more honorar (everything gets calculated into provision)
+                                aktAction.AktIntActionProvAbzug = ag.AuftraggeberIntAktPovAbzug;
+                                aktAction.AktIntActionDate = DateTime.Now;
+                                aktAction.AktIntActionTime = DateTime.Now;
+
+
+                                aktAction.AktIntActionLatitude = rec.ActionLatitude;
+                                aktAction.AktIntActionLongitude = rec.ActionLongitude;
+                                try
+                                {
+                                    aktAction.AktIntActionAddress =
+                                        GlobalUtilArea.GetAddressFromLatitudeAndLongitude(aktAction.AktIntActionLatitude,
+                                            aktAction.AktIntActionLongitude);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error(ex);
+                                }
+                                aktAction.AktIntActionMemo = rec.ActionMemo;
+                                Log.Info("Inserting Action... AktIntActionAkt = " + aktAction.AktIntActionAkt);
+                                RecordSet.Insert(aktAction);
+                                if (qryIntAkt.IsAuto() && actionType.AktIntActionIsAutoNegative)
+                                {
+                                    GenerateAutoProtocol(akt.AktIntID, actionType.AktIntActionTypeID, aktAction.AktIntActionMemo);
+                                }
+                                #endregion
+                            }
+                            else
+                            {
+                                var ratenansuchen = record as tblAktenIntRatenansuchen;
+                                if (ratenansuchen != null)
+                                {
+                                    #region Ratenansuchen
+
+                                    var rec = ratenansuchen;
+                                    try
+                                    {
+                                        RecordSet.Insert(rec);
+                                    }
+                                    catch (Exception insertException)
+                                    {
+                                    }
+                                    var gegner = (tblGegner)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblGegner WHERE GegnerOldID = " + akt.AktIntGegner, typeof(tblGegner));
+                                    if (gegner != null)
+                                    {
+                                        bool gegnerNeedsUpdate = false;
+                                        if (rec.AktIntRateRequestPhoneCountry.Trim() != "" && rec.AktIntRateRequestPhoneCountry.Trim() != gegner.GegnerPhoneCountry)
+                                        {
+                                            gegner.GegnerPhoneCountry = rec.AktIntRateRequestPhoneCountry;
+                                            gegnerNeedsUpdate = true;
+                                        }
+                                        if (rec.AktIntRateRequestPhoneCity.Trim() != "" && rec.AktIntRateRequestPhoneCity.Trim() != gegner.GegnerPhoneCity)
+                                        {
+                                            gegner.GegnerPhoneCity = rec.AktIntRateRequestPhoneCity;
+                                            gegnerNeedsUpdate = true;
+                                        }
+                                        if (rec.AktIntRateRequestPhone.Trim() != "" && rec.AktIntRateRequestPhone.Trim() != gegner.GegnerPhone)
+                                        {
+                                            gegner.GegnerPhone = rec.AktIntRateRequestPhone;
+                                            gegnerNeedsUpdate = true;
+                                        }
+                                        if (!string.IsNullOrEmpty(rec.AktIntRateRequestEMail))
+                                        {
+                                            gegner.GegnerEmail = rec.AktIntRateRequestEMail;
+                                            _emailAddresses.Add(gegner.GegnerEmail);
+                                            gegnerNeedsUpdate = true;
+                                        }
+                                        if (!string.IsNullOrEmpty(rec.AktIntRateRequestEMailPartner))
+                                        {
+                                            gegner.GegnerPartnerEMail = rec.AktIntRateRequestEMailPartner;
+                                            _emailAddresses.Add(gegner.GegnerPartnerEMail);
+                                            gegnerNeedsUpdate = true;
+                                        }
+
+                                        if (gegnerNeedsUpdate)
+                                            RecordSet.Update(gegner);
+                                    }
+
+                                    #endregion
+                                }
+                                else
+                                {
+                                    var calcRecord = record as XmlAktInstallmentCalcRecord;
+                                    if (calcRecord != null)
+                                    {
+                                        #region Installment Calc Record
+
+                                        var rec = calcRecord;
+                                        if (akt.IsInkasso())
+                                        {
+                                            tblCustInkAkt inkAkt = HTBUtils.GetInkassoAkt(akt.AktIntCustInkAktID);
+                                            if (inkAkt != null)
+                                            {
+                                                tblControl control = HTBUtils.GetControlRecord();
+                                                SaveInstallmentList(inkAkt.CustInkAktID, akt, GetInstallmentDetail(records), rec.PaymentType);
+                                                akt.AktIntProcessCode = control.ProcessCodeInstallment;
+                                                akt.AKTIntRVInkassoType = rec.PaymentType;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            akt.AKTIntRVInkassoType = rec.PaymentType;
+                                            akt.AKTIntRVStartDate = rec.StartDate;
+                                            akt.AKTIntRVAmmount = rec.InstallmentAmount;
+                                            akt.AKTIntRVIntervallDay = rec.PaymentDay;
+                                            akt.AKTIntRVNoMonth = rec.NumberOfInstallments;
+                                            akt.AKTIntRVInfo = rec.PaymentPeriod;
+                                            RecordSet.Update(akt);
+                                        }
+
+                                        #endregion
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                #endregion
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                ok = false;
+            }
+            return ok;
+        }
+
+        private List<Record> GetRecords(string xmlData)
+        {
+            // encoding ISO08859-1 allows umlauts in XML
+            // xmlData = "<?xml version=\"1.0\" encoding=\"ISO8859-1\"?>"+Environment.NewLine+ xmlData;
+            xmlData = xmlData.Replace("&", "&amp;");
+            
+            HTBUtils.SaveTextFile(@"c:\temp\xmlData.xml", xmlData); // Debug purposes
+
+            var ds = new DataSet();
+            ds.ReadXml(new StringReader(xmlData));
+            var records = new List<Record>();
+            
+            foreach (DataTable tbl in ds.Tables)
+            {
+                foreach (DataRow dr in tbl.Rows)
+                {
+                    Record rec = GetRecordForXmlNode(tbl.TableName);
+                    if (rec != null)
+                    {
+                        rec.LoadFromDataRow(dr);
+                        records.Add(rec);
+                    }
+                }
+            }
+            return records;
+        }
+
+        private void SaveDocumentRecord(int aktNumber, int creator, string caption, string fileName)
+        {
+            var sb = new StringBuilder("SELECT * FROM tblDokument ");
+            sb.Append(" WHERE ");
+            sb.Append("DokInkAkt = ");
+            sb.Append(aktNumber);
+            sb.Append(" AND DokAttachment = '");
+            sb.Append(fileName);
+            sb.Append("'");
+            if (HTBUtils.GetSqlSingleRecord(sb.ToString(), typeof (tblDokument)) == null)
+            {
+                var doc = new tblDokument
+                              {
+                                  // CollectionInvoice
+                                  DokDokType = 25,
+                                  DokCaption = caption,
+                                  DokInkAkt = aktNumber,
+                                  DokCreator = creator,
+                                  DokAttachment = fileName,
+                                  DokCreationTimeStamp = DateTime.Now,
+                                  DokChangeDate = DateTime.Now
+                              };
+
+                RecordSet.Insert(doc);
+
+                doc = (tblDokument) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblDokument ORDER BY DokID DESC", typeof (tblDokument));
+                if (doc != null)
+                {
+                    RecordSet.Insert(new tblAktenDokumente {ADAkt = aktNumber, ADDok = doc.DokID, ADAkttyp = 3});
+                }
+            }
+        }
+
+        private Record GetRecordForXmlNode(String nodeName)
+        {
+            if (nodeName == null)
+                return null;
+            nodeName = nodeName.Trim();
+
+            if (nodeName.Equals("XmlInterventionAkt", StringComparison.InvariantCultureIgnoreCase))
+                return new XmlInterventionAkt();
+
+            if (nodeName.Equals("AktDocument", StringComparison.InvariantCultureIgnoreCase))
+                return new AktDocument();
+
+            if (nodeName.Equals("ActionRecord", StringComparison.InvariantCultureIgnoreCase))
+                return new ActionRecord();
+
+            if (nodeName.Equals("XmlPrintableReceiptRecord", StringComparison.InvariantCultureIgnoreCase))
+                return new XmlPrintableReceiptRecord();
+
+            if (nodeName.Equals("tblAktenIntRatenansuchen", StringComparison.InvariantCultureIgnoreCase))
+                return new tblAktenIntRatenansuchen();
+
+            if (nodeName.Equals("XmlAktInstallmentCalcRecord", StringComparison.InvariantCultureIgnoreCase))
+                return new XmlAktInstallmentCalcRecord();
+
+            if (nodeName.Equals("CustInkAktRate", StringComparison.InvariantCultureIgnoreCase))
+                return new tblCustInkAktRate();
+
+            return null;
+        }
+
+        private tblAktenIntReceipt GetReceiptRecord(tblAktenInt akt, string actionNumber, tblAktenIntActionType actionType, IEnumerable<Record> records)
+        {
+            XmlPrintableReceiptRecord rec = records.OfType<XmlPrintableReceiptRecord>().FirstOrDefault(record => (record).ActionNumber == actionNumber);
+            if (rec != null)
+            {
+                var gegner = (tblGegner) HTBUtils.GetSqlSingleRecord("SELECT * FROM tblGegner WHERE GegnerOldID = " + akt.AktIntGegner, typeof (tblGegner));
+                var receipt = new tblAktenIntReceipt
+                                  {
+                                      AktIntReceiptDate = DateTime.Now,
+                                      AktIntReceiptUser = akt.AktIntSB,
+                                      AktIntReceiptAmount = GlobalUtilArea.GetZeroIfConvertToDoubleError(rec.PaymentAmount),
+                                      AktIntReceiptAkt = akt.AktIntID,
+                                      AktIntReceiptCity = gegner.GegnerLastOrt,
+                                      AktIntReceiptType = actionType.AktIntActionIsTotalCollection ? 1 : 2,
+                                      AktIntReceiptAuftraggeber = akt.AktIntAuftraggeber
+                                  };
+                if (RecordSet.Insert(receipt))
+                    receipt = (tblAktenIntReceipt) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblAktenIntReceipt order by AktIntReceiptID desc", typeof (tblAktenIntReceipt));
+                return receipt;
+            }
+            return null;
+        }
+
+        private List<tblCustInkAktRate> GetInstallmentDetail(IEnumerable<Record> records)
+        {
+            return records.OfType<tblCustInkAktRate>().ToList();
+        }
+
+        private List<AktDocument> GetDocumentRecords(IEnumerable<Record> records)
+        {
+            return records.OfType<AktDocument>().ToList();
+        }
+
+        private void GenerateAutoProtocol(int intAktId, int actionType, string memo)
+        {
+            try
+            {
+                RecordSet.Insert(new tblProtokol
+                    {
+                        ProtokolAkt = intAktId,
+                        ProtokolActionTypeID = actionType,
+                        Memo =  memo,
+                        UpdateDate = DateTime.Now
+
+                    });
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+        }
+
+        private bool SaveInstallmentList(int custAktId, tblAktenInt akt, List<tblCustInkAktRate> list, int paymentType)
+        {
+            bool ok = true;
+            if (list != null && list.Count > 0)
+            {
+                try
+                {
+                    HTBUtils.DeleteInstallmentPlan(custAktId);
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+                var set = new RecordSet();
+                foreach (tblCustInkAktRate installment in list)
+                {
+                    installment.CustInkAktRateAktID = custAktId;
+                    installment.CustInkAktRateLastChanged = DateTime.Now;
+                    installment.CustInkAktRateReceivedAmount = 0;
+                    installment.CustInkAktRateBalance = installment.CustInkAktRateAmount;
+                    installment.CustInkAktRatePaymentType = paymentType;
+                    installment.CustInkAktRatePostponeTillDate = HTBUtils.DefaultDate;
+                    installment.CustInkAktRateNotifiedAD = HTBUtils.DefaultDate;
+                    set.InsertRecord(installment);
+                }
+
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private void SetAktHasTransferReceiptAttached(int aktIntId, bool hasTransferReciptAttached)
+        {
+            HTBUtils.ExecuteStoredProcedure("spSetAktIntHasTransferReceiptAttached", new ArrayList()
+            {
+                new StoredProcedureParameter("aktId", SqlDbType.Int, aktIntId),
+                new StoredProcedureParameter("@hasTransferReciptAttached", SqlDbType.Bit, hasTransferReciptAttached)
+            });
+        }
+
+        private void SendInstallmentEmail(int intAktId, string fileName)
+        {
+            var attachment = _documentsFolder + fileName;
+            if (File.Exists(attachment))
+            {
+                var to = new List<string>();
+                if (_emailAddresses != null)
+                {
+                    to.AddRange(_emailAddresses.Where(HTBUtils.IsValidEmail));
+                }
+                string sbAddress = HTBUtils.GetSBEmailAddress(intAktId);
+                tblAktenInt akt = HTBUtils.GetInterventionAkt(intAktId);
+                if (sbAddress != null)
+                {
+                    to.Add(sbAddress);
+                }
+                to.Add(_defaultEmailAddr);
+                string body = _body.Replace("[akt]", akt.AktIntAZ);
+                new HTBEmail().SendGenericEmail(to, _subjectOut, body, true, new List<HTBEmailAttachment> { new HTBEmailAttachment(File.OpenRead(attachment), fileName, "application/pdf") }, 0, akt.AktIntID);
+            }
+        }
+
+        private void SendEmail(int intAktId, string fileName, string subject, string toAddress)
+        {
+            var attachment = _documentsFolder + fileName;
+            if (File.Exists(attachment))
+            {
+                string sbAddress = HTBUtils.GetSBEmailAddress(intAktId); // this is the email address of the Sachbearbeiter
+                string adAddress = HTBUtils.GetADEmailAddress(intAktId); // this is the email address of the Aussendienst
+                var to = HTBUtils.GetValidEmailAddressesFromStrings(new[]
+                    {
+                        toAddress,
+                        sbAddress,
+                        adAddress,
+                        _defaultEmailAddr
+                    });
+
+                Log.Info("[intAktId: " + intAktId + "] [sbAddress: " + sbAddress + "] [adAddress: " + adAddress + "] [_defaultEmailAddr: " + _defaultEmailAddr + "]");
+
+                const string body = "Siehe Anhang.";
+                new HTBEmail().SendGenericEmail(to, subject, body, true, new List<HTBEmailAttachment> { new HTBEmailAttachment(File.OpenRead(attachment), fileName, "application/pdf") }, 0, intAktId);
+            }
+        }
+
+        private void SendAutoProtocolEmails(qryAktenInt qryAktInt)
+        {
+            int aktId = qryAktInt.AktIntID;
+
+            var protocol = (tblProtokol) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblProtokol WHERE AktIntID = " + aktId + " ORDER BY ProtokolID DESC", typeof (tblProtokol));
+            if (protocol != null)
+            {
+                #region Load Data
+
+                var action = (qryAktenIntActionWithType)HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionIsInternal = 0 AND AktIntActionAkt = " + aktId + " ORDER BY AktIntActionTime DESC", typeof(qryAktenIntActionWithType));
+
+                ArrayList docsList = HTBUtils.GetSqlRecords("SELECT * FROM qryDoksIntAkten WHERE AktIntID = " + aktId, typeof (qryDoksIntAkten));
+                if (qryAktInt.IsInkasso())
+                    HTBUtils.AddListToList(HTBUtils.GetSqlRecords("SELECT * FROM qryDoksInkAkten WHERE CustInkAktID = " + qryAktInt.AktIntCustInkAktID, typeof (qryDoksInkAkten)), docsList);
+
+                #endregion
+
+                #region Create and Save AG Protocol
+                var fileName = "Abschlus_Protokoll_" + qryAktInt.AktIntAZ + ".pdf";
+                string filepath = HTBUtils.GetConfigValue("DocumentsFolder") + fileName;
+                FileStream ms = File.Exists(filepath) ? new FileStream(filepath, FileMode.Truncate) : new FileStream(filepath, FileMode.Create);
+
+                var rpt = new ProtokolTablet();
+                try
+                {
+                    var visitedDates = GlobalUtilArea.GetVisitedDates(qryAktInt.AktIntID);
+                    var posList = GlobalUtilArea.GetPosList(qryAktInt.AktIntID);
+                    
+                    if (action == null)
+                        Log.Error("could not find Akt Actions... action is null");
+
+                    if (visitedDates == null)
+                        Log.Error("could not find Akt Visited Dates... visitedDates is null");
+                    if (posList == null)
+                        Log.Error("could not find Akt Pos List... posList is null");
+                    if (docsList == null)
+                        Log.Error("could not find Akt Documents... docsList is null");
+
+                    rpt.GenerateProtokol(
+                        qryAktInt, 
+                        protocol, 
+                        action, 
+                        ms,
+                        visitedDates,
+                        posList, 
+                        docsList.Cast<Record>().ToList());
+                    SaveDocumentRecord(qryAktInt.AktIntID, qryAktInt.AktIntSB, "3 Abschlus Protokoll", fileName);
+
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                }
+                finally
+                {
+                    ms.Close();
+                    ms.Dispose();
+                }
+                #endregion
+
+                string subject = "BERICHT ZU AKT: " + qryAktInt.AktIntAZ + " für " + qryAktInt.AuftraggeberName1;
+                
+                #region Email AG Protocol
+                var to = HTBUtils.GetValidEmailAddressesFromStrings(new []
+                    {
+                        qryAktInt.AKTIntKSVEMail,
+                        qryAktInt.AuftraggeberEMail
+                    }
+                );
+
+                if (to.Count > 0)
+                {
+
+                    var bcc = HTBUtils.GetValidEmailAddressesFromStrings(new[]
+                        {
+                            qryAktInt.UserEMailOffice,
+                            qryAktInt.UserEMailPrivate
+                        });
+
+                    string body = HTBUtils.GetFileText(HTBUtils.GetConfigValue("Auftraggeber_Auto_Bericht_Text")) ?? "Siehe Anhang!";
+                    
+                    body = body.Replace("[akt]", qryAktInt.AktIntAZ);
+                    body = body.Replace("[auftraggeber]", qryAktInt.AuftraggeberName1);
+
+                    using (FileStream fileStream = File.OpenRead(filepath))
+                    {
+                        var attachment = new HTBEmailAttachment(fileStream, "Protokoll_" + qryAktInt.AktIntAZ + ".pdf", "application/pdf");
+                        new HTBEmail().SendGenericEmail(null, to, null, bcc, subject, body, true, new List<HTBEmailAttachment> { attachment }, 0, qryAktInt.AktIntID);
+                    }
+
+                    
+                    #endregion
+                }
+                else
+                {
+                    Log.Error(string.Format("Both Auftraggeber Email [{0},{1}] are invalid", qryAktInt.AKTIntKSVEMail, qryAktInt.AuftraggeberEMail));
+                }
+                var officeEmailAdr = HTBUtils.GetConfigValue("Office_Email");
+
+                if (HTBUtils.IsValidEmail(officeEmailAdr))
+                {
+                    #region Generate and Email Office Protocol
+
+                    string body = HTBUtils.GetFileText(HTBUtils.GetConfigValue("Office_Auto_Bericht_Text")) ??
+                                  "Siehe Anhang!";
+
+                    body = body.Replace("[akt]", qryAktInt.AktIntAZ);
+                    body = body.Replace("[auftraggeber]", qryAktInt.AuftraggeberName1);
+
+                    var officeMS = new MemoryStream();
+                    var officeRpt = new ProtokolTablet();
+                    try
+                    {
+//                        officeRpt.GenerateOfficeProtokol(qryAktInt, protocol, action, officeMS, protocolVisits.Cast<tblProtokolBesuch>().ToList(), docsList.Cast<Record>().ToList());
+                        officeRpt.GenerateOfficeProtokol(qryAktInt, protocol, action, officeMS,
+                                                         GlobalUtilArea.GetVisitedDates(qryAktInt.AktIntID),
+                                                         GlobalUtilArea.GetPosList(qryAktInt.AktIntID),
+                                                         docsList.Cast<Record>().ToList());
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex);
+                    }
+                    finally
+                    {
+                        officeMS.Close();
+                        officeMS.Dispose();
+                    }
+
+                    var attachment = new HTBEmailAttachment(new MemoryStream(officeMS.ToArray()),
+                                                            "Protokoll_" + qryAktInt.AktIntAZ + ".pdf",
+                                                            "application/pdf");
+                    new HTBEmail().SendGenericEmail(new List<string> {officeEmailAdr}, subject, body, true,
+                                                    new List<HTBEmailAttachment> {attachment}, 0, qryAktInt.AktIntID);
+
+                    #endregion
+                }
+                else
+                {
+                    Log.Error(string.Format("Office_Email [{0}] is invalid", officeEmailAdr));
+                }
+            }
+        }
+
+        private void ValidateFile(int aktId, string filename)
+        {
+            try
+            {
+                var fileInfo = new FileInfo(filename);
+                var size = fileInfo.Length;
+                if (size == 0)
+                {
+                    var body = string.Format("Akt ID: {0}\n<br/>Attachment: {1}\n<br>Size: {2}", aktId, filename, size);
+                    new HTBEmail().SendGenericEmail(_adminEmailAddress, "Corrupt Attachment: ", body);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+        }
+    }
+}

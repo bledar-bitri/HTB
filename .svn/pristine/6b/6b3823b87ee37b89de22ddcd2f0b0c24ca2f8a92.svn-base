@@ -1,0 +1,486 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using HTB.Database;
+using HTBUtilities;
+using HTB.Database.Views;
+
+namespace HTB.v2.intranetx.aktenintprovfix
+{
+    public class ProvisionCalc
+    {
+        public const string ProvType_AG_AktType_ActionType_User = "AG_TYPE_ACTION_USER";
+        public const string ProvType_AktType_ActionType_User = "USER_TYPE_ACTION";
+        public const string ProvType_AG_AktType_ActionType = "AG_TYPE_ACTION";
+        public const string ProvType_AG_User = "AG_USER";
+        public const string ProvType_ActionType_User = "USER_ACTION";
+        public const string ProvType_AG_ActionType = "AG_ACTION";
+        public const string ProvType_AG_AktType = "AG_TYPE";
+        public const string ProvType_ActionType = "ACTION";
+
+        public const int PeriodCode_Range = 0;
+        public const int PeriodCode_Weekly = 1;
+        public const int PeriodCode_Monthly = 2;
+
+        private readonly ActionRecordList _actionRecordList = new ActionRecordList();
+
+        public double GetProvision(double collectedAmount, double balance, int agId, int aktIntTypeId, int userId, int actionTypeId)
+        {
+            _actionRecordList.Add(agId, aktIntTypeId, actionTypeId, userId, DateTime.Now);
+
+            string sqlWhere = " WHERE AGAktTypeAktionUserProvAuftraggeberID = " + agId +
+                       " AND AGAktTypeActionUserProvAktTypeIntID = " + aktIntTypeId +
+                       " AND AGAktTypeActionUserProvUserID = " + userId +
+                       " AND AGAktTypeActionUserProvAktAktionTypeID = " + actionTypeId;
+            string provType = ProvType_AG_AktType_ActionType_User;
+            Record prov = (tblAuftraggeberAktTypeActionUserProv)HTBUtils.GetSqlSingleRecord("*+54qSDGH00" + sqlWhere, typeof(tblAuftraggeberAktTypeActionUserProv));
+            if (prov == null)
+            {
+                sqlWhere = " WHERE UserAktTypeAktionProvUserID = " + userId +
+                           " AND UserAktTypeActionProvAktTypeIntID = " + aktIntTypeId +
+                           " AND UserAktTypeActionProvAktAktionTypeID = " + actionTypeId;
+                prov = (tblUserAktTypeActionProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblUserAktTypeActionProv " + sqlWhere, typeof(tblUserAktTypeActionProv));
+                provType = ProvType_AktType_ActionType_User;
+
+            }
+            if (prov == null)
+            {
+                sqlWhere = " WHERE AGAktTypeAktionProvAuftraggeberID = " + agId +
+                           " AND AGAktTypeActionProvAktTypeIntID = " + aktIntTypeId +
+                           " AND AGAktTypeActionProvAktAktionTypeID = " + actionTypeId;
+                prov = (tblAuftraggeberAktTypeActionProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeberAktTypeActionProv " + sqlWhere, typeof(tblAuftraggeberAktTypeActionProv));
+                provType = ProvType_AG_AktType_ActionType;
+            }
+            if (prov == null)
+            {
+                sqlWhere = " WHERE AGUserProvAuftraggeberID = " + agId +
+                                 " AND AGUserProvUserID = " + userId +
+                                 " AND AGUserProvAktAktionTypeID = " + actionTypeId;
+                prov = (tblAuftraggeberUserProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeberUserProv " + sqlWhere, typeof(tblAuftraggeberUserProv));
+                provType = ProvType_AG_User;
+            }
+            if (prov == null)
+            {
+                sqlWhere = " WHERE UserAktionProvUserID = " + userId +
+                           " AND UserActionProvAktAktionTypeID = " + actionTypeId;
+                prov = (tblUserActionProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblUserActionProv " + sqlWhere, typeof(tblUserActionProv));
+                provType = ProvType_ActionType_User;
+            }
+            if (prov == null)
+            {
+                sqlWhere = " WHERE AGAktionProvAuftraggeberID = " + agId +
+                           " AND AGActionProvAktAktionTypeID = " + actionTypeId;
+                prov = (tblAuftraggeberActionProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeberActionProv " + sqlWhere, typeof(tblAuftraggeberActionProv));
+                provType = ProvType_AG_ActionType;
+            }
+            if (prov == null)
+            {
+                sqlWhere = " WHERE AGAktTypeProvAuftraggeberID = " + agId +
+                           " AND AGAktTypeProvAktTypeIntID = " + aktIntTypeId;
+                prov = (tblAuftraggeberAktTypeProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeberAktTypeProv " + sqlWhere, typeof(tblAuftraggeberAktTypeProv));
+                provType = ProvType_AG_AktType;
+            }
+            if (prov == null)
+            {
+                sqlWhere = " WHERE AktIntActionTypeID = " + actionTypeId;
+                prov = (tblAktenIntActionType)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAktenIntActionType " + sqlWhere, typeof(tblAktenIntActionType));
+                provType = ProvType_ActionType;
+            }
+            return GetProvision(collectedAmount, balance, prov, provType);
+        }
+        private double GetProvision(double collectedAmount, double balance, Record provRecord, string provType)
+        {
+            if (provRecord is tblAuftraggeberAktTypeActionUserProv)
+            {
+                var rec = (tblAuftraggeberAktTypeActionUserProv)provRecord;
+                return GetProvision(collectedAmount, balance, rec.AGAktTypeActionUserProvHonGrpID, rec.AGAktTypeActionUserProvAmount, rec.AGAktTypeActionUserProvAmountForZeroCollection, rec.AGAktTypeActionUserProvPct, provType);
+            }
+            if (provRecord is tblUserAktTypeActionProv)
+            {
+                var rec = (tblUserAktTypeActionProv)provRecord;
+                return GetProvision(collectedAmount, balance, rec.UserAktTypeActionProvHonGrpID, rec.UserAktTypeActionProvAmount, rec.UserAktTypeActionProvAmountForZeroCollection, rec.UserAktTypeActionProvPct, provType);
+            }
+            if (provRecord is tblAuftraggeberUserProv)
+            {
+                var rec = (tblAuftraggeberUserProv)provRecord;
+                return GetProvision(collectedAmount, balance, rec.AGUserProvHonGrpID, rec.AGUserProvAmount, rec.AGUserProvAmountForZeroCollection, rec.AGUserProvPct, provType);
+            }
+            if (provRecord is tblAuftraggeberAktTypeActionProv)
+            {
+                var rec = (tblAuftraggeberAktTypeActionProv)provRecord;
+                return GetProvision(collectedAmount, balance, rec.AGAktTypeActionProvHonGrpID, rec.AGAktTypeActionProvAmount, rec.AGAktTypeActionProvAmountForZeroCollection, rec.AGAktTypeActionProvPct, provType);
+            }
+            if (provRecord is tblUserActionProv)
+            {
+                var rec = (tblUserActionProv)provRecord;
+                return GetProvision(collectedAmount, balance, rec.UserActionProvHonGrpID, rec.UserActionProvAmount, rec.UserActionProvAmountForZeroCollection, rec.UserActionProvPct, provType);
+            }
+            if (provRecord is tblAuftraggeberActionProv)
+            {
+                var rec = (tblAuftraggeberActionProv)provRecord;
+                return GetProvision(collectedAmount, balance, rec.AGActionProvHonGrpID, rec.AGActionProvAmount, rec.AGActionProvAmountForZeroCollection, rec.AGActionProvPct, provType);
+            }
+            if (provRecord is tblAuftraggeberAktTypeProv)
+            {
+                var rec = (tblAuftraggeberAktTypeProv)provRecord;
+                return GetProvision(collectedAmount, balance, rec.AGAktTypeProvProvisionHonGrpID, rec.AGAktTypeProvProvisionAmount, rec.AGAktTypeProvProvisionAmountForZeroCollection, rec.AGAktTypeProvProvisionPct, provType);
+            }
+            if (provRecord is tblAktenIntActionType)
+            {
+                var rec = (tblAktenIntActionType)provRecord;
+                return GetProvision(collectedAmount, balance, rec.AktIntActionProvHonGrpID, rec.AktIntActionProvAmount, rec.AktIntActionProvAmountForZeroCollection, rec.AktIntActionProvPct, provType);
+            }
+            return 0;
+        }
+
+        private double GetProvision(double collectedAmount, double balance, int honorarGrpId, double amt, double amtForZero, double amtPct, string provType)
+        {
+            if (honorarGrpId > 0)
+            {
+                return GetHonorar(honorarGrpId, collectedAmount, balance, provType);
+            }
+            double ret;
+            if (HTBUtils.IsZero(collectedAmount))
+            {
+                ret = amtForZero;
+            }
+            else
+            {
+                if (!HTBUtils.IsZero(amtPct))
+                {
+                    ret = collectedAmount * (amtPct / 100);
+                }
+                else
+                {
+                    ret = amt;
+                }
+            }
+            return ret;
+        }
+        private double GetHonorar(int honorarGrpId, double collectedAmount, double balance, string provType)
+        {
+            double ret = 0;
+            if (balance > 0 || collectedAmount > 0)
+            {
+                string sqlQuery = "SELECT * FROM qryAktenIntGroupHonorar WHERE AktIntHonGrpID = " + honorarGrpId + " AND AktIntHonFrom <= " + collectedAmount + " AND AktIntHonTo >= " + collectedAmount;
+                var honorar = (qryAktenIntGroupHonorar)HTBUtils.GetSqlSingleRecord(sqlQuery.Replace(",", "."), typeof(qryAktenIntGroupHonorar));
+                if (honorar != null)
+                {
+                    ret = honorar.AktIntHonProvAmount;
+                    if (honorar.AktIntHonProvPct > 0)
+                    {
+                        if (honorar.AktIntHonProvPctOf == 0)
+                        {
+                            ret += (honorar.AktIntHonProvPct / 100) * collectedAmount;
+                        }
+                        else
+                        {
+                            ret += (honorar.AktIntHonProvPct / 100) * balance;
+                        }
+                    }
+                    if (ret > honorar.AktIntHonMaxProvAmount)
+                    {
+                        ret = honorar.AktIntHonMaxProvAmount;
+                    }
+                }
+            }
+            return ret;
+        }
+
+        public double GetPrice(double collectedAmount, double balance, int agId, int aktIntTypeId, int userId, int actionTypeId)
+        {
+            double price = 0;
+            if (IsActionVoid(actionTypeId))
+                return 0;
+
+            string sqlWhere = " WHERE AGAktTypeAktionUserProvAuftraggeberID = " + agId +
+                       " AND AGAktTypeActionUserProvAktTypeIntID = " + aktIntTypeId +
+                       " AND AGAktTypeActionUserProvUserID = " + userId +
+                       " AND AGAktTypeActionUserProvAktAktionTypeID = " + actionTypeId;
+
+
+            var agAktTypeUserProv = (tblAuftraggeberAktTypeActionUserProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeberAktTypeActionUserProv" + sqlWhere, typeof(tblAuftraggeberAktTypeActionUserProv));
+
+            if (agAktTypeUserProv != null)
+            {
+                if (agAktTypeUserProv.AGAktTypeActionUserProvHonGrpID > 0)
+                    price = GetHonorarPrice(agAktTypeUserProv.AGAktTypeActionUserProvHonGrpID, collectedAmount, balance);
+                else if (agAktTypeUserProv.AGAktTypeActionUserProvPrice > 0)
+                    price = agAktTypeUserProv.AGAktTypeActionUserProvPrice;
+            }
+            if (price == 0)
+            {
+                sqlWhere = " WHERE UserAktTypeAktionProvUserID = " + userId +
+                           " AND UserAktTypeActionProvAktTypeIntID = " + aktIntTypeId +
+                           " AND UserAktTypeActionProvAktAktionTypeID = " + actionTypeId;
+                var userAktTypeProv = (tblUserAktTypeActionProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblUserAktTypeActionProv " + sqlWhere, typeof(tblUserAktTypeActionProv));
+                if (userAktTypeProv != null)
+                {
+                    if (userAktTypeProv.UserAktTypeActionProvHonGrpID > 0)
+                        price = GetHonorarPrice(userAktTypeProv.UserAktTypeActionProvHonGrpID, collectedAmount, balance);
+                    else if (userAktTypeProv.UserAktTypeActionProvPrice > 0)
+                        price = userAktTypeProv.UserAktTypeActionProvPrice;
+                }
+            }
+            if (price == 0)
+            {
+                sqlWhere = " WHERE AGAktTypeAktionProvAuftraggeberID = " + agId +
+                           " AND AGAktTypeActionProvAktTypeIntID = " + aktIntTypeId +
+                           " AND AGAktTypeActionProvAktAktionTypeID = " + actionTypeId;
+                var agAktTypeProv = (tblAuftraggeberAktTypeActionProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeberAktTypeActionProv " + sqlWhere, typeof(tblAuftraggeberAktTypeActionProv));
+                if (agAktTypeProv != null)
+                {
+                    if (agAktTypeProv.AGAktTypeActionProvHonGrpID > 0)
+                        price = GetHonorarPrice(agAktTypeProv.AGAktTypeActionProvHonGrpID, collectedAmount, balance);
+                    else if (agAktTypeProv.AGAktTypeActionProvPrice > 0)
+                        price = agAktTypeProv.AGAktTypeActionProvPrice;
+                }
+            }
+            if (price == 0)
+            {
+                sqlWhere = " WHERE AGUserProvAuftraggeberID = " + agId +
+                                 " AND AGUserProvUserID = " + userId +
+                                 " AND AGUserProvAktAktionTypeID = " + actionTypeId;
+                var agUserProv = (tblAuftraggeberUserProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeberUserProv " + sqlWhere, typeof(tblAuftraggeberUserProv));
+                if (agUserProv != null)
+                {
+                    if (agUserProv.AGUserProvHonGrpID > 0)
+                        price = GetHonorarPrice(agUserProv.AGUserProvHonGrpID, collectedAmount, balance);
+                    else if (agUserProv.AGUserProvPrice > 0)
+                        price = agUserProv.AGUserProvPrice;
+                }
+            }
+            if (price == 0)
+            {
+                sqlWhere = " WHERE UserAktionProvUserID = " + userId +
+                           " AND UserActionProvAktAktionTypeID = " + actionTypeId;
+                var userActionProv = (tblUserActionProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblUserActionProv " + sqlWhere, typeof(tblUserActionProv));
+                if (userActionProv != null)
+                {
+                    if (userActionProv.UserActionProvHonGrpID > 0)
+                        price = GetHonorarPrice(userActionProv.UserActionProvHonGrpID, collectedAmount, balance);
+                    else if (userActionProv.UserActionProvPrice > 0)
+                        price = userActionProv.UserActionProvPrice;
+                }
+            }
+            if (price == 0)
+            {
+                sqlWhere = " WHERE AGAktionProvAuftraggeberID = " + agId +
+                           " AND AGActionProvAktAktionTypeID = " + actionTypeId;
+                var agActionProv = (tblAuftraggeberActionProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeberActionProv " + sqlWhere, typeof(tblAuftraggeberActionProv));
+                if (agActionProv != null)
+                {
+                    if (agActionProv.AGActionProvHonGrpID > 0)
+                        price = GetHonorarPrice(agActionProv.AGActionProvHonGrpID, collectedAmount, balance);
+                    else if (agActionProv.AGActionProvPrice > 0)
+                        price = agActionProv.AGActionProvPrice;
+                }
+            }
+            if (price == 0)
+            {
+                sqlWhere = " WHERE AGAktTypeProvAuftraggeberID = " + agId +
+                           " AND AGAktTypeProvAktTypeIntID = " + aktIntTypeId;
+                var agType = (tblAuftraggeberAktTypeProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeberAktTypeProv " + sqlWhere, typeof(tblAuftraggeberAktTypeProv));
+                if (agType != null)
+                {
+                    if (agType.AGAktTypeProvProvisionHonGrpID > 0)
+                        price = GetHonorarPrice(agType.AGAktTypeProvProvisionHonGrpID, collectedAmount, balance);
+                    else if (agType.AGAktTypeProvProvisionPrice > 0)
+                        price = agType.AGAktTypeProvProvisionPrice;
+                }
+            }
+            if (price == 0)
+            {
+                sqlWhere = " WHERE AktIntActionTypeID = " + actionTypeId;
+                var action = (tblAktenIntActionType)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAktenIntActionType " + sqlWhere, typeof(tblAktenIntActionType));
+                if (action != null)
+                {
+                    if (action.AktIntActionProvHonGrpID > 0)
+                        price = GetHonorarPrice(action.AktIntActionProvHonGrpID, collectedAmount, balance);
+                    else if (action.AktIntActionProvPrice > 0)
+                        price = action.AktIntActionProvPrice;
+                }
+            }
+            if (price == 0)
+            {
+                sqlWhere = " WHERE AuftraggeberID = " + agId;
+                var ag = (tblAuftraggeber)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeber " + sqlWhere, typeof(tblAuftraggeber));
+                if (ag != null)
+                {
+                    if (ag.AuftraggeberInterventionsKost > 0)
+                        price = ag.AuftraggeberInterventionsKost;
+                }
+            }
+            return price;
+        }
+
+        private double GetHonorarPrice(int honorarGrpId, double collectedAmount, double balance)
+        {
+            double ret = 0;
+            string sqlQuery = "SELECT * FROM qryAktenIntGroupHonorar WHERE AktIntHonGrpID = " + honorarGrpId + " AND AktIntHonFrom <= " + collectedAmount + " AND AktIntHonTo >= " + collectedAmount;
+            var honorar = (qryAktenIntGroupHonorar)HTBUtils.GetSqlSingleRecord(sqlQuery.Replace(",", "."), typeof(qryAktenIntGroupHonorar));
+            if (honorar != null)
+            {
+                ret = honorar.AktIntHonPrice;
+                if (honorar.AktIntHonPct > 0)
+                {
+                    if (honorar.AktIntHonPctOf == 0)
+                    {
+                        ret += (honorar.AktIntHonPct / 100) * collectedAmount;
+                    }
+                    else
+                    {
+                        ret += (honorar.AktIntHonPct / 100) * balance;
+                    }
+                }
+                if (ret > honorar.AktIntHonMaxPrice)
+                {
+                    ret = honorar.AktIntHonMaxPrice;
+                }
+            }
+
+            return ret;
+        }
+
+        private bool IsActionVoid(int actionTypeId)
+        {
+            string sqlWhere = " WHERE AktIntActionTypeID = " + actionTypeId;
+            var action = (tblAktenIntActionType)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAktenIntActionType " + sqlWhere, typeof(tblAktenIntActionType));
+            return action.AktIntActionIsVoid;
+        }
+    }
+
+    public class ActionRecord
+    {
+        public int UserId { get; set; }
+        public int AgId { get; set; }
+        public int AktType { get; set; }
+        public int ActionType { get; set; }
+
+        public DateTime ActionDate { get; set; }
+
+        public ActionRecord(int agId, int aktType, int actionType, int userId, DateTime actionDate)
+        {
+            UserId = userId;
+            AgId = agId;
+            AktType = aktType;
+            ActionType = actionType;
+            ActionDate = actionDate;
+        }
+        
+        private void InitDefault()
+        {
+            UserId = -1;
+            AgId = -1;
+            AktType = -1;
+            ActionType = -1;
+            ActionDate = HTBUtils.DefaultDate;
+        }
+    }
+
+    public class ActionRecordList : List<ActionRecord>
+    {
+        public void Add(int agId, int aktType, int actionType, int userId, DateTime actionDate)
+        {
+            base.Add(new ActionRecord(agId, aktType, actionType, userId, actionDate));
+        }
+
+        public int GetCount (int agId, int aktType, int actionType, int userId, DateTime actionDate, string provType, int periodCode)
+        {
+            var list = new ActionRecordList();
+            switch (provType)
+            {
+                case ProvisionCalc.ProvType_AG_AktType_ActionType_User:
+                    list = FindBy_Ag_AktType_ActionType_User(agId, aktType, actionType, userId);
+                    break;
+                case ProvisionCalc.ProvType_AktType_ActionType_User:
+                    list = FindBy_AktType_ActionType_User(aktType, actionType, userId);
+                    break;
+                case ProvisionCalc.ProvType_AG_AktType_ActionType:
+                    list = FindBy_Ag_AktType_ActionType(agId, aktType, actionType);
+                    break;
+                case ProvisionCalc.ProvType_AG_User:
+                    list = FindBy_Ag_User(agId, userId);
+                    break;
+                case ProvisionCalc.ProvType_ActionType_User:
+                    list = FindBy_ActionType_User(actionType, userId);
+                    break;
+                case ProvisionCalc.ProvType_AG_ActionType:
+                    list = FindBy_Ag_ActionType(agId, actionType);
+                    break;
+                case ProvisionCalc.ProvType_AG_AktType:
+                    list = FindBy_Ag_AktType(agId, aktType);
+                    break;
+                case ProvisionCalc.ProvType_ActionType:
+                    list = FindBy_ActionType(actionType);
+                    break;
+            }
+            switch (periodCode)
+            {
+                case ProvisionCalc.PeriodCode_Range:
+                    return list.Count;
+                case ProvisionCalc.PeriodCode_Weekly:
+                    return list.Count;
+                case ProvisionCalc.PeriodCode_Monthly:
+                    return list.Count;
+            }
+            return 0;
+        }
+
+        public ActionRecordList FindBy_Ag_AktType_ActionType_User(int agId, int aktType, int actionTypeId, int userId)
+        {
+            var list = new ActionRecordList();
+            list.AddRange(this.Where(actionRecord => actionRecord.AgId == agId && actionRecord.AktType == aktType && actionRecord.ActionType == actionTypeId && actionRecord.UserId == userId));
+            return list;
+        }
+
+        public ActionRecordList FindBy_AktType_ActionType_User(int aktType, int actionTypeId, int userId)
+        {
+            var list = new ActionRecordList();
+            list.AddRange(this.Where(actionRecord => actionRecord.AktType == aktType && actionRecord.ActionType == actionTypeId && actionRecord.UserId == userId));
+            return list;
+        }
+
+        public ActionRecordList FindBy_Ag_AktType_ActionType(int agId, int aktType, int actionTypeId)
+        {
+            var list = new ActionRecordList();
+            list.AddRange(this.Where(actionRecord => actionRecord.AgId == agId && actionRecord.AktType == aktType && actionRecord.ActionType == actionTypeId));
+            return list;
+        }
+
+        public ActionRecordList FindBy_Ag_User(int agId, int userId)
+        {
+            var list = new ActionRecordList();
+            list.AddRange(this.Where(actionRecord => actionRecord.AgId == agId && actionRecord.UserId == userId));
+            return list;
+        }
+
+        public ActionRecordList FindBy_ActionType_User(int actionTypeId, int userId)
+        {
+            var list = new ActionRecordList();
+            list.AddRange(this.Where(actionRecord => actionRecord.ActionType == actionTypeId && actionRecord.UserId == userId));
+            return list;
+        }
+
+        public ActionRecordList FindBy_Ag_ActionType(int agId, int actionTypeId)
+        {
+            var list = new ActionRecordList();
+            list.AddRange(this.Where(actionRecord => actionRecord.AgId == agId && actionRecord.ActionType == actionTypeId));
+            return list;
+        }
+
+        public ActionRecordList FindBy_Ag_AktType(int agId, int aktType)
+        {
+            var list = new ActionRecordList();
+            list.AddRange(this.Where(actionRecord => actionRecord.AgId == agId && actionRecord.AktType == aktType));
+            return list;
+        }
+
+        public ActionRecordList FindBy_ActionType(int actionTypeId)
+        {
+            var list = new ActionRecordList();
+            list.AddRange(this.Where(actionRecord => actionRecord.ActionType == actionTypeId));
+            return list;
+        }
+    }
+}

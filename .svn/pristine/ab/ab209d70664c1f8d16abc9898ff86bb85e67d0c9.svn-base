@@ -1,0 +1,5 @@
+SCC = This is a Source Code Control file
+
+[ManagedUtilities.csproj]
+SCC_Aux_Path = "\\dev108.maaco.com\SourceSafe"
+SCC_Project_Name = "$/ManagedUtilities.root/ManagedUtilities/ManagedUtilities", RWUBAAAA

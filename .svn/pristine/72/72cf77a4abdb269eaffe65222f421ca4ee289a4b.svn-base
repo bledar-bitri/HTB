@@ -1,0 +1,2833 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{41E6731E-FEBD-4CA9-8AD1-DEF7ACB267DE}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HTB</RootNamespace>
+    <AssemblyName>HTB</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <FilesToIncludeForPublish>OnlyFilesToRunTheApp</FilesToIncludeForPublish>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Lib\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AjaxControlToolkit, Version=3.0.30930.28736, Culture=neutral, PublicKeyToken=28f01b0e84b6d53e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\AjaxControlToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="CarlosAg.ExcelXmlWriter, Version=1.0.0.6, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\CarlosAg.ExcelXmlWriter.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Api.Maps.Service, Version=0.9.2.6262, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Google.Api.Maps.Service.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zip, Version=1.9.1.5, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Ionic.Zip.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zlib">
+      <HintPath>lib\Ionic.Zlib.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.Services.Client" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.DataVisualization" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Tamir.SharpSSH, Version=1.1.1.13, Culture=neutral" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Global.asax" />
+    <Content Include="includes\common\js\base.js" />
+    <Content Include="includes\common\js\sigslot_core.js" />
+    <Content Include="includes\common\js\utility.js" />
+    <Content Include="includes\common\KT_common.asp" />
+    <Content Include="includes\common\KT_config.inc.asp" />
+    <Content Include="includes\common\KT_functions.inc.asp" />
+    <Content Include="includes\common\lib\db\KT_FakeRecordset.asp" />
+    <Content Include="includes\common\lib\db\KT_FakeRecordset.class.asp" />
+    <Content Include="includes\common\lib\email\KT_Email.asp" />
+    <Content Include="includes\common\lib\email\KT_Email.class.asp" />
+    <Content Include="includes\common\lib\file_upload\KT_FileUpload.asp" />
+    <Content Include="includes\common\lib\file_upload\KT_FileUpload.class.asp" />
+    <Content Include="includes\common\lib\file_upload\KT_FileUploadFunctions.inc.asp" />
+    <Content Include="includes\common\lib\folder\KT_Folder.asp" />
+    <Content Include="includes\common\lib\folder\KT_Folder.class.asp" />
+    <Content Include="includes\common\lib\image\KT_Image.asp" />
+    <Content Include="includes\common\lib\image\KT_Image.class.asp" />
+    <Content Include="includes\common\lib\image\KT_ImageUtil.aspx" />
+    <Content Include="includes\common\lib\resources\KT_Resources.asp" />
+    <Content Include="includes\common\lib\resources\KT_ResourcesFunctions.inc.asp" />
+    <Content Include="includes\common\lib\shell\KT_Shell.asp" />
+    <Content Include="includes\common\lib\shell\KT_Shell.class.asp" />
+    <Content Include="includes\common\md5.js" />
+    <Content Include="includes\mailtemplates\activate.html" />
+    <Content Include="includes\mailtemplates\forgot.html" />
+    <Content Include="includes\mailtemplates\welcome.html" />
+    <Content Include="includes\mxi\MXI.asp" />
+    <Content Include="includes\mxi\MXI_functions.inc.asp" />
+    <Content Include="includes\mxi\MXI_Includes.class.asp" />
+    <Content Include="includes\mxl\MXL_Recordset.asp" />
+    <Content Include="includes\nav\NAV.asp" />
+    <Content Include="includes\nav\NAV_Regular.class.asp" />
+    <Content Include="includes\nav\NAV_Text_Navigation.inc.asp" />
+    <Content Include="includes\nav\NAV_Text_Statistics.inc.asp" />
+    <Content Include="includes\nxt\back.asp" />
+    <Content Include="includes\nxt\KT_back.asp" />
+    <Content Include="includes\nxt\scripts\form.js" />
+    <Content Include="includes\nxt\scripts\form.js.asp" />
+    <Content Include="includes\nxt\scripts\list.js" />
+    <Content Include="includes\nxt\scripts\list.js.asp" />
+    <Content Include="includes\qub\blank.html" />
+    <Content Include="includes\qub\canvas.html" />
+    <Content Include="includes\qub\dlgEditAlias.html" />
+    <Content Include="includes\qub\dlgEditCondition.html" />
+    <Content Include="includes\qub\dlgEditRelation.html" />
+    <Content Include="includes\qub\dlgLoad.html" />
+    <Content Include="includes\qub\dlgNewQuery.html" />
+    <Content Include="includes\qub\dlgPrint.html" />
+    <Content Include="includes\qub\dlgSave.html" />
+    <Content Include="includes\qub\dlgSettings.html" />
+    <Content Include="includes\qub\images\close_tab.gif" />
+    <Content Include="includes\qub\images\column_fk.gif" />
+    <Content Include="includes\qub\images\column_pk.gif" />
+    <Content Include="includes\qub\images\delete.gif" />
+    <Content Include="includes\qub\images\help.gif" />
+    <Content Include="includes\qub\images\interakt.jpg" />
+    <Content Include="includes\qub\images\new.gif" />
+    <Content Include="includes\qub\images\next.gif" />
+    <Content Include="includes\qub\images\nimic.gif" />
+    <Content Include="includes\qub\images\open_tab.gif" />
+    <Content Include="includes\qub\images\question1.gif" />
+    <Content Include="includes\qub\images\relation_add.gif" />
+    <Content Include="includes\qub\images\relation_rm.gif" />
+    <Content Include="includes\qub\images\save.gif" />
+    <Content Include="includes\qub\images\save_as.gif" />
+    <Content Include="includes\qub\images\table_add.gif" />
+    <Content Include="includes\qub\images\table_rm.gif" />
+    <Content Include="includes\qub\images\top.gif" />
+    <Content Include="includes\qub\images\topleft.gif" />
+    <Content Include="includes\qub\images\topright.gif" />
+    <Content Include="includes\qub\images\zoom_in.gif" />
+    <Content Include="includes\qub\images\zoom_out.gif" />
+    <Content Include="includes\qub\includes\canvas.js" />
+    <Content Include="includes\qub\includes\chromeless.js" />
+    <Content Include="includes\qub\includes\config.js" />
+    <Content Include="includes\qub\includes\contextMenu.js" />
+    <Content Include="includes\qub\includes\dragndrop.js" />
+    <Content Include="includes\qub\includes\file.js" />
+    <Content Include="includes\qub\includes\links.js" />
+    <Content Include="includes\qub\includes\menu.js" />
+    <Content Include="includes\qub\includes\mmdb.js" />
+    <Content Include="includes\qub\includes\model.js" />
+    <Content Include="includes\qub\includes\nifty.js" />
+    <Content Include="includes\qub\includes\qub.js" />
+    <Content Include="includes\qub\includes\querystring.js" />
+    <Content Include="includes\qub\includes\sql.js" />
+    <Content Include="includes\qub\includes\styles\canvas.css" />
+    <Content Include="includes\qub\includes\styles\canvas_print.css" />
+    <Content Include="includes\qub\includes\styles\dlg.css" />
+    <Content Include="includes\qub\includes\styles\niftyCorners.css" />
+    <Content Include="includes\qub\includes\styles\popup.css" />
+    <Content Include="includes\qub\includes\styles\styles.css" />
+    <Content Include="includes\qub\includes\table.js" />
+    <Content Include="includes\qub\includes\tabsets.js" />
+    <Content Include="includes\qub\includes\tohtml.js" />
+    <Content Include="includes\qub\includes\utils.js" />
+    <Content Include="includes\qub\includes\zoom.js" />
+    <Content Include="includes\qub\index.html" />
+    <Content Include="includes\qub\opener.html" />
+    <Content Include="includes\qub\qub.html" />
+    <Content Include="includes\qub\queryResult.html" />
+    <Content Include="includes\qub\removess.html" />
+    <Content Include="includes\qub\showQuery.html" />
+    <Content Include="includes\qub\sqlRows.html" />
+    <Content Include="includes\qub\syncTable.html" />
+    <Content Include="includes\resources\calendar.js" />
+    <Content Include="includes\resources\DB.res.asp" />
+    <Content Include="includes\resources\Email.res.asp" />
+    <Content Include="includes\resources\FakeRecordset.res.asp" />
+    <Content Include="includes\resources\File.res.asp" />
+    <Content Include="includes\resources\FileUpload.res.asp" />
+    <Content Include="includes\resources\Folder.res.asp" />
+    <Content Include="includes\resources\Image.res.asp" />
+    <Content Include="includes\resources\language.txt" />
+    <Content Include="includes\resources\MXI.res.asp" />
+    <Content Include="includes\resources\NXT.res.asp" />
+    <Content Include="includes\resources\Shell.res.asp" />
+    <Content Include="includes\resources\tNG.res.asp" />
+    <Content Include="includes\resources\tNG_FormValidation.res.asp" />
+    <Content Include="includes\resources\WDG.res.asp" />
+    <Content Include="includes\skins\aqua\images\button_big.gif" />
+    <Content Include="includes\skins\aqua\images\button_small.gif" />
+    <Content Include="includes\skins\aqua\images\button_smallest.gif" />
+    <Content Include="includes\skins\aqua\images\cannot_thumbnail.gif" />
+    <Content Include="includes\skins\aqua\images\down.gif" />
+    <Content Include="includes\skins\aqua\images\error.gif" />
+    <Content Include="includes\skins\aqua\images\img_not_found.gif" />
+    <Content Include="includes\skins\aqua\images\up.gif" />
+    <Content Include="includes\skins\aqua\images\warning.gif" />
+    <Content Include="includes\skins\aqua\images\wdg_down.gif" />
+    <Content Include="includes\skins\aqua\images\wdg_up.gif" />
+    <Content Include="includes\skins\aqua\nav.css" />
+    <Content Include="includes\skins\aqua\nxt.css" />
+    <Content Include="includes\skins\aqua\preview.gif" />
+    <Content Include="includes\skins\aqua\tng.css" />
+    <Content Include="includes\skins\aqua\wdg.css" />
+    <Content Include="includes\skins\arktic\images\bg.gif" />
+    <Content Include="includes\skins\arktic\images\bg_sel.gif" />
+    <Content Include="includes\skins\arktic\images\cannot_thumbnail.gif" />
+    <Content Include="includes\skins\arktic\images\down.gif" />
+    <Content Include="includes\skins\arktic\images\error.gif" />
+    <Content Include="includes\skins\arktic\images\img_not_found.gif" />
+    <Content Include="includes\skins\arktic\images\up.gif" />
+    <Content Include="includes\skins\arktic\images\warning.gif" />
+    <Content Include="includes\skins\arktic\images\wdg_down.gif" />
+    <Content Include="includes\skins\arktic\images\wdg_up.gif" />
+    <Content Include="includes\skins\arktic\nav.css" />
+    <Content Include="includes\skins\arktic\nxt.css" />
+    <Content Include="includes\skins\arktic\preview.gif" />
+    <Content Include="includes\skins\arktic\tng.css" />
+    <Content Include="includes\skins\arktic\wdg.css" />
+    <Content Include="includes\skins\common.css" />
+    <Content Include="includes\skins\formal\images\cannot_thumbnail.gif" />
+    <Content Include="includes\skins\formal\images\down.gif" />
+    <Content Include="includes\skins\formal\images\error.gif" />
+    <Content Include="includes\skins\formal\images\img_not_found.gif" />
+    <Content Include="includes\skins\formal\images\up.gif" />
+    <Content Include="includes\skins\formal\images\warning.gif" />
+    <Content Include="includes\skins\formal\images\wdg_down.gif" />
+    <Content Include="includes\skins\formal\images\wdg_up.gif" />
+    <Content Include="includes\skins\formal\nav.css" />
+    <Content Include="includes\skins\formal\nxt.css" />
+    <Content Include="includes\skins\formal\preview.gif" />
+    <Content Include="includes\skins\formal\tng.css" />
+    <Content Include="includes\skins\formal\wdg.css" />
+    <Content Include="includes\skins\garant\images\button_big.gif" />
+    <Content Include="includes\skins\garant\images\button_small.gif" />
+    <Content Include="includes\skins\garant\images\button_smallest.gif" />
+    <Content Include="includes\skins\garant\images\cannot_thumbnail.gif" />
+    <Content Include="includes\skins\garant\images\down.gif" />
+    <Content Include="includes\skins\garant\images\error.gif" />
+    <Content Include="includes\skins\garant\images\img_not_found.gif" />
+    <Content Include="includes\skins\garant\images\up.gif" />
+    <Content Include="includes\skins\garant\images\warning.gif" />
+    <Content Include="includes\skins\garant\images\wdg_down.gif" />
+    <Content Include="includes\skins\garant\images\wdg_up.gif" />
+    <Content Include="includes\skins\garant\nav.css" />
+    <Content Include="includes\skins\garant\nxt.css" />
+    <Content Include="includes\skins\garant\preview.gif" />
+    <Content Include="includes\skins\garant\tng.css" />
+    <Content Include="includes\skins\garant\wdg.css" />
+    <Content Include="includes\skins\kollection\images\cannot_thumbnail.gif" />
+    <Content Include="includes\skins\kollection\images\down.gif" />
+    <Content Include="includes\skins\kollection\images\error.gif" />
+    <Content Include="includes\skins\kollection\images\img_not_found.gif" />
+    <Content Include="includes\skins\kollection\images\up.gif" />
+    <Content Include="includes\skins\kollection\images\warning.gif" />
+    <Content Include="includes\skins\kollection\images\wdg_down.gif" />
+    <Content Include="includes\skins\kollection\images\wdg_up.gif" />
+    <Content Include="includes\skins\kollection\nav.css" />
+    <Content Include="includes\skins\kollection\nxt.css" />
+    <Content Include="includes\skins\kollection\preview.gif" />
+    <Content Include="includes\skins\kollection\tng.css" />
+    <Content Include="includes\skins\kollection\wdg.css" />
+    <Content Include="includes\skins\mxkollection3.css" />
+    <Content Include="includes\skins\none\nav.css" />
+    <Content Include="includes\skins\none\nxt.css" />
+    <Content Include="includes\skins\none\preview.gif" />
+    <Content Include="includes\skins\none\tng.css" />
+    <Content Include="includes\skins\none\wdg.css" />
+    <Content Include="includes\skins\style.js" />
+    <Content Include="includes\tfi\TFI.asp" />
+    <Content Include="includes\tfi\TFI_TableFilter.class.asp" />
+    <Content Include="includes\tng\logs\readme.txt" />
+    <Content Include="includes\tng\pub\blank.html" />
+    <Content Include="includes\tng\pub\tNG_download.asp" />
+    <Content Include="includes\tng\scripts\FormValidation.js" />
+    <Content Include="includes\tng\scripts\FormValidation.js.asp" />
+    <Content Include="includes\tng\styles\cannot_thumbnail.gif" />
+    <Content Include="includes\tng\styles\img_not_found.gif" />
+    <Content Include="includes\tng\tNG.class.asp" />
+    <Content Include="includes\tng\tNG.inc.asp" />
+    <Content Include="includes\tng\tNG_config.inc.asp" />
+    <Content Include="includes\tng\tNG_custom.class.asp" />
+    <Content Include="includes\tng\tNG_delete.class.asp" />
+    <Content Include="includes\tng\tNG_dispatcher.class.asp" />
+    <Content Include="includes\tng\tNG_error.class.asp" />
+    <Content Include="includes\tng\tNG_fields.class.asp" />
+    <Content Include="includes\tng\tNG_functions.inc.asp" />
+    <Content Include="includes\tng\tNG_insert.class.asp" />
+    <Content Include="includes\tng\tNG_log.class.asp" />
+    <Content Include="includes\tng\tNG_login.class.asp" />
+    <Content Include="includes\tng\tNG_multiple.class.asp" />
+    <Content Include="includes\tng\tNG_multipleDelete.class.asp" />
+    <Content Include="includes\tng\tNG_multipleInsert.class.asp" />
+    <Content Include="includes\tng\tNG_multipleUpdate.class.asp" />
+    <Content Include="includes\tng\tNG_update.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_CheckDetailRecord.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_CheckMasterRecord.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_CheckTableField.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_CheckUnique.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_defTrigg.inc.asp" />
+    <Content Include="includes\tng\triggers\tNG_DeleteDetailRec.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_Email.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_EmailPageSection.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_EmailRecordset.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_FileDelete.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_FileUpload.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_FormValidation.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_ImageUpload.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_LinkedTrans.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_Logout.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_Redirect.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_RestrictAccess.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_SetOrderField.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_ThrowError.class.asp" />
+    <Content Include="includes\tng\triggers\tNG_UserLoggedIn.class.asp" />
+    <Content Include="includes\tor\TOR.asp" />
+    <Content Include="includes\tor\TOR_SetOrder.class.asp" />
+    <Content Include="includes\tso\TSO.asp" />
+    <Content Include="includes\tso\TSO_TableSorter.class.asp" />
+    <Content Include="includes\version.xml" />
+    <Content Include="includes\wdg\calendar\calendar-setup_stripped.js" />
+    <Content Include="includes\wdg\calendar\calendar-win2k-1.css" />
+    <Content Include="includes\wdg\calendar\calendar_stripped.js" />
+    <Content Include="includes\wdg\calendar\menuarrow.gif" />
+    <Content Include="includes\wdg\calendar\menuarrow2.gif" />
+    <Content Include="includes\wdg\classes\BaseListSorter.js" />
+    <Content Include="includes\wdg\classes\Calendar.js" />
+    <Content Include="includes\wdg\classes\CommaCheckboxes.js" />
+    <Content Include="includes\wdg\classes\CommaMenu.js" />
+    <Content Include="includes\wdg\classes\DependentDropdown.js" />
+    <Content Include="includes\wdg\classes\DiscreetSlider.js" />
+    <Content Include="includes\wdg\classes\DynamicInput.js" />
+    <Content Include="includes\wdg\classes\JSRecordset.js" />
+    <Content Include="includes\wdg\classes\ListSorter.js" />
+    <Content Include="includes\wdg\classes\MaskedInput.js" />
+    <Content Include="includes\wdg\classes\MenuMover.js" />
+    <Content Include="includes\wdg\classes\MXWidgets.js" />
+    <Content Include="includes\wdg\classes\MXWidgets.js.asp" />
+    <Content Include="includes\wdg\classes\MXWidgets.js.aspx" />
+    <Content Include="includes\wdg\classes\N1DependentField.js" />
+    <Content Include="includes\wdg\classes\NumericInput.js" />
+    <Content Include="includes\wdg\classes\RegexpValidator.js" />
+    <Content Include="includes\wdg\classes\RestrictedTextArea.js" />
+    <Content Include="includes\wdg\classes\Slider.js" />
+    <Content Include="includes\wdg\classes\SmartDate.js" />
+    <Content Include="includes\wdg\WDG.asp" />
+    <Content Include="includes\wdg\WDG_functions.inc.asp" />
+    <Content Include="includes\wdg\WDG_JsRecordset.class.asp" />
+    <Content Include="includes\wdg\WDG_recordInsert.asp" />
+    <Content Include="includes\widgets\calendar-blue.css" />
+    <Content Include="includes\widgets\calendar-blue2.css" />
+    <Content Include="includes\widgets\calendar-brown.css" />
+    <Content Include="includes\widgets\calendar-green.css" />
+    <Content Include="includes\widgets\calendar-setup.js" />
+    <Content Include="includes\widgets\calendar-setup_stripped.js" />
+    <Content Include="includes\widgets\calendar-system.css" />
+    <Content Include="includes\widgets\calendar-tas.css" />
+    <Content Include="includes\widgets\calendar-win2k-1.css" />
+    <Content Include="includes\widgets\calendar-win2k-2.css" />
+    <Content Include="includes\widgets\calendar-win2k-cold-1.css" />
+    <Content Include="includes\widgets\calendar-win2k-cold-2.css" />
+    <Content Include="includes\widgets\calendar.js" />
+    <Content Include="includes\widgets\calendar_stripped.js" />
+    <Content Include="includes\widgets\dependentDropdown.js" />
+    <Content Include="includes\widgets\dynamicInput.asp" />
+    <Content Include="includes\widgets\dynamicInput.js" />
+    <Content Include="includes\widgets\dynamicInputP.asp" />
+    <Content Include="includes\widgets\lang\calendar-af.js" />
+    <Content Include="includes\widgets\lang\calendar-br.js" />
+    <Content Include="includes\widgets\lang\calendar-ca.js" />
+    <Content Include="includes\widgets\lang\calendar-cs-win.js" />
+    <Content Include="includes\widgets\lang\calendar-da.js" />
+    <Content Include="includes\widgets\lang\calendar-de.js" />
+    <Content Include="includes\widgets\lang\calendar-du.js" />
+    <Content Include="includes\widgets\lang\calendar-el.js" />
+    <Content Include="includes\widgets\lang\calendar-en.js" />
+    <Content Include="includes\widgets\lang\calendar-es.js" />
+    <Content Include="includes\widgets\lang\calendar-fi.js" />
+    <Content Include="includes\widgets\lang\calendar-fr.js" />
+    <Content Include="includes\widgets\lang\calendar-hr-utf8.js" />
+    <Content Include="includes\widgets\lang\calendar-hr.js" />
+    <Content Include="includes\widgets\lang\calendar-hu.js" />
+    <Content Include="includes\widgets\lang\calendar-it.js" />
+    <Content Include="includes\widgets\lang\calendar-jp.js" />
+    <Content Include="includes\widgets\lang\calendar-ko-utf8.js" />
+    <Content Include="includes\widgets\lang\calendar-ko.js" />
+    <Content Include="includes\widgets\lang\calendar-lt-utf8.js" />
+    <Content Include="includes\widgets\lang\calendar-lt.js" />
+    <Content Include="includes\widgets\lang\calendar-nl.js" />
+    <Content Include="includes\widgets\lang\calendar-no.js" />
+    <Content Include="includes\widgets\lang\calendar-pl-utf8.js" />
+    <Content Include="includes\widgets\lang\calendar-pl.js" />
+    <Content Include="includes\widgets\lang\calendar-pt.js" />
+    <Content Include="includes\widgets\lang\calendar-ro.js" />
+    <Content Include="includes\widgets\lang\calendar-ru.js" />
+    <Content Include="includes\widgets\lang\calendar-si.js" />
+    <Content Include="includes\widgets\lang\calendar-sk.js" />
+    <Content Include="includes\widgets\lang\calendar-sv.js" />
+    <Content Include="includes\widgets\lang\calendar-tr.js" />
+    <Content Include="includes\widgets\lang\calendar-zh.js" />
+    <Content Include="includes\widgets\mask.js" />
+    <Content Include="includes\widgets\menuarrow.gif" />
+    <Content Include="includes\widgets\menuarrow2.gif" />
+    <Content Include="includes\widgets\n1dependentDropdown.js" />
+    <Content Include="includes\widgets\numericInput.js" />
+    <Content Include="includes\widgets\smartdate.js" />
+    <Content Include="includes\widgets\utils.asp" />
+    <Content Include="includes\widgets\widgets_start.asp" />
+    <None Include="Properties\PublishProfiles\ECP-HTB.pubxml" />
+    <None Include="Properties\PublishProfiles\localhost.pubxml" />
+    <None Include="Service References\TabletService\GetData.disco" />
+    <None Include="Service References\TabletService\configuration91.svcinfo" />
+    <None Include="Service References\TabletService\configuration.svcinfo" />
+    <None Include="Service References\TabletService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="Text.html" />
+    <Content Include="lib\AjaxControlToolkit.dll" />
+    <Content Include="lib\CarlosAg.ExcelXmlWriter.dll" />
+    <Content Include="lib\Google.Api.Maps.Service.dll" />
+    <Content Include="lib\Ionic.Zip.dll" />
+    <Content Include="lib\Ionic.Zlib.dll" />
+    <Content Include="lib\Newtonsoft.Json.dll" />
+    <None Include="Service References\GeocodeService\configuration91.svcinfo" />
+    <None Include="Service References\GeocodeService\configuration.svcinfo" />
+    <None Include="Service References\GeocodeService\HTB.GeocodeService.GeocodeResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\GeocodeService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\ImageryService\HTB.ImageryService.ImageryMetadataResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ImageryService\HTB.ImageryService.MapUriResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ImageryService\ImageryService.wsdl" />
+    <None Include="Service References\ImageryService\ImageryService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\ImageryService\imageryservice1.wsdl" />
+    <None Include="Service References\ImageryService\ImageryService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\ImageryService\ImageryService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\ImageryService\ImageryService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\ImageryService\ImageryService4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\ImageryService\ImageryService5.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\RouteService\HTB.RouteService.MajorRoutesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\RouteService\HTB.RouteService.RouteResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\RouteService\RouteService.wsdl" />
+    <None Include="Service References\RouteService\routeservice.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\RouteService\routeservice1.wsdl" />
+    <None Include="Service References\RouteService\routeservice1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\RouteService\routeservice2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\RouteService\routeservice3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\SearchService\configuration91.svcinfo" />
+    <None Include="Service References\SearchService\configuration.svcinfo" />
+    <None Include="Service References\SearchService\HTB.SearchService.SearchResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\SearchService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\ImageryService\configuration91.svcinfo" />
+    <None Include="Service References\ImageryService\configuration.svcinfo" />
+    <None Include="Service References\ImageryService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\RouteService\configuration91.svcinfo" />
+    <None Include="Service References\RouteService\configuration.svcinfo" />
+    <None Include="Service References\RouteService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="v2\intranetx\aktenink\Actions.aspx" />
+    <Content Include="v2\intranetx\aktenink\ActionsRat.aspx" />
+    <Content Include="v2\intranetx\aktenink\AktInkPayment.aspx" />
+    <Content Include="v2\intranetx\aktenink\AktInkRatePayment.aspx" />
+    <Content Include="v2\intranetx\aktenink\ImportFromXL.aspx" />
+    <Content Include="v2\intranetx\aktenink\ViewAktInk2.aspx" />
+    <Content Include="v2\intranetx\aktenink\ViewAktInk.aspx" />
+    <Content Include="v2\intranetx\aktenink\EditAktInk.aspx" />
+    <Content Include="v2\intranetx\aktenink\DeleteMahnung.aspx" />
+    <Content Include="v2\intranetx\aktenink\EditInkAction.aspx" />
+    <Content Include="v2\intranetx\aktenink\EditInvoice.aspx" />
+    <Content Include="v2\intranetx\aktenink\NewAktInk.aspx" />
+    <Content Include="v2\intranetx\aktenink\PostponeRate.aspx" />
+    <Content Include="v2\intranetx\aktenink\ShowInvoice.aspx" />
+    <Content Include="v2\intranetx\aktenintaction\EditActionType.aspx" />
+    <Content Include="v2\intranetx\aktenintprovfix\ActionProv.aspx" />
+    <Content Include="v2\intranetx\aktenintprovfix\EditHonorar.aspx" />
+    <Content Include="v2\intranetx\aktenintprovfix\EditHonorarGroup.aspx" />
+    <Content Include="v2\intranetx\aktenintprovfix\HonorarSchema.aspx" />
+    <Content Include="v2\intranetx\aktenintprovfix\ProvBalance.aspx" />
+    <Content Include="v2\intranetx\aktenintprovfix\ProvFix.aspx" />
+    <Content Include="v2\intranetx\aktenint\AktenIntTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\AuftragTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\Protocol2.aspx" />
+    <Content Include="v2\intranetx\aktenint\EditBooking.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\DownloadAktTablet2.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\DownloadJournalTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\DownloadChangedAktsTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\DownloadAktsWithOpenedTransfersTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\ProcessMessageTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\DownloadDataTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\UEList.aspx" />
+    <Content Include="v2\intranetx\aktenint\WeeklyValidationOrg.aspx" />
+    <Content Include="v2\intranetx\aktenint\ImportKsv.aspx" />
+    <Content Include="v2\intranetx\aktenint\EditAktIntAuto.aspx" />
+    <Content Include="v2\intranetx\aktenint\OverdueList.aspx" />
+    <Content Include="v2\intranetx\aktenint\EditAktInt.aspx" />
+    <Content Include="v2\intranetx\aktenint\NewAction.aspx" />
+    <Content Include="v2\intranetx\aktenint\PrintAuftrag.aspx" />
+    <Content Include="v2\intranetx\aktenint\ResearchRedirect.aspx" />
+    <Content Include="v2\intranetx\aktenint\SendMitteilung.aspx" />
+    <Content Include="v2\intranetx\aktenint\SetAktGebiete.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\AddActionTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\SaveAktTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\CreateAutoProtocol.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\LoginTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\DownloadRoadAktsTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\DownloadAktTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\DownloadAktInstallmentInfoTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\DownloadActionTypeTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\DownloadActionsTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\ProvisionAbrechnungTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\SetActionTablet.aspx" />
+    <Content Include="v2\intranetx\aktenint\WeeklyValidation.aspx" />
+    <Content Include="v2\intranetx\aktenint\WorkAktInt.aspx" />
+    <Content Include="v2\intranetx\aktenint\WorkReportInfoScore.aspx" />
+    <Content Include="v2\intranetx\akten\UebergabeAkten.aspx" />
+    <Content Include="v2\intranetx\auftraggeber\AuftraggeberAktionen.aspx" />
+    <Content Include="v2\intranetx\auftraggeber\AuftraggeberExtension.aspx" />
+    <Content Include="v2\intranetx\bank\BankTransferOLD.aspx" />
+    <Content Include="v2\intranetx\customer\CustomerNewAktInk.aspx" />
+    <Content Include="v2\intranetx\klienten\EditKlientCommunication.aspx" />
+    <Content Include="v2\intranetx\auftraggeber\EditAuftraggeber.aspx" />
+    <Content Include="v2\intranetx\bank\Bank.aspx" />
+    <Content Include="v2\intranetx\bank\BankAccountMonthlyStatus.aspx" />
+    <Content Include="v2\intranetx\bank\BankTransactions.aspx" />
+    <Content Include="v2\intranetx\bank\BankTransfer.aspx" />
+    <Content Include="v2\intranetx\bank\BankInkassoProvisionToTransfer.aspx" />
+    <Content Include="v2\intranetx\BingWaypoints.html" />
+    <Content Include="v2\intranetx\dealer\EditDealer.aspx" />
+    <Content Include="v2\intranetx\dealer\DealerBrowser.aspx" />
+    <Content Include="v2\intranetx\gegner\EditGegnerAddress.aspx" />
+    <Content Include="v2\intranetx\gegner\EditGegnerPhone.aspx" />
+    <Content Include="v2\intranetx\gegner\tablet\EditGegnerTablet.aspx" />
+    <Content Include="v2\intranetx\GetGegnerLatAndLng.aspx" />
+    <Content Include="v2\intranetx\GetLatAndLon.aspx" />
+    <Content Include="v2\intranetx\GetLatLon.html" />
+    <Content Include="v2\intranetx\customer\AktenInk.aspx" />
+    <Content Include="v2\intranetx\customer\AktenInt.aspx" />
+    <Content Include="v2\intranetx\customer\CollectedByAussendienst.aspx" />
+    <Content Include="v2\intranetx\customer\UbergabeneAktenInt.aspx" />
+    <Content Include="v2\intranetx\customer\TransferToCustomer.aspx" />
+    <Content Include="v2\intranetx\customer\InkassoStatistic.aspx" />
+    <Content Include="v2\intranetx\customer\InteverntionStatistic.aspx" />
+    <Content Include="v2\intranetx\customer\ShowAktInk.aspx" />
+    <Content Include="v2\intranetx\dv\addressMenu.js" />
+    <Content Include="v2\intranetx\dv\btnDetails.gif" />
+    <Content Include="v2\intranetx\dv\default.css" />
+    <Content Include="v2\intranetx\dv\greenCheck.gif" />
+    <Content Include="v2\intranetx\dv\letter.gif" />
+    <Content Include="v2\intranetx\dv\ordercheck.css" />
+    <Content Include="v2\intranetx\dv\reports\products-small-CC.gif" />
+    <Content Include="v2\intranetx\dv\reports\products-small-QC.gif" />
+    <Content Include="v2\intranetx\dv\standard.js" />
+    <Content Include="v2\intranetx\dv\style.css" />
+    <Content Include="v2\intranetx\gegner\EditGegner.aspx" />
+    <Content Include="v2\intranetx\gegner\GegnerBrowser.aspx" />
+    <Content Include="v2\intranetx\gegner\NewGegner.aspx" />
+    <Content Include="v2\intranetx\global_files\CtlBrowserDealer.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlLookupDealer.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlLookupAuftraggeber.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlInstallmentOldTablet.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlInstallmentInfoTablet.ascx" />
+    <Content Include="v2\intranetx\global_files\intranet_header_no_menu_tablet.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlInstallmentTablet.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlBrowserUser.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlChartUbergebeneAkten.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlLookupUser.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlBrowserGegner.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlBrowserClient.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlExtensionRequest.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlInstallment.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlInstallmentOld.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlLookupGegner.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlLookupKlient.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlMessage.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlTelAndEmailCollection.ascx" />
+    <Content Include="v2\intranetx\global_files\CtlWorkflow.ascx" />
+    <Content Include="v2\intranetx\global_files\intranet_footer.ascx" />
+    <Content Include="v2\intranetx\global_files\intranet_header_no_menu.ascx" />
+    <Content Include="v2\intranetx\global_files\intranet_header.ascx" />
+    <Content Include="v2\intranetx\global_files\intranet_header_no_menu_no_session_validation.ascx" />
+    <Content Include="v2\intranetx\global_files\UploadFile.ascx" />
+    <Content Include="v2\intranetx\global_files\AuftraggeberBrowser.ascx" />
+    <Content Include="v2\intranetx\intranet\tablet\IntranetTablet.aspx" />
+    <Content Include="v2\intranetx\lawyer\EditLawyer.aspx" />
+    <Content Include="v2\intranetx\paypal\PaypalPaymentResponse.aspx" />
+    <Content Include="v2\intranetx\progress\atlas\ExecContext.aspx" />
+    <Content Include="v2\intranetx\progress\atlas\images\indicator.gif" />
+    <Content Include="v2\intranetx\progress\atlas\SyncExec.aspx" />
+    <Content Include="v2\intranetx\progress\atlas\SyncExec1.aspx" />
+    <Content Include="v2\intranetx\progress\atlas\SyncExecPanel.aspx" />
+    <Content Include="v2\intranetx\progress\ContextSens.aspx" />
+    <Content Include="v2\intranetx\progress\SyncTask.aspx" />
+    <Content Include="v2\intranetx\progress\SyncTaskCallback.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRouteAddressFix.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRouteDisplay.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRouteLoader.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlanerForAkten.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlaner.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRoutePrintRouteDirections.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRoutePrintRouteAddresses.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlanerAutomatic.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRouteActionsDisplay.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRouteDisplayTabletApp.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerAutomaticTabletApp.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerTabletApp.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerProgressTabletApp.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRouteAddressFixTablet.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRouteDisplayTablet.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePrintRouteAddressesTablet.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePlanerAutomaticTablet.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePlanerTablet.aspx" />
+    <Content Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePrintRouteDirectionsTablet.aspx" />
+    <Content Include="v2\intranetx\routeplanter\googlemaps\RoutePlaner.aspx" />
+    <Content Include="v2\intranetx\kassablock\MissingBeleg.aspx" />
+    <Content Include="v2\intranetx\klienten\KlientBericht.aspx" />
+    <Content Include="v2\intranetx\global_forms\Zwischenbericht.aspx" />
+    <Content Include="v2\intranetx\global_forms\GlobalDelete.aspx" />
+    <Content Include="v2\intranetx\global_forms\Forderungsaufstellung.aspx" />
+    <Content Include="v2\intranetx\global_forms\UploadAkten.aspx" />
+    <Content Include="v2\intranetx\customer\Customer.aspx" />
+    <Content Include="v2\intranetx\klienten\AuftragReceipt.aspx" />
+    <Content Include="v2\intranetx\klienten\KlientBrowser.aspx" />
+    <Content Include="v2\intranetx\klienten\NewKlient.aspx" />
+    <Content Include="v2\intranetx\reports\ADStatistic.aspx" />
+    <Content Include="v2\intranetx\scripts\AjaxHacks.js" />
+    <Content Include="Test.html" />
+    <Content Include="v2\intranetx\scripts\jquery-1.3.2.js" />
+    <Content Include="v2\intranetx\scripts\jquery-1.8.2.js" />
+    <Content Include="v2\intranetx\scripts\jquery.MultiFile.js" />
+    <Content Include="v2\intranetx\search\LoginAndSearch.aspx" />
+    <Content Include="v2\intranetx\search\SearchTablet.aspx" />
+    <Content Include="v2\intranetx\search\Search.aspx" />
+    <Content Include="v2\intranetx\session_transfer\SessionTransferDB2.aspx" />
+    <Content Include="v2\intranetx\session_transfer\SessionTransferDB2.asp" />
+    <Content Include="v2\intranetx\TestProgress.aspx" />
+    <Content Include="v2\intranetx\TestSP.aspx" />
+    <Content Include="v2\intranetx\test\Test.aspx" />
+    <Content Include="v2\intranetx\upload\SyncAkt.aspx" />
+    <Content Include="v2\intranetx\upload\ReceiveUpload.aspx" />
+    <Content Include="v2\intranetx\user\UserBrowser.aspx" />
+    <Content Include="v2\intranetx\user\UserAktionen.aspx" />
+    <Content Include="v2\intranetx\dv\DVRedirect.aspx" />
+    <Content Include="v2\intranetx\werber\Werber.aspx" />
+    <Content Include="v2\intranetx\wfc\aktenint\GetData.svc" />
+    <Content Include="v2\intranetx\WS\WsLookup.asmx" />
+    <Content Include="v2\intranetx\WS\WsInkasso.asmx" />
+    <Content Include="v2\intranetx\WS\WsProgress.asmx" />
+    <Content Include="v2\intranetx\WS\WsTabletSync.asmx" />
+    <Content Include="v2\intranet\globalcode\lib.js" />
+    <Content Include="v2\intranet\globalcode\numericInput.js" />
+    <Content Include="v2\intranet\globalcode\smartdate.js" />
+    <Content Include="v2\intranet\images\Accounting.png" />
+    <Content Include="v2\intranet\images\adstat.gif" />
+    <Content Include="v2\intranet\images\ae32.gif" />
+    <Content Include="v2\intranet\images\ae48.gif" />
+    <Content Include="v2\intranet\images\akt16.gif" />
+    <Content Include="v2\intranet\images\akt48.gif" />
+    <Content Include="v2\intranet\images\aktaktionen48.gif" />
+    <Content Include="v2\intranet\images\akten16.gif" />
+    <Content Include="v2\intranet\images\akten2-16.gif" />
+    <Content Include="v2\intranet\images\Arbeitgeber48.gif" />
+    <Content Include="v2\intranet\images\arrow16.gif" />
+    <Content Include="v2\intranet\images\arrow16_Dis.gif" />
+    <Content Include="v2\intranet\images\arrowDOWN16.gif" />
+    <Content Include="v2\intranet\images\arrowUP16.gif" />
+    <Content Include="v2\intranet\images\Auftraggeber48.gif" />
+    <Content Include="v2\intranet\images\badge16.gif" />
+    <Content Include="v2\intranet\images\bag48.gif" />
+    <Content Include="v2\intranet\images\bank48.gif" />
+    <Content Include="v2\intranet\images\bf_Anschrift.gif" />
+    <Content Include="v2\intranet\images\bf_Anschrift48.gif" />
+    <Content Include="v2\intranet\images\bf_Anschrift_Dis.gif" />
+    <Content Include="v2\intranet\images\bf_arbeitgeber.gif" />
+    <Content Include="v2\intranet\images\bf_arbeitgeber48.gif" />
+    <Content Include="v2\intranet\images\bf_arbeitgeber_dis.gif" />
+    <Content Include="v2\intranet\images\bf_Bon.gif" />
+    <Content Include="v2\intranet\images\bf_Bon48.gif" />
+    <Content Include="v2\intranet\images\bf_Bon_Dis.gif" />
+    <Content Include="v2\intranet\images\bf_detauftrag.gif" />
+    <Content Include="v2\intranet\images\bf_detauftrag_Dis.gif" />
+    <Content Include="v2\intranet\images\bf_Detektei.gif" />
+    <Content Include="v2\intranet\images\bf_Detektei_Dis.gif" />
+    <Content Include="v2\intranet\images\bf_Diverses.gif" />
+    <Content Include="v2\intranet\images\bf_Diverses_Dis.gif" />
+    <Content Include="v2\intranet\images\bf_gebErh.gif" />
+    <Content Include="v2\intranet\images\bf_gebErh48.gif" />
+    <Content Include="v2\intranet\images\bf_gebErh_Dis.gif" />
+    <Content Include="v2\intranet\images\bf_Inkasso.gif" />
+    <Content Include="v2\intranet\images\bf_Inkasso2.gif" />
+    <Content Include="v2\intranet\images\bf_Inkasso2_dis.gif" />
+    <Content Include="v2\intranet\images\bf_Inkasso_Dis.gif" />
+    <Content Include="v2\intranet\images\bf_Inkasso_Small.gif" />
+    <Content Include="v2\intranet\images\bf_Inkasso_Small_dis.gif" />
+    <Content Include="v2\intranet\images\bf_Interventionen.gif" />
+    <Content Include="v2\intranet\images\bf_Interventionen_Dis.gif" />
+    <Content Include="v2\intranet\images\bf_Interventionen_Small.gif" />
+    <Content Include="v2\intranet\images\bf_Melde.gif" />
+    <Content Include="v2\intranet\images\bf_Melde48.gif" />
+    <Content Include="v2\intranet\images\bf_Melde_Dis.gif" />
+    <Content Include="v2\intranet\images\bf_Ordner.gif" />
+    <Content Include="v2\intranet\images\bf_wirtschaftsauskunft.gif" />
+    <Content Include="v2\intranet\images\bf_wirtschaftsauskunft48.gif" />
+    <Content Include="v2\intranet\images\bf_wirtschaftsauskunft_Dis.gif" />
+    <Content Include="v2\intranet\images\bltBon48.gif" />
+    <Content Include="v2\intranet\images\bltCalendar.gif" />
+    <Content Include="v2\intranet\images\bltMail.gif" />
+    <Content Include="v2\intranet\images\bltProjects48.gif" />
+    <Content Include="v2\intranet\images\bltSettings48.gif" />
+    <Content Include="v2\intranet\images\bltTasks.gif" />
+    <Content Include="v2\intranet\images\bltTelefon48.gif" />
+    <Content Include="v2\intranet\images\bltTime48.gif" />
+    <Content Include="v2\intranet\images\boxdown.gif" />
+    <Content Include="v2\intranet\images\boxdown2.gif" />
+    <Content Include="v2\intranet\images\boxup.gif" />
+    <Content Include="v2\intranet\images\boxup2.gif" />
+    <Content Include="v2\intranet\images\btnGericht.gif" />
+    <Content Include="v2\intranet\images\bug48.gif" />
+    <Content Include="v2\intranet\images\ButtonNextIcon.png" />
+    <Content Include="v2\intranet\images\ButtonPreviousIcon.png" />
+    <Content Include="v2\intranet\images\cal16.gif" />
+    <Content Include="v2\intranet\images\cal48.gif" />
+    <Content Include="v2\intranet\images\CalendarHS.png" />
+    <Content Include="v2\intranet\images\cash48.gif" />
+    <Content Include="v2\intranet\images\clear.gif" />
+    <Content Include="v2\intranet\images\cms48.gif" />
+    <Content Include="v2\intranet\images\cms48_Dis.gif" />
+    <Content Include="v2\intranet\images\crm48.gif" />
+    <Content Include="v2\intranet\images\crmactiontypes48.gif" />
+    <Content Include="v2\intranet\images\csv16.gif" />
+    <Content Include="v2\intranet\images\db48.gif" />
+    <Content Include="v2\intranet\images\delete.gif" />
+    <Content Include="v2\intranet\images\delete2.gif" />
+    <Content Include="v2\intranet\images\delete2hover.gif" />
+    <Content Include="v2\intranet\images\delete2hover2.gif" />
+    <Content Include="v2\intranet\images\delete2hovertrans.gif" />
+    <Content Include="v2\intranet\images\delete2hover_dis.gif" />
+    <Content Include="v2\intranet\images\detekteiakt48.gif" />
+    <Content Include="v2\intranet\images\doc.gif" />
+    <Content Include="v2\intranet\images\documents16gif.gif" />
+    <Content Include="v2\intranet\images\documents48.gif" />
+    <Content Include="v2\intranet\images\DZ_ico.gif" />
+    <Content Include="v2\intranet\images\ECPLogoNEU.jpg" />
+    <Content Include="v2\intranet\images\edit.gif" />
+    <Content Include="v2\intranet\images\edituser16.gif" />
+    <Content Include="v2\intranet\images\edit_dis.gif" />
+    <Content Include="v2\intranet\images\excel16.gif" />
+    <Content Include="v2\intranet\images\expand_button.png" />
+    <Content Include="v2\intranet\images\expand_button_down.png" />
+    <Content Include="v2\intranet\images\export16.gif" />
+    <Content Include="v2\intranet\images\Fakt48.gif" />
+    <Content Include="v2\intranet\images\Fakt48_Dis.gif" />
+    <Content Include="v2\intranet\images\FAQ.gif" />
+    <Content Include="v2\intranet\images\faxdetekteifooter.gif" />
+    <Content Include="v2\intranet\images\faxdetekteifooter2.gif" />
+    <Content Include="v2\intranet\images\faxdetekteilogo.gif" />
+    <Content Include="v2\intranet\images\fibu48.gif" />
+    <Content Include="v2\intranet\images\fibu48_Dis.gif" />
+    <Content Include="v2\intranet\images\folder128.gif" />
+    <Content Include="v2\intranet\images\folder48.gif" />
+    <Content Include="v2\intranet\images\folder48_1.gif" />
+    <Content Include="v2\intranet\images\ForwardIcon.png" />
+    <Content Include="v2\intranet\images\garant-g.gif" />
+    <Content Include="v2\intranet\images\Gegner48.gif" />
+    <Content Include="v2\intranet\images\Gegner48_Dis.gif" />
+    <Content Include="v2\intranet\images\globe48.gif" />
+    <Content Include="v2\intranet\images\greenflag.gif" />
+    <Content Include="v2\intranet\images\gruppe.bmp" />
+    <Content Include="v2\intranet\images\gruppe2.bmp" />
+    <Content Include="v2\intranet\images\hdbackblue.gif" />
+    <Content Include="v2\intranet\images\hdbackgreen.gif" />
+    <Content Include="v2\intranet\images\hdbackgreen2.gif" />
+    <Content Include="v2\intranet\images\hdbackgrey.gif" />
+    <Content Include="v2\intranet\images\hdbacksepia.gif" />
+    <Content Include="v2\intranet\images\hdbackyellow.gif" />
+    <Content Include="v2\intranet\images\help16.gif" />
+    <Content Include="v2\intranet\images\ico_Bon16.gif" />
+    <Content Include="v2\intranet\images\ic_abteilung.gif" />
+    <Content Include="v2\intranet\images\ic_action16.gif" />
+    <Content Include="v2\intranet\images\ic_action16_dis.gif" />
+    <Content Include="v2\intranet\images\ic_activities.gif" />
+    <Content Include="v2\intranet\images\ic_adzuordnung.gif" />
+    <Content Include="v2\intranet\images\ic_aestat48.gif" />
+    <Content Include="v2\intranet\images\ic_aktaktionen.gif" />
+    <Content Include="v2\intranet\images\ic_akten48.gif" />
+    <Content Include="v2\intranet\images\ic_aktionstypen.gif" />
+    <Content Include="v2\intranet\images\ic_back48.gif" />
+    <Content Include="v2\intranet\images\ic_banken48.gif" />
+    <Content Include="v2\intranet\images\ic_blank48.gif" />
+    <Content Include="v2\intranet\images\ic_brachen48.gif" />
+    <Content Include="v2\intranet\images\ic_cal48.gif" />
+    <Content Include="v2\intranet\images\ic_calendar48.gif" />
+    <Content Include="v2\intranet\images\ic_calls32.gif" />
+    <Content Include="v2\intranet\images\ic_calls48.gif" />
+    <Content Include="v2\intranet\images\ic_calls48_Dis.gif" />
+    <Content Include="v2\intranet\images\ic_calltypes48.gif" />
+    <Content Include="v2\intranet\images\ic_contacttypes.gif" />
+    <Content Include="v2\intranet\images\ic_crm48.gif" />
+    <Content Include="v2\intranet\images\ic_crm48_Dis.gif" />
+    <Content Include="v2\intranet\images\ic_data48.gif" />
+    <Content Include="v2\intranet\images\ic_dbstat.gif" />
+    <Content Include="v2\intranet\images\ic_dbwart48.gif" />
+    <Content Include="v2\intranet\images\ic_doktyp.gif" />
+    <Content Include="v2\intranet\images\ic_dokumentet48.gif" />
+    <Content Include="v2\intranet\images\ic_dokumentet48_dis.gif" />
+    <Content Include="v2\intranet\images\ic_edit48.gif" />
+    <Content Include="v2\intranet\images\ic_export16.gif" />
+    <Content Include="v2\intranet\images\ic_fordtyp.gif" />
+    <Content Include="v2\intranet\images\ic_gebinde.gif" />
+    <Content Include="v2\intranet\images\ic_Gericht48.gif" />
+    <Content Include="v2\intranet\images\ic_honorare48.gif" />
+    <Content Include="v2\intranet\images\ic_import16.gif" />
+    <Content Include="v2\intranet\images\ic_importDF16.gif" />
+    <Content Include="v2\intranet\images\ic_importDF16_Dis.gif" />
+    <Content Include="v2\intranet\images\ic_importDP16.gif" />
+    <Content Include="v2\intranet\images\ic_importDP16_dis.gif" />
+    <Content Include="v2\intranet\images\ic_importIC16.gif" />
+    <Content Include="v2\intranet\images\ic_importIC16_dis.gif" />
+    <Content Include="v2\intranet\images\ic_importkennz.gif" />
+    <Content Include="v2\intranet\images\ic_info48.gif" />
+    <Content Include="v2\intranet\images\ic_intstat16.gif" />
+    <Content Include="v2\intranet\images\ic_intstat48.gif" />
+    <Content Include="v2\intranet\images\ic_kampagne48.gif" />
+    <Content Include="v2\intranet\images\ic_kassablock48.gif" />
+    <Content Include="v2\intranet\images\ic_klienttyp.gif" />
+    <Content Include="v2\intranet\images\ic_kontakt48.gif" />
+    <Content Include="v2\intranet\images\ic_kontakttyp48.gif" />
+    <Content Include="v2\intranet\images\ic_log48.gif" />
+    <Content Include="v2\intranet\images\ic_lst16.gif" />
+    <Content Include="v2\intranet\images\ic_lst16_dis.gif" />
+    <Content Include="v2\intranet\images\ic_lstCost16.gif" />
+    <Content Include="v2\intranet\images\ic_lstCost16_dis.gif" />
+    <Content Include="v2\intranet\images\ic_mail48.gif" />
+    <Content Include="v2\intranet\images\ic_mail48_dis.gif" />
+    <Content Include="v2\intranet\images\ic_mailbox.gif" />
+    <Content Include="v2\intranet\images\ic_mandant.gif" />
+    <Content Include="v2\intranet\images\ic_money16.gif" />
+    <Content Include="v2\intranet\images\ic_money16_dis.gif" />
+    <Content Include="v2\intranet\images\ic_mygui.gif" />
+    <Content Include="v2\intranet\images\ic_mygui_dis.gif" />
+    <Content Include="v2\intranet\images\ic_mypersdata.gif" />
+    <Content Include="v2\intranet\images\ic_orte48.gif" />
+    <Content Include="v2\intranet\images\ic_print48.gif" />
+    <Content Include="v2\intranet\images\ic_print48_Dis.gif" />
+    <Content Include="v2\intranet\images\ic_printer16.gif" />
+    <Content Include="v2\intranet\images\ic_printer16_dis.gif" />
+    <Content Include="v2\intranet\images\ic_project48.gif" />
+    <Content Include="v2\intranet\images\ic_project48_Dis.gif" />
+    <Content Include="v2\intranet\images\ic_projekttyp.gif" />
+    <Content Include="v2\intranet\images\ic_provisionen48.gif" />
+    <Content Include="v2\intranet\images\ic_roleprogs48.gif" />
+    <Content Include="v2\intranet\images\ic_roles48.gif" />
+    <Content Include="v2\intranet\images\ic_sched48.gif" />
+    <Content Include="v2\intranet\images\ic_sched48_Dis.gif" />
+    <Content Include="v2\intranet\images\ic_schloss48_.gif" />
+    <Content Include="v2\intranet\images\ic_server48.gif" />
+    <Content Include="v2\intranet\images\ic_sicherheitsstufen48.gif" />
+    <Content Include="v2\intranet\images\ic_staaten48.gif" />
+    <Content Include="v2\intranet\images\ic_statistik48.gif" />
+    <Content Include="v2\intranet\images\ic_statistik48_dis.gif" />
+    <Content Include="v2\intranet\images\ic_system48.gif" />
+    <Content Include="v2\intranet\images\ic_taetigkeit48.gif" />
+    <Content Include="v2\intranet\images\ic_Task48.gif" />
+    <Content Include="v2\intranet\images\ic_tbl0116.gif" />
+    <Content Include="v2\intranet\images\ic_telephone16.gif" />
+    <Content Include="v2\intranet\images\ic_telephone16_dis.gif" />
+    <Content Include="v2\intranet\images\ic_terminliste16.gif" />
+    <Content Include="v2\intranet\images\ic_termintyp.gif" />
+    <Content Include="v2\intranet\images\ic_tools48.gif" />
+    <Content Include="v2\intranet\images\ic_tools48_dis.gif" />
+    <Content Include="v2\intranet\images\ic_warning48.gif" />
+    <Content Include="v2\intranet\images\ic_weggeb48.gif" />
+    <Content Include="v2\intranet\images\IE48.gif" />
+    <Content Include="v2\intranet\images\ifProg48.gif" />
+    <Content Include="v2\intranet\images\img.gif" />
+    <Content Include="v2\intranet\images\important0116x16.gif" />
+    <Content Include="v2\intranet\images\important16x16.gif" />
+    <Content Include="v2\intranet\images\important16x16_dis.gif" />
+    <Content Include="v2\intranet\images\info16.gif" />
+    <Content Include="v2\intranet\images\InkBonicon16.gif" />
+    <Content Include="v2\intranet\images\inkinticon.gif" />
+    <Content Include="v2\intranet\images\InkInticon16.gif" />
+    <Content Include="v2\intranet\images\inkMLDicon16.gif" />
+    <Content Include="v2\intranet\images\inksys48.gif" />
+    <Content Include="v2\intranet\images\IPadUpload.png" />
+    <Content Include="v2\intranet\images\items48.gif" />
+    <Content Include="v2\intranet\images\kalender48.gif" />
+    <Content Include="v2\intranet\images\kennz48.gif" />
+    <Content Include="v2\intranet\images\kennz49.gif" />
+    <Content Include="v2\intranet\images\key16.gif" />
+    <Content Include="v2\intranet\images\key48.gif" />
+    <Content Include="v2\intranet\images\key48_01.gif" />
+    <Content Include="v2\intranet\images\kl32.gif" />
+    <Content Include="v2\intranet\images\kl48.gif" />
+    <Content Include="v2\intranet\images\klient16.gif" />
+    <Content Include="v2\intranet\images\klient48.gif" />
+    <Content Include="v2\intranet\images\Klienten48.gif" />
+    <Content Include="v2\intranet\images\kontakt48.gif" />
+    <Content Include="v2\intranet\images\kontakttype48.gif" />
+    <Content Include="v2\intranet\images\kuvert16.gif" />
+    <Content Include="v2\intranet\images\Layer_1.gif" />
+    <Content Include="v2\intranet\images\locked.gif" />
+    <Content Include="v2\intranet\images\Logo1x1cm.png" />
+    <Content Include="v2\intranet\images\Logo2x2.png" />
+    <Content Include="v2\intranet\images\Logo5mm.png" />
+    <Content Include="v2\intranet\images\Logo5x5.png" />
+    <Content Include="v2\intranet\images\LogoECP4c.jpg" />
+    <Content Include="v2\intranet\images\logosmall.gif" />
+    <Content Include="v2\intranet\images\Logosml.gif" />
+    <Content Include="v2\intranet\images\Logosml.jpg" />
+    <Content Include="v2\intranet\images\logout16.gif" />
+    <Content Include="v2\intranet\images\logo_garantdetekteiPDF.jpg" />
+    <Content Include="v2\intranet\images\logo_garantgruppePDF.bmp" />
+    <Content Include="v2\intranet\images\logo_garantgruppePDF.gif" />
+    <Content Include="v2\intranet\images\logo_garantgruppePDF.jpg" />
+    <Content Include="v2\intranet\images\lohnverrechnung48.gif" />
+    <Content Include="v2\intranet\images\lohnverrechnung48_Dis.gif" />
+    <Content Include="v2\intranet\images\mail48.gif" />
+    <Content Include="v2\intranet\images\mailbox48.gif" />
+    <Content Include="v2\intranet\images\mandant48.gif" />
+    <Content Include="v2\intranet\images\Message.png" />
+    <Content Include="v2\intranet\images\minisearch.gif" />
+    <Content Include="v2\intranet\images\MWST48.gif" />
+    <Content Include="v2\intranet\images\mydata48.gif" />
+    <Content Include="v2\intranet\images\mygui16.gif" />
+    <Content Include="v2\intranet\images\mygui48.gif" />
+    <Content Include="v2\intranet\images\mytasks48.gif" />
+    <Content Include="v2\intranet\images\newheader-transparent.gif" />
+    <Content Include="v2\intranet\images\newheader.gif" />
+    <Content Include="v2\intranet\images\newmail.gif" />
+    <Content Include="v2\intranet\images\osxback.gif" />
+    <Content Include="v2\intranet\images\osxback2.gif" />
+    <Content Include="v2\intranet\images\osxback3.gif" />
+    <Content Include="v2\intranet\images\pdf.gif" />
+    <Content Include="v2\intranet\images\pdf16.gif" />
+    <Content Include="v2\intranet\images\pdf16_Dis.gif" />
+    <Content Include="v2\intranet\images\poi_custom.png" />
+    <Content Include="v2\intranet\images\popfooterback.gif" />
+    <Content Include="v2\intranet\images\popFooterClose.gif" />
+    <Content Include="v2\intranet\images\poplogo.gif" />
+    <Content Include="v2\intranet\images\popTopBack.gif" />
+    <Content Include="v2\intranet\images\ppt.gif" />
+    <Content Include="v2\intranet\images\preislisten48.gif" />
+    <Content Include="v2\intranet\images\print16.gif" />
+    <Content Include="v2\intranet\images\print16_dis.gif" />
+    <Content Include="v2\intranet\images\printer48.gif" />
+    <Content Include="v2\intranet\images\progfolder48.gif" />
+    <Content Include="v2\intranet\images\qm.gif" />
+    <Content Include="v2\intranet\images\question32.gif" />
+    <Content Include="v2\intranet\images\Rechnung_Small.gif" />
+    <Content Include="v2\intranet\images\refresh16.gif" />
+    <Content Include="v2\intranet\images\Roles48.gif" />
+    <Content Include="v2\intranet\images\rolleyes.gif" />
+    <Content Include="v2\intranet\images\RouteIcon.jpg" />
+    <Content Include="v2\intranet\images\RT_ico.gif" />
+    <Content Include="v2\intranet\images\RV_ico.gif" />
+    <Content Include="v2\intranet\images\scheck16.gif" />
+    <Content Include="v2\intranet\images\scheduler48.gif" />
+    <Content Include="v2\intranet\images\sc_Inkasso.gif" />
+    <Content Include="v2\intranet\images\sc_Settings.gif" />
+    <Content Include="v2\intranet\images\sc_Statistik.gif" />
+    <Content Include="v2\intranet\images\sc_Statistik_Dis.gif" />
+    <Content Include="v2\intranet\images\sc_Transfer.gif" />
+    <Content Include="v2\intranet\images\sep2.gif" />
+    <Content Include="v2\intranet\images\sortdown.gif" />
+    <Content Include="v2\intranet\images\sortup.gif" />
+    <Content Include="v2\intranet\images\sort_asc.gif" />
+    <Content Include="v2\intranet\images\sort_desc.gif" />
+    <Content Include="v2\intranet\images\spacer.gif" />
+    <Content Include="v2\intranet\images\spacer_box.gif" />
+    <Content Include="v2\intranet\images\sport2003.gif" />
+    <Content Include="v2\intranet\images\states48.gif" />
+    <Content Include="v2\intranet\images\Statistik01_16.gif" />
+    <Content Include="v2\intranet\images\Statistik01_16DIS.gif" />
+    <Content Include="v2\intranet\images\Statistik02_16.gif" />
+    <Content Include="v2\intranet\images\Statistik02_16dis.gif" />
+    <Content Include="v2\intranet\images\Statistik16.gif" />
+    <Content Include="v2\intranet\images\Statistik16red.gif" />
+    <Content Include="v2\intranet\images\statistik48.gif" />
+    <Content Include="v2\intranet\images\stern.gif" />
+    <Content Include="v2\intranet\images\stern16.gif" />
+    <Content Include="v2\intranet\images\sys16.gif" />
+    <Content Include="v2\intranet\images\system48.gif" />
+    <Content Include="v2\intranet\images\task16.gif" />
+    <Content Include="v2\intranet\images\task16green.gif" />
+    <Content Include="v2\intranet\images\task48.gif" />
+    <Content Include="v2\intranet\images\textbausteine48.gif" />
+    <Content Include="v2\intranet\images\tools48.gif" />
+    <Content Include="v2\intranet\images\torte48.gif" />
+    <Content Include="v2\intranet\images\txt.gif" />
+    <Content Include="v2\intranet\images\ug_Statistik.gif" />
+    <Content Include="v2\intranet\images\user16.gif" />
+    <Content Include="v2\intranet\images\user48-2.gif" />
+    <Content Include="v2\intranet\images\user48.gif" />
+    <Content Include="v2\intranet\images\userglobe48.gif" />
+    <Content Include="v2\intranet\images\vacation48.gif" />
+    <Content Include="v2\intranet\images\webserver48.gif" />
+    <Content Include="v2\intranet\images\weg16.gif" />
+    <Content Include="v2\intranet\images\weg48.gif" />
+    <Content Include="v2\intranet\images\wfarrowdown.gif" />
+    <Content Include="v2\intranet\images\wfarrowdown01.gif" />
+    <Content Include="v2\intranet\images\WFL16.gif" />
+    <Content Include="v2\intranet\images\WFL16_dis.gif" />
+    <Content Include="v2\intranet\images\WFL_16_1.gif" />
+    <Content Include="v2\intranet\images\wienstrom.gif" />
+    <Content Include="v2\intranet\images\wire_transfer48.png" />
+    <Content Include="v2\intranet\images\workflow48.gif" />
+    <Content Include="v2\intranet\images\wv_16.gif" />
+    <Content Include="v2\intranet\images\xls.gif" />
+    <Content Include="v2\intranet\images\zip16.gif" />
+    <Content Include="v2\intranet\images\zmr32.gif" />
+    <Content Include="v2\intranet\images\zmr48.gif" />
+    <Content Include="v2\intranetx\user\menu\black_arrow.gif" />
+    <Content Include="v2\intranetx\user\menu\menudef.aspx" />
+    <Content Include="v2\intranetx\user\menu\new_s_loader.js" />
+    <Content Include="v2\intranetx\user\menu\scrollbottom.gif" />
+    <Content Include="v2\intranetx\user\menu\scrolltop.gif" />
+    <Content Include="v2\intranetx\user\menu\s_arrays.asp" />
+    <Content Include="v2\intranetx\user\menu\s_arrays.js" />
+    <Content Include="v2\intranetx\user\menu\s_loader.js" />
+    <Content Include="v2\intranetx\user\menu\s_script_dom.js" />
+    <Content Include="v2\intranetx\user\menu\s_script_ns4.js" />
+    <Content Include="v2\intranetx\user\menu\s_script_old.js" />
+    <Content Include="v2\intranetx\aktenint\Protocol.aspx" />
+    <Content Include="v2\intranetx\session_transfer\SessionTransfer.asp" />
+    <Content Include="v2\intranetx\session_transfer\SessionTransfer.aspx" />
+    <Content Include="v2\intranetx\session_transfer\SessionVar.asp" />
+    <Content Include="v2\intranetx\session_transfer\SetSessionVar.asp" />
+    <Content Include="v2\intranet\js\data.js" />
+    <Content Include="v2\intranet\styles\htbTablet.css" />
+    <Content Include="v2\intranet\styles\inksys.css" />
+    <Content Include="v2\intranet\styles\inksysv2.css" />
+    <Content Include="v2\intranetx\aktenint\Test.aspx" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Service References\TabletService\GetData.wsdl" />
+    <None Include="Service References\TabletService\GetData.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\TabletService\GetData1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="includes\wdg\classes\MXWidgets.js.aspx.cs">
+      <DependentUpon>MXWidgets.js.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="includes\wdg\classes\MXWidgets.js.aspx.designer.cs">
+      <DependentUpon>MXWidgets.js.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\GeocodeService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\ImageryService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\RouteService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\SearchService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\TabletService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\Actions.aspx.cs">
+      <DependentUpon>Actions.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\Actions.aspx.designer.cs">
+      <DependentUpon>Actions.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\ActionsRat.aspx.cs">
+      <DependentUpon>ActionsRat.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\ActionsRat.aspx.designer.cs">
+      <DependentUpon>ActionsRat.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\AktInkPayment.aspx.cs">
+      <DependentUpon>AktInkPayment.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\AktInkPayment.aspx.designer.cs">
+      <DependentUpon>AktInkPayment.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\AktInkRatePayment.aspx.cs">
+      <DependentUpon>AktInkRatePayment.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\AktInkRatePayment.aspx.designer.cs">
+      <DependentUpon>AktInkRatePayment.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\ImportFromXL.aspx.cs">
+      <DependentUpon>ImportFromXL.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\ImportFromXL.aspx.designer.cs">
+      <DependentUpon>ImportFromXL.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\ViewAktInk2.aspx.cs">
+      <DependentUpon>ViewAktInk2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\ViewAktInk2.aspx.designer.cs">
+      <DependentUpon>ViewAktInk2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\ViewAktInk.aspx.cs">
+      <DependentUpon>ViewAktInk.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\ViewAktInk.aspx.designer.cs">
+      <DependentUpon>ViewAktInk.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\EditAktInk.aspx.cs">
+      <DependentUpon>EditAktInk.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\EditAktInk.aspx.designer.cs">
+      <DependentUpon>EditAktInk.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\DeleteMahnung.aspx.cs">
+      <DependentUpon>DeleteMahnung.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\DeleteMahnung.aspx.designer.cs">
+      <DependentUpon>DeleteMahnung.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\EditInkAction.aspx.cs">
+      <DependentUpon>EditInkAction.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\EditInkAction.aspx.designer.cs">
+      <DependentUpon>EditInkAction.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\EditInvoice.aspx.cs">
+      <DependentUpon>EditInvoice.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\EditInvoice.aspx.designer.cs">
+      <DependentUpon>EditInvoice.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\NewAktInk.aspx.cs">
+      <DependentUpon>NewAktInk.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\NewAktInk.aspx.designer.cs">
+      <DependentUpon>NewAktInk.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\PostponeRate.aspx.cs">
+      <DependentUpon>PostponeRate.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\PostponeRate.aspx.designer.cs">
+      <DependentUpon>PostponeRate.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\ShowInvoice.aspx.cs">
+      <DependentUpon>ShowInvoice.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenink\ShowInvoice.aspx.designer.cs">
+      <DependentUpon>ShowInvoice.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintaction\EditActionType.aspx.cs">
+      <DependentUpon>EditActionType.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintaction\EditActionType.aspx.designer.cs">
+      <DependentUpon>EditActionType.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintprovfix\ActionProv.aspx.cs">
+      <DependentUpon>ActionProv.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintprovfix\ActionProv.aspx.designer.cs">
+      <DependentUpon>ActionProv.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintprovfix\EditHonorar.aspx.cs">
+      <DependentUpon>EditHonorar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintprovfix\EditHonorar.aspx.designer.cs">
+      <DependentUpon>EditHonorar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintprovfix\EditHonorarGroup.aspx.cs">
+      <DependentUpon>EditHonorarGroup.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintprovfix\EditHonorarGroup.aspx.designer.cs">
+      <DependentUpon>EditHonorarGroup.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintprovfix\HonorarSchema.aspx.cs">
+      <DependentUpon>HonorarSchema.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintprovfix\HonorarSchema.aspx.designer.cs">
+      <DependentUpon>HonorarSchema.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintprovfix\ProvBalance.aspx.cs">
+      <DependentUpon>ProvBalance.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintprovfix\ProvBalance.aspx.designer.cs">
+      <DependentUpon>ProvBalance.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintprovfix\ProvFix.aspx.cs">
+      <DependentUpon>ProvFix.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintprovfix\ProvFix.aspx.designer.cs">
+      <DependentUpon>ProvFix.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenintprovfix\ProvisionCalc.cs" />
+    <Compile Include="v2\intranetx\aktenint\AktenIntTablet.aspx.cs">
+      <DependentUpon>AktenIntTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\AktenIntTablet.aspx.designer.cs">
+      <DependentUpon>AktenIntTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\AuftragTablet.aspx.cs">
+      <DependentUpon>AuftragTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\AuftragTablet.aspx.designer.cs">
+      <DependentUpon>AuftragTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\Protocol2.aspx.cs">
+      <DependentUpon>Protocol2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\Protocol2.aspx.designer.cs">
+      <DependentUpon>Protocol2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\EditBooking.aspx.cs">
+      <DependentUpon>EditBooking.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\EditBooking.aspx.designer.cs">
+      <DependentUpon>EditBooking.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadAktTablet2.aspx.cs">
+      <DependentUpon>DownloadAktTablet2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadAktTablet2.aspx.designer.cs">
+      <DependentUpon>DownloadAktTablet2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadJournalTablet.aspx.cs">
+      <DependentUpon>DownloadJournalTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadJournalTablet.aspx.designer.cs">
+      <DependentUpon>DownloadJournalTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadChangedAktsTablet.aspx.cs">
+      <DependentUpon>DownloadChangedAktsTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadChangedAktsTablet.aspx.designer.cs">
+      <DependentUpon>DownloadChangedAktsTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadAktsWithOpenedTransfersTablet.aspx.cs">
+      <DependentUpon>DownloadAktsWithOpenedTransfersTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadAktsWithOpenedTransfersTablet.aspx.designer.cs">
+      <DependentUpon>DownloadAktsWithOpenedTransfersTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\ProcessMessageTablet.aspx.cs">
+      <DependentUpon>ProcessMessageTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\ProcessMessageTablet.aspx.designer.cs">
+      <DependentUpon>ProcessMessageTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadDataTablet.aspx.cs">
+      <DependentUpon>DownloadDataTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadDataTablet.aspx.designer.cs">
+      <DependentUpon>DownloadDataTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\TabletPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\UEList.aspx.cs">
+      <DependentUpon>UEList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\UEList.aspx.designer.cs">
+      <DependentUpon>UEList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\WeeklyValidationOrg.aspx.cs">
+      <DependentUpon>WeeklyValidationOrg.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\WeeklyValidationOrg.aspx.designer.cs">
+      <DependentUpon>WeeklyValidationOrg.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\ImportKsv.aspx.cs">
+      <DependentUpon>ImportKsv.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\ImportKsv.aspx.designer.cs">
+      <DependentUpon>ImportKsv.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\EditAktIntAuto.aspx.cs">
+      <DependentUpon>EditAktIntAuto.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\EditAktIntAuto.aspx.designer.cs">
+      <DependentUpon>EditAktIntAuto.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\OverdueList.aspx.cs">
+      <DependentUpon>OverdueList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\OverdueList.aspx.designer.cs">
+      <DependentUpon>OverdueList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\EditAktInt.aspx.cs">
+      <DependentUpon>EditAktInt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\EditAktInt.aspx.designer.cs">
+      <DependentUpon>EditAktInt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\NewAction.aspx.cs">
+      <DependentUpon>NewAction.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\NewAction.aspx.designer.cs">
+      <DependentUpon>NewAction.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\PrintAuftrag.aspx.cs">
+      <DependentUpon>PrintAuftrag.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\PrintAuftrag.aspx.designer.cs">
+      <DependentUpon>PrintAuftrag.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\ResearchRedirect.aspx.cs">
+      <DependentUpon>ResearchRedirect.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\ResearchRedirect.aspx.designer.cs">
+      <DependentUpon>ResearchRedirect.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\SendMitteilung.aspx.cs">
+      <DependentUpon>SendMitteilung.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\SendMitteilung.aspx.designer.cs">
+      <DependentUpon>SendMitteilung.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\SetAktGebiete.aspx.cs">
+      <DependentUpon>SetAktGebiete.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\SetAktGebiete.aspx.designer.cs">
+      <DependentUpon>SetAktGebiete.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\AddActionTablet.aspx.cs">
+      <DependentUpon>AddActionTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\AddActionTablet.aspx.designer.cs">
+      <DependentUpon>AddActionTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\SaveAktTablet.aspx.cs">
+      <DependentUpon>SaveAktTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\SaveAktTablet.aspx.designer.cs">
+      <DependentUpon>SaveAktTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\CreateAutoProtocol.aspx.cs">
+      <DependentUpon>CreateAutoProtocol.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\CreateAutoProtocol.aspx.designer.cs">
+      <DependentUpon>CreateAutoProtocol.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\LoginTablet.aspx.cs">
+      <DependentUpon>LoginTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\LoginTablet.aspx.designer.cs">
+      <DependentUpon>LoginTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadRoadAktsTablet.aspx.cs">
+      <DependentUpon>DownloadRoadAktsTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadRoadAktsTablet.aspx.designer.cs">
+      <DependentUpon>DownloadRoadAktsTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadAktTablet.aspx.cs">
+      <DependentUpon>DownloadAktTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadAktTablet.aspx.designer.cs">
+      <DependentUpon>DownloadAktTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadAktInstallmentInfoTablet.aspx.cs">
+      <DependentUpon>DownloadAktInstallmentInfoTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadAktInstallmentInfoTablet.aspx.designer.cs">
+      <DependentUpon>DownloadAktInstallmentInfoTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadActionTypeTablet.aspx.cs">
+      <DependentUpon>DownloadActionTypeTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadActionTypeTablet.aspx.designer.cs">
+      <DependentUpon>DownloadActionTypeTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadActionsTablet.aspx.cs">
+      <DependentUpon>DownloadActionsTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadActionsTablet.aspx.designer.cs">
+      <DependentUpon>DownloadActionsTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\ProvisionAbrechnungTablet.aspx.cs">
+      <DependentUpon>ProvisionAbrechnungTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\ProvisionAbrechnungTablet.aspx.designer.cs">
+      <DependentUpon>ProvisionAbrechnungTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\SetActionTablet.aspx.cs">
+      <DependentUpon>SetActionTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\SetActionTablet.aspx.designer.cs">
+      <DependentUpon>SetActionTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\WeeklyValidation.aspx.cs">
+      <DependentUpon>WeeklyValidation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\WeeklyValidation.aspx.designer.cs">
+      <DependentUpon>WeeklyValidation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\WorkAktInt.aspx.cs">
+      <DependentUpon>WorkAktInt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\WorkAktInt.aspx.designer.cs">
+      <DependentUpon>WorkAktInt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\WorkReportInfoScore.aspx.cs">
+      <DependentUpon>WorkReportInfoScore.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\WorkReportInfoScore.aspx.designer.cs">
+      <DependentUpon>WorkReportInfoScore.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\akten\UebergabeAkten.aspx.cs">
+      <DependentUpon>UebergabeAkten.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\akten\UebergabeAkten.aspx.designer.cs">
+      <DependentUpon>UebergabeAkten.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\auftraggeber\AuftraggeberAktionen.aspx.cs">
+      <DependentUpon>AuftraggeberAktionen.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\auftraggeber\AuftraggeberAktionen.aspx.designer.cs">
+      <DependentUpon>AuftraggeberAktionen.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\auftraggeber\AuftraggeberExtension.aspx.cs">
+      <DependentUpon>AuftraggeberExtension.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\auftraggeber\AuftraggeberExtension.aspx.designer.cs">
+      <DependentUpon>AuftraggeberExtension.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\bank\BankTransferOLD.aspx.cs">
+      <DependentUpon>BankTransferOLD.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\bank\BankTransferOLD.aspx.designer.cs">
+      <DependentUpon>BankTransferOLD.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\CustomerNewAktInk.aspx.cs">
+      <DependentUpon>CustomerNewAktInk.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\CustomerNewAktInk.aspx.designer.cs">
+      <DependentUpon>CustomerNewAktInk.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\klienten\EditKlientCommunication.aspx.cs">
+      <DependentUpon>EditKlientCommunication.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\klienten\EditKlientCommunication.aspx.designer.cs">
+      <DependentUpon>EditKlientCommunication.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\auftraggeber\EditAuftraggeber.aspx.cs">
+      <DependentUpon>EditAuftraggeber.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\auftraggeber\EditAuftraggeber.aspx.designer.cs">
+      <DependentUpon>EditAuftraggeber.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\bank\Bank.aspx.cs">
+      <DependentUpon>Bank.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\bank\Bank.aspx.designer.cs">
+      <DependentUpon>Bank.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\bank\BankAccountMonthlyStatus.aspx.cs">
+      <DependentUpon>BankAccountMonthlyStatus.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\bank\BankAccountMonthlyStatus.aspx.designer.cs">
+      <DependentUpon>BankAccountMonthlyStatus.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\bank\BankInkassoProvisionToTransfer.aspx.designer.cs">
+      <DependentUpon>BankInkassoProvisionToTransfer.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\bank\BankTransactions.aspx.cs">
+      <DependentUpon>BankTransactions.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\bank\BankTransactions.aspx.designer.cs">
+      <DependentUpon>BankTransactions.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\bank\BankTransfer.aspx.cs">
+      <DependentUpon>BankTransfer.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\bank\BankTransfer.aspx.designer.cs">
+      <DependentUpon>BankTransfer.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\bank\BankInkassoProvisionToTransfer.aspx.cs">
+      <DependentUpon>BankInkassoProvisionToTransfer.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\AktenInk.aspx.cs">
+      <DependentUpon>AktenInk.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\AktenInk.aspx.designer.cs">
+      <DependentUpon>AktenInk.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\AktenInt.aspx.cs">
+      <DependentUpon>AktenInt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\AktenInt.aspx.designer.cs">
+      <DependentUpon>AktenInt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\CollectedByAussendienst.aspx.cs">
+      <DependentUpon>CollectedByAussendienst.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\CollectedByAussendienst.aspx.designer.cs">
+      <DependentUpon>CollectedByAussendienst.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\UbergabeneAktenInt.aspx.cs">
+      <DependentUpon>UbergabeneAktenInt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\UbergabeneAktenInt.aspx.designer.cs">
+      <DependentUpon>UbergabeneAktenInt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\InkassoStatistic.aspx.cs">
+      <DependentUpon>InkassoStatistic.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\InkassoStatistic.aspx.designer.cs">
+      <DependentUpon>InkassoStatistic.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\InteverntionStatistic.aspx.cs">
+      <DependentUpon>InteverntionStatistic.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\InteverntionStatistic.aspx.designer.cs">
+      <DependentUpon>InteverntionStatistic.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\ShowAktInk.aspx.cs">
+      <DependentUpon>ShowAktInk.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\ShowAktInk.aspx.designer.cs">
+      <DependentUpon>ShowAktInk.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\TransferToCustomer.aspx.cs">
+      <DependentUpon>TransferToCustomer.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\TransferToCustomer.aspx.designer.cs">
+      <DependentUpon>TransferToCustomer.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\dealer\EditDealer.aspx.cs">
+      <DependentUpon>EditDealer.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\dealer\EditDealer.aspx.designer.cs">
+      <DependentUpon>EditDealer.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\dealer\DealerBrowser.aspx.cs">
+      <DependentUpon>DealerBrowser.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\dealer\DealerBrowser.aspx.designer.cs">
+      <DependentUpon>DealerBrowser.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\gegner\EditGegnerAddress.aspx.cs">
+      <DependentUpon>EditGegnerAddress.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\gegner\EditGegnerAddress.aspx.designer.cs">
+      <DependentUpon>EditGegnerAddress.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\gegner\EditGegner.aspx.cs">
+      <DependentUpon>EditGegner.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\gegner\EditGegner.aspx.designer.cs">
+      <DependentUpon>EditGegner.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\gegner\EditGegnerPhone.aspx.cs">
+      <DependentUpon>EditGegnerPhone.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\gegner\EditGegnerPhone.aspx.designer.cs">
+      <DependentUpon>EditGegnerPhone.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\gegner\GegnerBrowser.aspx.cs">
+      <DependentUpon>GegnerBrowser.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\gegner\GegnerBrowser.aspx.designer.cs">
+      <DependentUpon>GegnerBrowser.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\gegner\NewGegner.aspx.cs">
+      <DependentUpon>NewGegner.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\gegner\NewGegner.aspx.designer.cs">
+      <DependentUpon>NewGegner.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\gegner\tablet\EditGegnerTablet.aspx.cs">
+      <DependentUpon>EditGegnerTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\gegner\tablet\EditGegnerTablet.aspx.designer.cs">
+      <DependentUpon>EditGegnerTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\GetGegnerLatAndLng.aspx.cs">
+      <DependentUpon>GetGegnerLatAndLng.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\GetGegnerLatAndLng.aspx.designer.cs">
+      <DependentUpon>GetGegnerLatAndLng.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\GetLatAndLon.aspx.cs">
+      <DependentUpon>GetLatAndLon.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\GetLatAndLon.aspx.designer.cs">
+      <DependentUpon>GetLatAndLon.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\Globals.cs" />
+    <Compile Include="v2\intranetx\global_files\CtlBrowserDealer.ascx.cs">
+      <DependentUpon>CtlBrowserDealer.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlBrowserDealer.ascx.designer.cs">
+      <DependentUpon>CtlBrowserDealer.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlLookupDealer.ascx.cs">
+      <DependentUpon>CtlLookupDealer.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlLookupDealer.ascx.designer.cs">
+      <DependentUpon>CtlLookupDealer.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlLookupAuftraggeber.ascx.cs">
+      <DependentUpon>CtlLookupAuftraggeber.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlLookupAuftraggeber.ascx.designer.cs">
+      <DependentUpon>CtlLookupAuftraggeber.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlInstallmentOldTablet.ascx.cs">
+      <DependentUpon>CtlInstallmentOldTablet.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlInstallmentOldTablet.ascx.designer.cs">
+      <DependentUpon>CtlInstallmentOldTablet.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlInstallmentInfoTablet.ascx.cs">
+      <DependentUpon>CtlInstallmentInfoTablet.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlInstallmentInfoTablet.ascx.designer.cs">
+      <DependentUpon>CtlInstallmentInfoTablet.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\IInstallment.cs" />
+    <Compile Include="v2\intranetx\global_files\intranet_header_no_menu_tablet.ascx.cs">
+      <DependentUpon>intranet_header_no_menu_tablet.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\intranet_header_no_menu_tablet.ascx.designer.cs">
+      <DependentUpon>intranet_header_no_menu_tablet.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlInstallmentTablet.ascx.cs">
+      <DependentUpon>CtlInstallmentTablet.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlInstallmentTablet.ascx.designer.cs">
+      <DependentUpon>CtlInstallmentTablet.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlBrowserUser.ascx.cs">
+      <DependentUpon>CtlBrowserUser.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlBrowserUser.ascx.designer.cs">
+      <DependentUpon>CtlBrowserUser.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlChartUbergebeneAkten.ascx.cs">
+      <DependentUpon>CtlChartUbergebeneAkten.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlChartUbergebeneAkten.ascx.designer.cs">
+      <DependentUpon>CtlChartUbergebeneAkten.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlLookupUser.ascx.cs">
+      <DependentUpon>CtlLookupUser.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlLookupUser.ascx.designer.cs">
+      <DependentUpon>CtlLookupUser.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlBrowserGegner.ascx.cs">
+      <DependentUpon>CtlBrowserGegner.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlBrowserGegner.ascx.designer.cs">
+      <DependentUpon>CtlBrowserGegner.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlBrowserClient.ascx.cs">
+      <DependentUpon>CtlBrowserClient.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlBrowserClient.ascx.designer.cs">
+      <DependentUpon>CtlBrowserClient.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlExtensionRequest.ascx.cs">
+      <DependentUpon>CtlExtensionRequest.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlExtensionRequest.ascx.designer.cs">
+      <DependentUpon>CtlExtensionRequest.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlInstallment.ascx.cs">
+      <DependentUpon>CtlInstallment.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlInstallment.ascx.designer.cs">
+      <DependentUpon>CtlInstallment.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlInstallmentOld.ascx.cs">
+      <DependentUpon>CtlInstallmentOld.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlInstallmentOld.ascx.designer.cs">
+      <DependentUpon>CtlInstallmentOld.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlLookupGegner.ascx.cs">
+      <DependentUpon>CtlLookupGegner.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlLookupGegner.ascx.designer.cs">
+      <DependentUpon>CtlLookupGegner.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlLookupKlient.ascx.cs">
+      <DependentUpon>CtlLookupKlient.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlLookupKlient.ascx.designer.cs">
+      <DependentUpon>CtlLookupKlient.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlMessage.ascx.cs">
+      <DependentUpon>CtlMessage.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlMessage.ascx.designer.cs">
+      <DependentUpon>CtlMessage.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlTelAndEmailCollection.ascx.cs">
+      <DependentUpon>CtlTelAndEmailCollection.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlTelAndEmailCollection.ascx.designer.cs">
+      <DependentUpon>CtlTelAndEmailCollection.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlWorkflow.ascx.cs">
+      <DependentUpon>CtlWorkflow.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\CtlWorkflow.ascx.designer.cs">
+      <DependentUpon>CtlWorkflow.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\intranet_footer.ascx.cs">
+      <DependentUpon>intranet_footer.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\intranet_footer.ascx.designer.cs">
+      <DependentUpon>intranet_footer.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\intranet_header_no_menu.ascx.cs">
+      <DependentUpon>intranet_header_no_menu.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\intranet_header_no_menu.ascx.designer.cs">
+      <DependentUpon>intranet_header_no_menu.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\intranet_header.ascx.cs">
+      <DependentUpon>intranet_header.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\intranet_header.ascx.designer.cs">
+      <DependentUpon>intranet_header.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\intranet_header_no_menu_no_session_validation.ascx.cs">
+      <DependentUpon>intranet_header_no_menu_no_session_validation.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\intranet_header_no_menu_no_session_validation.ascx.designer.cs">
+      <DependentUpon>intranet_header_no_menu_no_session_validation.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\IWorkflow.cs" />
+    <Compile Include="v2\intranetx\global_files\UploadFile.ascx.cs">
+      <DependentUpon>UploadFile.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\UploadFile.ascx.designer.cs">
+      <DependentUpon>UploadFile.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\AuftraggeberBrowser.ascx.cs">
+      <DependentUpon>AuftraggeberBrowser.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_files\AuftraggeberBrowser.ascx.designer.cs">
+      <DependentUpon>AuftraggeberBrowser.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\intranet\tablet\IntranetTablet.aspx.cs">
+      <DependentUpon>IntranetTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\intranet\tablet\IntranetTablet.aspx.designer.cs">
+      <DependentUpon>IntranetTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\lawyer\EditLawyer.aspx.cs">
+      <DependentUpon>EditLawyer.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\lawyer\EditLawyer.aspx.designer.cs">
+      <DependentUpon>EditLawyer.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\paypal\PaypalPaymentResponse.aspx.cs">
+      <DependentUpon>PaypalPaymentResponse.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\paypal\PaypalPaymentResponse.aspx.designer.cs">
+      <DependentUpon>PaypalPaymentResponse.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\permissions\PermissionsUEList.cs" />
+    <Compile Include="v2\intranetx\permissions\PermissionsRoutePlanner.cs" />
+    <Compile Include="v2\intranetx\progress\atlas\CoreDataService.cs" />
+    <Compile Include="v2\intranetx\progress\atlas\ExecContext.aspx.cs">
+      <DependentUpon>ExecContext.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\atlas\ExecContext.aspx.designer.cs">
+      <DependentUpon>ExecContext.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\atlas\FakeDataService.cs" />
+    <Compile Include="v2\intranetx\progress\atlas\SyncExec.aspx.cs">
+      <DependentUpon>SyncExec.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\atlas\SyncExec.aspx.designer.cs">
+      <DependentUpon>SyncExec.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\atlas\SyncExec1.aspx.cs">
+      <DependentUpon>SyncExec1.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\atlas\SyncExec1.aspx.designer.cs">
+      <DependentUpon>SyncExec1.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\atlas\SyncExecPanel.aspx.cs">
+      <DependentUpon>SyncExecPanel.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\atlas\SyncExecPanel.aspx.designer.cs">
+      <DependentUpon>SyncExecPanel.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\atlas\TaskHelpers.cs" />
+    <Compile Include="v2\intranetx\progress\ContextSens.aspx.cs">
+      <DependentUpon>ContextSens.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\ContextSens.aspx.designer.cs">
+      <DependentUpon>ContextSens.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\LengthyTask.cs" />
+    <Compile Include="v2\intranetx\progress\ProgressBar.cs" />
+    <Compile Include="v2\intranetx\progress\SyncTask.aspx.cs">
+      <DependentUpon>SyncTask.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\SyncTask.aspx.designer.cs">
+      <DependentUpon>SyncTask.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\SyncTaskCallback.aspx.cs">
+      <DependentUpon>SyncTaskCallback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\SyncTaskCallback.aspx.designer.cs">
+      <DependentUpon>SyncTaskCallback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\progress\Task.cs" />
+    <Compile Include="v2\intranetx\progress\TaskStatus.cs" />
+    <Compile Include="v2\intranetx\routeplanter\AddressLocation.cs" />
+    <Compile Include="v2\intranetx\routeplanter\AddressWithID.cs" />
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteAddressFix.aspx.cs">
+      <DependentUpon>BingRouteAddressFix.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteAddressFix.aspx.designer.cs">
+      <DependentUpon>BingRouteAddressFix.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteDisplay.aspx.cs">
+      <DependentUpon>BingRouteDisplay.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteDisplay.aspx.designer.cs">
+      <DependentUpon>BingRouteDisplay.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteLoader.aspx.cs">
+      <DependentUpon>BingRouteLoader.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteLoader.aspx.designer.cs">
+      <DependentUpon>BingRouteLoader.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlanerForAkten.aspx.cs">
+      <DependentUpon>BingRoutePlanerForAkten.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlanerForAkten.aspx.designer.cs">
+      <DependentUpon>BingRoutePlanerForAkten.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlaner.aspx.cs">
+      <DependentUpon>BingRoutePlaner.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlaner.aspx.designer.cs">
+      <DependentUpon>BingRoutePlaner.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePrintRouteDirections.aspx.cs">
+      <DependentUpon>BingRoutePrintRouteDirections.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePrintRouteDirections.aspx.designer.cs">
+      <DependentUpon>BingRoutePrintRouteDirections.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePrintRouteAddresses.aspx.cs">
+      <DependentUpon>BingRoutePrintRouteAddresses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePrintRouteAddresses.aspx.designer.cs">
+      <DependentUpon>BingRoutePrintRouteAddresses.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlanerAutomatic.aspx.cs">
+      <DependentUpon>BingRoutePlanerAutomatic.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlanerAutomatic.aspx.designer.cs">
+      <DependentUpon>BingRoutePlanerAutomatic.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteActionsDisplay.aspx.cs">
+      <DependentUpon>BingRouteActionsDisplay.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteActionsDisplay.aspx.designer.cs">
+      <DependentUpon>BingRouteActionsDisplay.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRouteDisplayTabletApp.aspx.cs">
+      <DependentUpon>BingRouteDisplayTabletApp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRouteDisplayTabletApp.aspx.designer.cs">
+      <DependentUpon>BingRouteDisplayTabletApp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerAutomaticTabletApp.aspx.cs">
+      <DependentUpon>BingRoutePlanerAutomaticTabletApp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerAutomaticTabletApp.aspx.designer.cs">
+      <DependentUpon>BingRoutePlanerAutomaticTabletApp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerTabletApp.aspx.cs">
+      <DependentUpon>BingRoutePlanerTabletApp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerTabletApp.aspx.designer.cs">
+      <DependentUpon>BingRoutePlanerTabletApp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerProgressTabletApp.aspx.cs">
+      <DependentUpon>BingRoutePlanerProgressTabletApp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerProgressTabletApp.aspx.designer.cs">
+      <DependentUpon>BingRoutePlanerProgressTabletApp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRouteAddressFixTablet.aspx.cs">
+      <DependentUpon>BingRouteAddressFixTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRouteAddressFixTablet.aspx.designer.cs">
+      <DependentUpon>BingRouteAddressFixTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRouteDisplayTablet.aspx.cs">
+      <DependentUpon>BingRouteDisplayTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRouteDisplayTablet.aspx.designer.cs">
+      <DependentUpon>BingRouteDisplayTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePrintRouteAddressesTablet.aspx.cs">
+      <DependentUpon>BingRoutePrintRouteAddressesTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePrintRouteAddressesTablet.aspx.designer.cs">
+      <DependentUpon>BingRoutePrintRouteAddressesTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePlanerAutomaticTablet.aspx.cs">
+      <DependentUpon>BingRoutePlanerAutomaticTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePlanerAutomaticTablet.aspx.designer.cs">
+      <DependentUpon>BingRoutePlanerAutomaticTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePlanerTablet.aspx.cs">
+      <DependentUpon>BingRoutePlanerTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePlanerTablet.aspx.designer.cs">
+      <DependentUpon>BingRoutePlanerTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePrintRouteDirectionsTablet.aspx.cs">
+      <DependentUpon>BingRoutePrintRouteDirectionsTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePrintRouteDirectionsTablet.aspx.designer.cs">
+      <DependentUpon>BingRoutePrintRouteDirectionsTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\RoutePlanerManagerAutomatic.cs" />
+    <Compile Include="v2\intranetx\routeplanter\IRouteEventHandler.cs" />
+    <Compile Include="v2\intranetx\routeplanter\City.cs" />
+    <Compile Include="v2\intranetx\routeplanter\googlemaps\RoutePlaner.aspx.cs">
+      <DependentUpon>RoutePlaner.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\googlemaps\RoutePlaner.aspx.designer.cs">
+      <DependentUpon>RoutePlaner.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\kassablock\MissingBeleg.aspx.cs">
+      <DependentUpon>MissingBeleg.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\kassablock\MissingBeleg.aspx.designer.cs">
+      <DependentUpon>MissingBeleg.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\klienten\KlientBericht.aspx.cs">
+      <DependentUpon>KlientBericht.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\klienten\KlientBericht.aspx.designer.cs">
+      <DependentUpon>KlientBericht.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_forms\Zwischenbericht.aspx.cs">
+      <DependentUpon>Zwischenbericht.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_forms\Zwischenbericht.aspx.designer.cs">
+      <DependentUpon>Zwischenbericht.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_forms\GlobalDelete.aspx.cs">
+      <DependentUpon>GlobalDelete.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_forms\GlobalDelete.aspx.designer.cs">
+      <DependentUpon>GlobalDelete.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_forms\Forderungsaufstellung.aspx.cs">
+      <DependentUpon>Forderungsaufstellung.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_forms\Forderungsaufstellung.aspx.designer.cs">
+      <DependentUpon>Forderungsaufstellung.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\global_forms\UploadAkten.aspx.cs">
+      <DependentUpon>UploadAkten.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\global_forms\UploadAkten.aspx.designer.cs">
+      <DependentUpon>UploadAkten.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\glocalcode\Browser.cs" />
+    <Compile Include="v2\intranetx\glocalcode\IncControls.cs" />
+    <Compile Include="v2\intranetx\customer\Customer.aspx.cs">
+      <DependentUpon>Customer.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\customer\Customer.aspx.designer.cs">
+      <DependentUpon>Customer.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\klienten\AuftragReceipt.aspx.cs">
+      <DependentUpon>AuftragReceipt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\klienten\AuftragReceipt.aspx.designer.cs">
+      <DependentUpon>AuftragReceipt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\klienten\KlientBrowser.aspx.cs">
+      <DependentUpon>KlientBrowser.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\klienten\KlientBrowser.aspx.designer.cs">
+      <DependentUpon>KlientBrowser.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\klienten\NewKlient.aspx.cs">
+      <DependentUpon>NewKlient.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\klienten\NewKlient.aspx.designer.cs">
+      <DependentUpon>NewKlient.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\KTFunctions.cs" />
+    <Compile Include="v2\intranetx\test\Test.aspx.cs">
+      <DependentUpon>Test.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\test\Test.aspx.designer.cs">
+      <DependentUpon>Test.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\user\menu\menudef.aspx.cs">
+      <DependentUpon>menudef.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\user\menu\menudef.aspx.designer.cs">
+      <DependentUpon>menudef.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="v2\intranetx\aktenint\Protocol.aspx.cs">
+      <DependentUpon>Protocol.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\Protocol.aspx.designer.cs">
+      <DependentUpon>Protocol.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\permissions\PermissionsNewAction.cs" />
+    <Compile Include="v2\intranetx\permissions\PermissionsADStatistic.cs" />
+    <Compile Include="v2\intranetx\permissions\PermissionsWorkAktInt.cs" />
+    <Compile Include="v2\intranetx\permissions\PermissionsEditAktInk.cs" />
+    <Compile Include="v2\intranetx\permissions\PermissionsProvision.cs" />
+    <Compile Include="v2\intranetx\reports\ADStatistic.aspx.cs">
+      <DependentUpon>ADStatistic.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\reports\ADStatistic.aspx.designer.cs">
+      <DependentUpon>ADStatistic.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanter\Map.cs" />
+    <Compile Include="v2\intranetx\routeplanter\Road.cs" />
+    <Compile Include="v2\intranetx\routeplanter\RoutePlanerManager.cs" />
+    <Compile Include="v2\intranetx\search\LoginAndSearch.aspx.cs">
+      <DependentUpon>LoginAndSearch.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\search\LoginAndSearch.aspx.designer.cs">
+      <DependentUpon>LoginAndSearch.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\search\SearchTablet.aspx.cs">
+      <DependentUpon>SearchTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\search\SearchTablet.aspx.designer.cs">
+      <DependentUpon>SearchTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\search\Search.aspx.cs">
+      <DependentUpon>Search.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\search\Search.aspx.designer.cs">
+      <DependentUpon>Search.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\search\SearchRecord.cs" />
+    <Compile Include="v2\intranetx\session_transfer\SessionTransferDB2.aspx.cs">
+      <DependentUpon>SessionTransferDB2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\session_transfer\SessionTransferDB2.aspx.designer.cs">
+      <DependentUpon>SessionTransferDB2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\session_transfer\SessionTransfer.aspx.cs">
+      <DependentUpon>SessionTransfer.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\session_transfer\SessionTransfer.aspx.designer.cs">
+      <DependentUpon>SessionTransfer.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\session_transfer\SessionVar.asp.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\session_transfer\SessionVar.asp.designer.cs">
+      <DependentUpon>SessionVar.asp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\Test.aspx.cs">
+      <DependentUpon>Test.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\Test.aspx.designer.cs">
+      <DependentUpon>Test.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\Task.cs" />
+    <Compile Include="v2\intranetx\TestProgress.aspx.cs">
+      <DependentUpon>TestProgress.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\TestProgress.aspx.designer.cs">
+      <DependentUpon>TestProgress.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\TestSP.aspx.cs">
+      <DependentUpon>TestSP.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\TestSP.aspx.designer.cs">
+      <DependentUpon>TestSP.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\upload\SyncAkt.aspx.cs">
+      <DependentUpon>SyncAkt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\upload\SyncAkt.aspx.designer.cs">
+      <DependentUpon>SyncAkt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\upload\ReceiveUpload.aspx.cs">
+      <DependentUpon>ReceiveUpload.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\upload\ReceiveUpload.aspx.designer.cs">
+      <DependentUpon>ReceiveUpload.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\user\UserBrowser.aspx.cs">
+      <DependentUpon>UserBrowser.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\user\UserBrowser.aspx.designer.cs">
+      <DependentUpon>UserBrowser.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\user\UserAktionen.aspx.cs">
+      <DependentUpon>UserAktionen.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\user\UserAktionen.aspx.designer.cs">
+      <DependentUpon>UserAktionen.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\dv\DVRedirect.aspx.cs">
+      <DependentUpon>DVRedirect.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\dv\DVRedirect.aspx.designer.cs">
+      <DependentUpon>DVRedirect.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\util\EMailSender.cs" />
+    <Compile Include="v2\intranetx\util\FileSerializer.cs" />
+    <Compile Include="v2\intranetx\util\GlobalHtmlParams.cs" />
+    <Compile Include="v2\intranetx\util\GlobalUtilArea.cs" />
+    <Compile Include="v2\intranetx\util\GridExcelGenerator.cs" />
+    <Compile Include="v2\intranetx\util\GridViewExporter.cs" />
+    <Compile Include="v2\intranetx\util\ResponseHelper.cs" />
+    <Compile Include="v2\intranetx\werber\Werber.aspx.cs">
+      <DependentUpon>Werber.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\werber\Werber.aspx.designer.cs">
+      <DependentUpon>Werber.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\wfc\aktenint\GetData.svc.cs">
+      <DependentUpon>GetData.svc</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\wfc\aktenint\IGetData.cs" />
+    <Compile Include="v2\intranetx\WS\WsLookup.asmx.cs">
+      <DependentUpon>WsLookup.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\WS\WsInkasso.asmx.cs">
+      <DependentUpon>WsInkasso.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\WS\WsProgress.asmx.cs">
+      <DependentUpon>WsProgress.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\WS\WsTabletSync.asmx.cs">
+      <DependentUpon>WsTabletSync.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="includes\common\js\base.js.LCK" />
+    <None Include="includes\common\js\sigslot_core.js.LCK" />
+    <None Include="includes\common\js\utility.js.LCK" />
+    <None Include="includes\common\KT_common.asp.LCK" />
+    <None Include="includes\common\KT_config.inc.asp.LCK" />
+    <None Include="includes\common\KT_functions.inc.asp.LCK" />
+    <None Include="includes\common\lib\db\KT_FakeRecordset.asp.LCK" />
+    <None Include="includes\common\lib\db\KT_FakeRecordset.class.asp.LCK" />
+    <None Include="includes\common\lib\email\KT_Email.asp.LCK" />
+    <None Include="includes\common\lib\email\KT_Email.class.asp.LCK" />
+    <None Include="includes\common\lib\file_upload\KT_FileUpload.asp.LCK" />
+    <None Include="includes\common\lib\file_upload\KT_FileUpload.class.asp.LCK" />
+    <None Include="includes\common\lib\file_upload\KT_FileUploadFunctions.inc.asp.LCK" />
+    <None Include="includes\common\lib\folder\KT_Folder.asp.LCK" />
+    <None Include="includes\common\lib\folder\KT_Folder.class.asp.LCK" />
+    <None Include="includes\common\lib\image\KT_Image.asp.LCK" />
+    <None Include="includes\common\lib\image\KT_Image.class.asp.LCK" />
+    <None Include="includes\common\lib\image\KT_ImageUtil.aspx.LCK" />
+    <None Include="includes\common\lib\resources\KT_Resources.asp.LCK" />
+    <None Include="includes\common\lib\resources\KT_ResourcesFunctions.inc.asp.LCK" />
+    <None Include="includes\common\lib\shell\KT_Shell.asp.LCK" />
+    <None Include="includes\common\lib\shell\KT_Shell.class.asp.LCK" />
+    <None Include="includes\common\md5.js.LCK" />
+    <None Include="includes\mailtemplates\activate.html.LCK" />
+    <None Include="includes\mailtemplates\forgot.html.LCK" />
+    <None Include="includes\mailtemplates\welcome.html.LCK" />
+    <None Include="includes\mxi\MXI.asp.LCK" />
+    <None Include="includes\mxi\MXI_functions.inc.asp.LCK" />
+    <None Include="includes\mxi\MXI_Includes.class.asp.LCK" />
+    <None Include="includes\mxl\MXL_Recordset.asp.LCK" />
+    <None Include="includes\nav\NAV.asp.LCK" />
+    <None Include="includes\nav\NAV_Regular.class.asp.LCK" />
+    <None Include="includes\nav\NAV_Text_Navigation.inc.asp.LCK" />
+    <None Include="includes\nav\NAV_Text_Statistics.inc.asp.LCK" />
+    <None Include="includes\nxt\back.asp.LCK" />
+    <None Include="includes\nxt\KT_back.asp.LCK" />
+    <None Include="includes\nxt\scripts\form.js.asp.LCK" />
+    <None Include="includes\nxt\scripts\form.js.LCK" />
+    <None Include="includes\nxt\scripts\list.js.asp.LCK" />
+    <None Include="includes\nxt\scripts\list.js.LCK" />
+    <None Include="includes\qub\blank.html.LCK" />
+    <None Include="includes\qub\canvas.html.LCK" />
+    <None Include="includes\qub\dlgEditAlias.html.LCK" />
+    <None Include="includes\qub\dlgEditCondition.html.LCK" />
+    <None Include="includes\qub\dlgEditRelation.html.LCK" />
+    <None Include="includes\qub\dlgLoad.html.LCK" />
+    <None Include="includes\qub\dlgNewQuery.html.LCK" />
+    <None Include="includes\qub\dlgPrint.html.LCK" />
+    <None Include="includes\qub\dlgSave.html.LCK" />
+    <None Include="includes\qub\dlgSettings.html.LCK" />
+    <None Include="includes\qub\images\close_tab.gif.LCK" />
+    <None Include="includes\qub\images\column_fk.gif.LCK" />
+    <None Include="includes\qub\images\column_pk.gif.LCK" />
+    <None Include="includes\qub\images\delete.gif.LCK" />
+    <None Include="includes\qub\images\help.gif.LCK" />
+    <None Include="includes\qub\images\interakt.jpg.LCK" />
+    <None Include="includes\qub\images\new.gif.LCK" />
+    <None Include="includes\qub\images\next.gif.LCK" />
+    <None Include="includes\qub\images\nimic.gif.LCK" />
+    <None Include="includes\qub\images\open_tab.gif.LCK" />
+    <None Include="includes\qub\images\question1.gif.LCK" />
+    <None Include="includes\qub\images\relation_add.gif.LCK" />
+    <None Include="includes\qub\images\relation_rm.gif.LCK" />
+    <None Include="includes\qub\images\save.gif.LCK" />
+    <None Include="includes\qub\images\save_as.gif.LCK" />
+    <None Include="includes\qub\images\table_add.gif.LCK" />
+    <None Include="includes\qub\images\table_rm.gif.LCK" />
+    <None Include="includes\qub\images\top.gif.LCK" />
+    <None Include="includes\qub\images\topleft.gif.LCK" />
+    <None Include="includes\qub\images\topright.gif.LCK" />
+    <None Include="includes\qub\images\zoom_in.gif.LCK" />
+    <None Include="includes\qub\images\zoom_out.gif.LCK" />
+    <None Include="includes\qub\includes\canvas.js.LCK" />
+    <None Include="includes\qub\includes\chromeless.js.LCK" />
+    <None Include="includes\qub\includes\config.js.LCK" />
+    <None Include="includes\qub\includes\contextMenu.js.LCK" />
+    <None Include="includes\qub\includes\dragndrop.js.LCK" />
+    <None Include="includes\qub\includes\file.js.LCK" />
+    <None Include="includes\qub\includes\links.js.LCK" />
+    <None Include="includes\qub\includes\menu.js.LCK" />
+    <None Include="includes\qub\includes\mmdb.js.LCK" />
+    <None Include="includes\qub\includes\model.js.LCK" />
+    <None Include="includes\qub\includes\nifty.js.LCK" />
+    <None Include="includes\qub\includes\qub.js.LCK" />
+    <None Include="includes\qub\includes\querystring.js.LCK" />
+    <None Include="includes\qub\includes\sql.js.LCK" />
+    <None Include="includes\qub\includes\styles\canvas.css.LCK" />
+    <None Include="includes\qub\includes\styles\canvas_print.css.LCK" />
+    <None Include="includes\qub\includes\styles\dlg.css.LCK" />
+    <None Include="includes\qub\includes\styles\niftyCorners.css.LCK" />
+    <None Include="includes\qub\includes\styles\popup.css.LCK" />
+    <None Include="includes\qub\includes\styles\styles.css.LCK" />
+    <None Include="includes\qub\includes\table.js.LCK" />
+    <None Include="includes\qub\includes\tabsets.js.LCK" />
+    <None Include="includes\qub\includes\tohtml.js.LCK" />
+    <None Include="includes\qub\includes\utils.js.LCK" />
+    <None Include="includes\qub\includes\zoom.js.LCK" />
+    <None Include="includes\qub\index.html.LCK" />
+    <None Include="includes\qub\opener.html.LCK" />
+    <None Include="includes\qub\qub.html.LCK" />
+    <None Include="includes\qub\queryResult.html.LCK" />
+    <None Include="includes\qub\removess.html.LCK" />
+    <None Include="includes\qub\showQuery.html.LCK" />
+    <None Include="includes\qub\sqlRows.html.LCK" />
+    <None Include="includes\qub\syncTable.html.LCK" />
+    <None Include="includes\resources\calendar.js.LCK" />
+    <None Include="includes\resources\DB.res.asp.LCK" />
+    <None Include="includes\resources\Email.res.asp.LCK" />
+    <None Include="includes\resources\FakeRecordset.res.asp.LCK" />
+    <None Include="includes\resources\File.res.asp.LCK" />
+    <None Include="includes\resources\FileUpload.res.asp.LCK" />
+    <None Include="includes\resources\Folder.res.asp.LCK" />
+    <None Include="includes\resources\Image.res.asp.LCK" />
+    <None Include="includes\resources\language.txt.LCK" />
+    <None Include="includes\resources\MXI.res.asp.LCK" />
+    <None Include="includes\resources\NXT.res.asp.LCK" />
+    <None Include="includes\resources\Shell.res.asp.LCK" />
+    <None Include="includes\resources\tNG.res.asp.LCK" />
+    <None Include="includes\resources\tNG_FormValidation.res.asp.LCK" />
+    <None Include="includes\resources\WDG.res.asp.LCK" />
+    <None Include="includes\skins\aqua\images\button_big.gif.LCK" />
+    <None Include="includes\skins\aqua\images\button_small.gif.LCK" />
+    <None Include="includes\skins\aqua\images\button_smallest.gif.LCK" />
+    <None Include="includes\skins\aqua\images\cannot_thumbnail.gif.LCK" />
+    <None Include="includes\skins\aqua\images\down.gif.LCK" />
+    <None Include="includes\skins\aqua\images\error.gif.LCK" />
+    <None Include="includes\skins\aqua\images\img_not_found.gif.LCK" />
+    <None Include="includes\skins\aqua\images\up.gif.LCK" />
+    <None Include="includes\skins\aqua\images\warning.gif.LCK" />
+    <None Include="includes\skins\aqua\images\wdg_down.gif.LCK" />
+    <None Include="includes\skins\aqua\images\wdg_up.gif.LCK" />
+    <None Include="includes\skins\aqua\nav.css.LCK" />
+    <None Include="includes\skins\aqua\nxt.css.LCK" />
+    <None Include="includes\skins\aqua\preview.gif.LCK" />
+    <None Include="includes\skins\aqua\tng.css.LCK" />
+    <None Include="includes\skins\aqua\wdg.css.LCK" />
+    <None Include="includes\skins\arktic\images\bg.gif.LCK" />
+    <None Include="includes\skins\arktic\images\bg_sel.gif.LCK" />
+    <None Include="includes\skins\arktic\images\cannot_thumbnail.gif.LCK" />
+    <None Include="includes\skins\arktic\images\down.gif.LCK" />
+    <None Include="includes\skins\arktic\images\error.gif.LCK" />
+    <None Include="includes\skins\arktic\images\img_not_found.gif.LCK" />
+    <None Include="includes\skins\arktic\images\up.gif.LCK" />
+    <None Include="includes\skins\arktic\images\warning.gif.LCK" />
+    <None Include="includes\skins\arktic\images\wdg_down.gif.LCK" />
+    <None Include="includes\skins\arktic\images\wdg_up.gif.LCK" />
+    <None Include="includes\skins\arktic\nav.css.LCK" />
+    <None Include="includes\skins\arktic\nxt.css.LCK" />
+    <None Include="includes\skins\arktic\preview.gif.LCK" />
+    <None Include="includes\skins\arktic\tng.css.LCK" />
+    <None Include="includes\skins\arktic\wdg.css.LCK" />
+    <None Include="includes\skins\formal\images\cannot_thumbnail.gif.LCK" />
+    <None Include="includes\skins\formal\images\down.gif.LCK" />
+    <None Include="includes\skins\formal\images\error.gif.LCK" />
+    <None Include="includes\skins\formal\images\img_not_found.gif.LCK" />
+    <None Include="includes\skins\formal\images\up.gif.LCK" />
+    <None Include="includes\skins\formal\images\warning.gif.LCK" />
+    <None Include="includes\skins\formal\images\wdg_down.gif.LCK" />
+    <None Include="includes\skins\formal\images\wdg_up.gif.LCK" />
+    <None Include="includes\skins\formal\nav.css.LCK" />
+    <None Include="includes\skins\formal\nxt.css.LCK" />
+    <None Include="includes\skins\formal\preview.gif.LCK" />
+    <None Include="includes\skins\formal\tng.css.LCK" />
+    <None Include="includes\skins\formal\wdg.css.LCK" />
+    <None Include="includes\skins\garant\images\button_big.gif.LCK" />
+    <None Include="includes\skins\garant\images\button_small.gif.LCK" />
+    <None Include="includes\skins\garant\images\button_smallest.gif.LCK" />
+    <None Include="includes\skins\garant\images\cannot_thumbnail.gif.LCK" />
+    <None Include="includes\skins\garant\images\down.gif.LCK" />
+    <None Include="includes\skins\garant\images\error.gif.LCK" />
+    <None Include="includes\skins\garant\images\img_not_found.gif.LCK" />
+    <None Include="includes\skins\garant\images\up.gif.LCK" />
+    <None Include="includes\skins\garant\images\warning.gif.LCK" />
+    <None Include="includes\skins\garant\images\wdg_down.gif.LCK" />
+    <None Include="includes\skins\garant\images\wdg_up.gif.LCK" />
+    <None Include="includes\skins\garant\nav.css.LCK" />
+    <None Include="includes\skins\garant\nxt.css.LCK" />
+    <None Include="includes\skins\garant\preview.gif.LCK" />
+    <None Include="includes\skins\garant\tng.css.LCK" />
+    <None Include="includes\skins\garant\wdg.css.LCK" />
+    <None Include="includes\skins\kollection\images\cannot_thumbnail.gif.LCK" />
+    <None Include="includes\skins\kollection\images\down.gif.LCK" />
+    <None Include="includes\skins\kollection\images\error.gif.LCK" />
+    <None Include="includes\skins\kollection\images\img_not_found.gif.LCK" />
+    <None Include="includes\skins\kollection\images\up.gif.LCK" />
+    <None Include="includes\skins\kollection\images\warning.gif.LCK" />
+    <None Include="includes\skins\kollection\images\wdg_down.gif.LCK" />
+    <None Include="includes\skins\kollection\images\wdg_up.gif.LCK" />
+    <None Include="includes\skins\kollection\nav.css.LCK" />
+    <None Include="includes\skins\kollection\nxt.css.LCK" />
+    <None Include="includes\skins\kollection\preview.gif.LCK" />
+    <None Include="includes\skins\kollection\tng.css.LCK" />
+    <None Include="includes\skins\kollection\wdg.css.LCK" />
+    <None Include="includes\skins\none\nav.css.LCK" />
+    <None Include="includes\skins\none\nxt.css.LCK" />
+    <None Include="includes\skins\none\preview.gif.LCK" />
+    <None Include="includes\skins\none\tng.css.LCK" />
+    <None Include="includes\skins\none\wdg.css.LCK" />
+    <None Include="includes\tfi\TFI.asp.LCK" />
+    <None Include="includes\tfi\TFI_TableFilter.class.asp.LCK" />
+    <None Include="includes\tng\logs\2005-06.log" />
+    <None Include="includes\tng\logs\readme.txt.LCK" />
+    <None Include="includes\tng\pub\blank.html.LCK" />
+    <None Include="includes\tng\pub\tNG_download.asp.LCK" />
+    <None Include="includes\tng\scripts\FormValidation.js.asp.LCK" />
+    <None Include="includes\tng\scripts\FormValidation.js.LCK" />
+    <None Include="includes\tng\styles\cannot_thumbnail.gif.LCK" />
+    <None Include="includes\tng\styles\img_not_found.gif.LCK" />
+    <None Include="includes\tng\tNG.class.asp.LCK" />
+    <None Include="includes\tng\tNG.inc.asp.LCK" />
+    <None Include="includes\tng\tNG_config.inc.asp.LCK" />
+    <None Include="includes\tng\tNG_custom.class.asp.LCK" />
+    <None Include="includes\tng\tNG_delete.class.asp.LCK" />
+    <None Include="includes\tng\tNG_dispatcher.class.asp.LCK" />
+    <None Include="includes\tng\tNG_error.class.asp.LCK" />
+    <None Include="includes\tng\tNG_fields.class.asp.LCK" />
+    <None Include="includes\tng\tNG_functions.inc.asp.LCK" />
+    <None Include="includes\tng\tNG_insert.class.asp.LCK" />
+    <None Include="includes\tng\tNG_log.class.asp.LCK" />
+    <None Include="includes\tng\tNG_login.class.asp.LCK" />
+    <None Include="includes\tng\tNG_multiple.class.asp.LCK" />
+    <None Include="includes\tng\tNG_multipleDelete.class.asp.LCK" />
+    <None Include="includes\tng\tNG_multipleInsert.class.asp.LCK" />
+    <None Include="includes\tng\tNG_multipleUpdate.class.asp.LCK" />
+    <None Include="includes\tng\tNG_update.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_CheckDetailRecord.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_CheckMasterRecord.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_CheckTableField.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_CheckUnique.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_defTrigg.inc.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_DeleteDetailRec.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_Email.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_EmailPageSection.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_EmailRecordset.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_FileDelete.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_FileUpload.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_FormValidation.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_ImageUpload.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_LinkedTrans.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_Logout.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_Redirect.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_RestrictAccess.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_SetOrderField.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_ThrowError.class.asp.LCK" />
+    <None Include="includes\tng\triggers\tNG_UserLoggedIn.class.asp.LCK" />
+    <None Include="includes\tor\TOR.asp.LCK" />
+    <None Include="includes\tor\TOR_SetOrder.class.asp.LCK" />
+    <None Include="includes\tso\TSO.asp.LCK" />
+    <None Include="includes\tso\TSO_TableSorter.class.asp.LCK" />
+    <None Include="includes\wdg\calendar\calendar-setup_stripped.js.LCK" />
+    <None Include="includes\wdg\calendar\calendar-win2k-1.css.LCK" />
+    <None Include="includes\wdg\calendar\calendar_stripped.js.LCK" />
+    <None Include="includes\wdg\calendar\menuarrow.gif.LCK" />
+    <None Include="includes\wdg\calendar\menuarrow2.gif.LCK" />
+    <None Include="includes\wdg\classes\MXWidgets.js.php" />
+    <None Include="includes\wdg\WDG.asp.LCK" />
+    <None Include="includes\wdg\WDG_functions.inc.asp.LCK" />
+    <None Include="includes\wdg\WDG_recordInsert.asp.LCK" />
+    <None Include="includes\widgets\lang\calendar.lng" />
+    <Content Include="Log4Net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Service References\GeocodeService\GeocodeService.wsdl" />
+    <None Include="Service References\GeocodeService\GeocodeService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\GeocodeService\GeocodeService1.wsdl" />
+    <None Include="Service References\GeocodeService\GeocodeService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\GeocodeService\GeocodeService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\GeocodeService\GeocodeService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\GeocodeService\GeocodeService4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\SearchService\dev.wsdl" />
+    <None Include="Service References\SearchService\dev.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\SearchService\dev1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\SearchService\dev2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\SearchService\schemas.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\SearchService\schemas1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\SearchService\SearchService.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Database\Database.csproj">
+      <Project>{1F23BAED-3CF6-43B9-ACAC-06600A0104E6}</Project>
+      <Name>Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HTBAktLayer\HTBAktLayer.csproj">
+      <Project>{B8F838C7-DFFC-4824-9363-6CE08B3AAE8C}</Project>
+      <Name>HTBAktLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HTBAntColonyTSP\HTBAntColonyTSP.csproj">
+      <Project>{DBB44A1B-C29D-4DF5-A97A-08F422FBA209}</Project>
+      <Name>HTBAntColonyTSP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HTBDailyKosten\HTBDailyKosten.csproj">
+      <Project>{82DC419C-4FAD-4AC7-9EE7-025471028922}</Project>
+      <Name>HTBDailyKosten</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HTBExcel\HTBExcel.csproj">
+      <Project>{857654AB-F66A-413D-9BE8-DBBD6BEEA278}</Project>
+      <Name>HTBExcel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HTBExtras\HTBExtras.csproj">
+      <Project>{3E96FB09-2A67-4446-A908-8253ABBB9A3E}</Project>
+      <Name>HTBExtras</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HTBReports\HTBReports.csproj">
+      <Project>{8731BC94-BD61-41AD-976F-71D596B372CB}</Project>
+      <Name>HTBReports</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HTBUtilities\HTBUtilities.csproj">
+      <Project>{8415C6F7-C4D0-4EDE-9FA1-AA2AE3C0BE0B}</Project>
+      <Name>HTBUtilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InvoiceManager\InvoiceManager.csproj">
+      <Project>{A1B4D4FD-E378-4411-9A7C-6D0368C8EF42}</Project>
+      <Name>InvoiceManager</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\GeocodeService\" />
+    <WCFMetadataStorage Include="Service References\ImageryService\" />
+    <WCFMetadataStorage Include="Service References\RouteService\" />
+    <WCFMetadataStorage Include="Service References\SearchService\" />
+    <WCFMetadataStorage Include="Service References\TabletService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="TripOptimizerLib">
+      <Guid>{C1000CF7-74C6-4576-A0DC-67540A187138}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="v2\intranetx\documents\" />
+    <Folder Include="v2\intranetx\upload\tablet\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>False</AutoAssignPort>
+          <DevelopmentServerPort>57464</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:57464/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

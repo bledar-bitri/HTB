@@ -1,0 +1,153 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using HTB.Database;
+using HTB.v2.intranetx.util;
+using HTBUtilities;
+
+namespace HTB.v2.intranetx.aktenint
+{
+    public partial class EditBooking : System.Web.UI.Page
+    {
+        private bool _isNew = true;
+        private tblAktenInt _akt;
+        private tblAktenIntPos _pos;
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            int aktId = GlobalUtilArea.GetZeroIfConvertToIntError(Request[GlobalHtmlParams.INTERVENTION_AKT]);
+            if(aktId <= 0)
+            {
+                ctlMessage.ShowError("Kein Aktenzaht!");
+                return;
+            }
+            _akt = HTBUtils.GetInterventionAkt(aktId);
+            if(_akt == null)
+            {
+                ctlMessage.ShowError("Akt Nicht Gefunden!");
+                return;
+            }
+
+            int posId = GlobalUtilArea.GetZeroIfConvertToIntError(Request[GlobalHtmlParams.ID]);
+            if(posId > 0)
+            {
+                _pos = (tblAktenIntPos)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAktenIntPos WHERE AktIntPosID = " + posId, typeof(tblAktenIntPos));
+                if (_pos != null)
+                    _isNew = false;
+            }
+            if (!IsPostBack)
+            {
+                GlobalUtilArea.LoadDropdownList(ddlInvoiceType, "SELECT * FROM tblAktenIntPosType", typeof (tblAktenIntPosType),
+                                                "AktIntPosTypeCode",
+                                                "AktIntPosTypeCaption", false);
+                SetValues();
+            }
+        }
+
+        private void SetValues()
+        {
+            if(_pos == null)
+            {
+                _pos = new tblAktenIntPos();
+            }
+            
+            lblAktID.Text = _akt.AktIntID.ToString();
+            txtPosNr.Text = _pos.AktIntPosNr;
+            txtPosDate.Text = _isNew ? DateTime.Now.ToShortDateString() : _pos.AktIntPosDatum.ToShortDateString();
+            txtCaption.Text = _pos.AktIntPosCaption;
+            txtAmount.Text = HTBUtils.FormatCurrencyNumber(_pos.AktIntPosBetrag);
+            txtDueDate.Text = _isNew ? DateTime.Now.ToShortDateString() : _pos.AktIntPosDueDate.ToShortDateString();
+            txtTrasnferDate.Text = _isNew ? DateTime.Now.ToShortDateString() : _pos.AktIntPosTransferredDate.ToShortDateString();
+
+            if(_pos.AktIntPosTypeCode > 0)
+            {
+                try
+                {
+                    ddlInvoiceType.SelectedValue = _pos.AktIntPosTypeCode.ToString();
+                }
+                catch
+                {
+                    ctlMessage.ShowError("WRONG !");
+                }
+            }
+            
+        }
+
+        private void GetValues()
+        {
+            if (_pos == null)
+            {
+                _pos = new tblAktenIntPos();
+            }
+
+            lblAktID.Text = _akt.AktIntID.ToString();
+            _pos.AktIntPosAkt = _akt.AktIntID;
+            _pos.AktIntPosTypeCode = GlobalUtilArea.GetZeroIfConvertToIntError(ddlInvoiceType.SelectedValue);
+
+            _pos.AktIntPosNr = txtPosNr.Text;
+            _pos.AktIntPosDatum = GlobalUtilArea.GetDefaultDateIfConvertToDateError(txtPosDate);
+            _pos.AktIntPosCaption = txtCaption.Text;
+            _pos.AktIntPosBetrag = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtAmount);
+
+            _pos.AktIntPosDueDate = GlobalUtilArea.GetDefaultDateIfConvertToDateError(txtDueDate);
+            _pos.AktIntPosTransferredDate = GlobalUtilArea.GetDefaultDateIfConvertToDateError(txtTrasnferDate);
+            NormalizeInput();
+        }
+
+        private void ClearScreen()
+        {
+            _pos = null;
+            _isNew = true;
+            SetValues();
+            ctlMessage.Clear();
+        }
+
+        private void NormalizeInput()
+        {
+            if (_pos == null)
+                return;
+
+            if (_pos.AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_ORIGINAL ||
+                _pos.AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_COLLECTION_INVOICE ||
+                _pos.AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_CLIENT_COST ||
+                _pos.AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_INSURANCE
+                )
+            {
+                if (_pos.AktIntPosBetrag < 0)
+                    _pos.AktIntPosBetrag *= -1;
+            }
+            else if (_pos.AktIntPosBetrag > 0)
+                _pos.AktIntPosBetrag *= -1;
+
+        }
+
+        #region Event Handlers
+        protected void btnSubmit_Click(object sender, EventArgs e)
+        {
+            GetValues();
+            try
+            {
+                bool ok = _isNew ? RecordSet.Insert(_pos) : RecordSet.Update(_pos);
+
+                if (ok)
+                {
+                    var message = "Erfolg: [" + HTBUtils.FormatCurrency(_pos.AktIntPosBetrag) + "] " + (_isNew ? " Neue Buchung " : " Buchung Ge&auml;ndert");
+                    ClearScreen();
+                    ctlMessage.ShowSuccess(message);
+                }
+            }
+            catch(Exception ex)
+            {
+                ctlMessage.ShowException(ex);
+            }
+        }
+
+        //protected void btnCancel_Click(object sender, EventArgs e)
+        //{
+        //}
+#endregion
+    }
+}

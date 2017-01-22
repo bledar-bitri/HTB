@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3E96FB09-2A67-4446-A908-8253ABBB9A3E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HTBExtras</RootNamespace>
+    <AssemblyName>HTBExtras</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FileHelpers, Version=3.1.5.0, Culture=neutral, PublicKeyToken=3e0c08d59cc3d657, processorArchitecture=MSIL">
+      <HintPath>..\packages\FileHelpers.3.1.5\lib\net40\FileHelpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActionRecord.cs" />
+    <Compile Include="AktDocument.cs" />
+    <Compile Include="AktDocumentComparer.cs" />
+    <Compile Include="AktIntAmounts.cs" />
+    <Compile Include="AktIntForderungPrintLine.cs" />
+    <Compile Include="AussendienstCollectedRecord.cs" />
+    <Compile Include="AussendienstCollectedRecordComparer.cs" />
+    <Compile Include="AktIntShortRecord.cs" />
+    <Compile Include="ImportRecords\AlektumInkasso.cs" />
+    <Compile Include="VisitRecord.cs" />
+    <Compile Include="InvoiceIdAndAmountRecord.cs" />
+    <Compile Include="KingBill\Aktion.cs" />
+    <Compile Include="KingBill\InkassoActionRecord.cs" />
+    <Compile Include="KingBill\InkassoActionRecordComparer.cs" />
+    <Compile Include="KingBill\InkassoAkt.cs" />
+    <Compile Include="KingBill\InkassoAktDokument.cs" />
+    <Compile Include="KingBill\InkassoAktResponse.cs" />
+    <Compile Include="KingBill\InkassoAktStatusResponse.cs" />
+    <Compile Include="UbergebeneAktenRecordList.cs" />
+    <Compile Include="UbergebeneAktenRecordComparer.cs" />
+    <Compile Include="UbergebeneAktenRecord.cs" />
+    <Compile Include="KlientTransferRecordComparer.cs" />
+    <Compile Include="KlientTransferRecord.cs" />
+    <Compile Include="StatisticRecordComparer.cs" />
+    <Compile Include="DateComparer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProvisionRecord.cs" />
+    <Compile Include="StatisticRecord.cs" />
+    <Compile Include="XML\XmlInterventionAkt2.cs" />
+    <Compile Include="XML\XmlFieldPerson.cs" />
+    <Compile Include="XML\XmlJournalRecord.cs" />
+    <Compile Include="XML\XmlSearchResponseRecord.cs" />
+    <Compile Include="XML\XmlChangedAktsResponseRecord.cs" />
+    <Compile Include="XML\XmlChangedAktsRequestRecord.cs" />
+    <Compile Include="XML\XmlAktTypeIntRecord.cs" />
+    <Compile Include="XML\XmlGegner2Address.cs" />
+    <Compile Include="XML\XmlGegner2Phone.cs" />
+    <Compile Include="XML\XmlGegnerAddress.cs" />
+    <Compile Include="XML\XmlGegnerPhone.cs" />
+    <Compile Include="XML\XmlPhoneType.cs" />
+    <Compile Include="XML\XmlRoadRecord.cs" />
+    <Compile Include="XML\XmlLoginRecord.cs" />
+    <Compile Include="XML\XmlAktInstallmentCalcRecord.cs" />
+    <Compile Include="XML\XmlAktInstallmentRecord.cs" />
+    <Compile Include="XML\XmlInterventionAkt.cs" />
+    <Compile Include="XML\XmlPrintableReceiptRecord.cs" />
+    <Compile Include="XML\XmlRoadAktRecord.cs" />
+    <Compile Include="XML\XmlTelAndEmailRecord.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Database\Database.csproj">
+      <Project>{1F23BAED-3CF6-43B9-ACAC-06600A0104E6}</Project>
+      <Name>Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HTBUtilities\HTBUtilities.csproj">
+      <Project>{8415C6F7-C4D0-4EDE-9FA1-AA2AE3C0BE0B}</Project>
+      <Name>HTBUtilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

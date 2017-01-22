@@ -1,0 +1,122 @@
+﻿body {
+}
+.tblCol1 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	font-weight: bold;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-right-style: none;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-bottom-color: #999999;
+	border-left-color: #999999;
+	color: #000000;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #999999;
+	cursor: pointer;
+	background-image: url(../images/hdbackgrey.gif);
+}
+.tblCol2 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	font-weight: bold;
+	border-bottom-width: 1px;
+	border-right-style: none;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-bottom-color: #999999;
+	color: #000000;
+	border-left-width: 1px;
+	border-left-color: #999999;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #999999;
+	cursor: pointer;
+	background-image: url(../images/hdbackgrey.gif);
+}
+.tblCol3 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	font-weight: bold;
+	border-bottom-width: 1px;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-bottom-color: #999999;
+	color: #000000;
+	border-left-width: 1px;
+	border-left-color: #999999;
+	border-right-width: 1px;
+	border-right-color: #999999;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #999999;
+	cursor: auto;
+	background-image: url(../images/hdbackgrey.gif);
+	cursor:pointer;
+}
+.tblData1 {
+
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	font-weight: normal;
+	background-color: #FFFFFF;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-right-style: none;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-bottom-color: #999999;
+	border-left-color: #999999;
+	color: #000000;
+}
+.tblData12
+{
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 8pt;
+    font-weight: normal;
+    background-color: oldlace;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-right-style: none;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-bottom-color: #999999;
+    border-left-color: #999999;
+    color: #000000;
+}
+.tblData2 {
+
+
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	font-weight: normal;
+	background-color: #FFFFFF;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-right-style: none;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-bottom-color: #999999;
+	border-left-color: #999999;
+	color: #000000;
+}
+.tblData3 {
+
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	font-weight: normal;
+	background-color: #FFFFFF;
+	border-bottom-width: 1px;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-bottom-color: #999999;
+	color: #000000;
+	border-left-width: 1px;
+	border-left-color: #999999;
+	border-right-width: 1px;
+	border-right-color: #999999;
+}

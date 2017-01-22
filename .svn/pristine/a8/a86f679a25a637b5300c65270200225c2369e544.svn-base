@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="HTB">
+</Property><Property Name="Solution File" Value="C:\Source\CSharp\HTB\HTB.sln">
+</Property><Property Name="Date" Value="Freitag, 21. Oktober 2011">
+</Property><Property Name="Time" Value="09:20:35">
+</Property></Properties><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\VWGSample.csproj" Description="Project file successfully backed up as C:\Source\CSharp\HTB\Backup\VWGSample.csproj">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\VWGSample.csproj.user" Description="Project user file successfully backed up as C:\Source\CSharp\HTB\Backup\VWGSample.csproj.user">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\Form3.cs" Description="File successfully backed up as C:\Source\CSharp\HTB\Backup\Form3.cs">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\Form3.Designer.cs" Description="File successfully backed up as C:\Source\CSharp\HTB\Backup\Form3.Designer.cs">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\Properties\AssemblyInfo.cs" Description="File successfully backed up as C:\Source\CSharp\HTB\Backup\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\WebForm1.aspx.cs" Description="File successfully backed up as C:\Source\CSharp\HTB\Backup\WebForm1.aspx.cs">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\WebForm1.aspx.designer.cs" Description="File successfully backed up as C:\Source\CSharp\HTB\Backup\WebForm1.aspx.designer.cs">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\WebForm2.aspx.cs" Description="File successfully backed up as C:\Source\CSharp\HTB\Backup\WebForm2.aspx.cs">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\WebForm2.aspx.designer.cs" Description="File successfully backed up as C:\Source\CSharp\HTB\Backup\WebForm2.aspx.designer.cs">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\Web.config" Description="File successfully backed up as C:\Source\CSharp\HTB\Backup\Web.config">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\Readme.txt" Description="File successfully backed up as C:\Source\CSharp\HTB\Backup\Readme.txt">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\Resources\Images\ajax-loader.gif" Description="File successfully backed up as C:\Source\CSharp\HTB\Backup\Resources\Images\ajax-loader.gif">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\WebForm1.aspx" Description="File successfully backed up as C:\Source\CSharp\HTB\Backup\WebForm1.aspx">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\WebForm2.aspx" Description="File successfully backed up as C:\Source\CSharp\HTB\Backup\WebForm2.aspx">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\Form3.resx" Description="File successfully backed up as C:\Source\CSharp\HTB\Backup\Form3.resx">
+</Event><Event ErrorLevel="0" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\VWGSample.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="VWGSample" Source="..\..\..\temp\ASPPageBoxLoadingSample\VWGSample.csproj" Description="Converted">
+</Event><Event ErrorLevel="2" Project="" Source="..\..\..\temp\ASPPageBoxLoadingSample\VWGSample.csproj" Description="The project file 'C:\temp\ASPPageBoxLoadingSample\VWGSample.csproj' cannot be opened.&#xA;&#xA;The project type is not supported by this installation.">
+</Event></UpgradeLog>

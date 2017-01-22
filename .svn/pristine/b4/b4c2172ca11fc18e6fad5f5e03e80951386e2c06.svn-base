@@ -1,0 +1,142 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1">
+    <title>Auftragsbest&auml;tigung</title>
+    <link href="http://htb.ecp.or.at/v2/intranet/styles/inksys.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        body
+        {
+            margin-left: 5px;
+            margin-top: 5px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        a:link
+        {
+            color: #CC0000;
+        }
+        a:visited
+        {
+            color: #CC0000;
+        }
+        a:hover
+        {
+            color: #CC0000;
+        }
+        a:active
+        {
+            color: #CC0000;
+        }
+        
+        OPTION.dis
+        {
+            background-color: white;
+            color: #999999;
+        }
+        
+        .modalBackground
+        {
+            background-color: #CCCCCC;
+            filter: alpha(opacity=40);
+            opacity: 0.5;
+        }
+        
+        .ModalWindow
+        {
+            border: solid1px#c0c0c0;
+            background: #f0f0f0;
+            padding: 0px10px10px10px;
+            position: absolute;
+            top: -1000px;
+        }
+    </style>
+</head>
+<body>
+    <table width="100%" border="0" cellspacing="0" cellpadding="1">
+        <tr>
+            <td bgcolor="#000000">
+                <table width="100%" border="0" cellpadding="3" cellspacing="0" bgcolor="#FFFFFF">
+                    <tr>
+                        <td align="right" valign="middle">
+                            <img src="http://htb.ecp.or.at/v2/intranet/images/Logo2x2.png" width="125" height="125" alt="" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                        <td>
+                            <font face="calibri" size="+3" color="blue"><strong>EUROPEAN CAR PROTECT</strong></font><br />
+                            <font face="calibri" size="+2" color="blue"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;INKASSO-SERVICE</strong></font>
+                        </td>
+                        <td>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <font face="calibri">
+                                <br />
+                                Sehr geehrte Damen und Herren,
+                                <br />
+                                <br />
+                                im Anhang finden Sie das unterschriebene Ratenansuchen f&uuml;r Aktenzahl: [akt]. </font>
+                            <br />
+                            <p>
+                                <font face="calibri" color="black">Mit freundlichen Gr&uuml;&szlig;en,<br />
+                                    Ihr ECP Team </font>
+                            </p>
+                            <p>
+                                ECP European Car Protect KG<br />
+                                Schwarzparkstra&szlig;e 15, A-5020 Salzburg<br />
+                                <table>
+                                <tr>
+                                    <td>
+                                        [p]
+                                    </td>
+                                    <td>
+                                        +43 662 203410
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        [f]
+                                    </td>
+                                    <td>
+                                        +43 662 203410-90
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        [@]
+                                    </td>
+                                    <td>
+                                        <a href="mailto:office@ecp.or.at"><span style='color: blue'>office@ecp.or.at</span></a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        [http]
+                                    </td>
+                                    <td>
+                                        <a href="http://www.ecp.or.at/"><span style='color: blue'>www.ecp.or.at</span></a>
+                                    </td>
+                                </tr>
+                                </table>
+                            </p>
+                            <p>
+                                <span style='font-size: 6.0pt; font-family: "Arial","sans-serif"; color: #000000;'>Diese E-Mail und eventuell vorhandene Dateianh&auml;nge k&ouml;nnen vertrauliche und/oder rechtlich
+                                    gesch&uuml;tzte Informationen enthalten. Wenn Sie nicht der richtige Adressat sind oder diese E-Mail irrt&uuml;mlich erhalten haben, informieren Sie bitte sofort den Absender
+                                    und vernichten Sie diese Mail mit allen enthaltenen Informationen. Das unerlaubte Kopieren, Weiterleiten, Verbreiten oder Verwenden dieser Mail und deren Inhalte
+                                    ist nicht gestattet.</span></p>
+                            <p>
+                                <span style='font-size: 6.0pt; font-family: "Arial","sans-serif";'>&nbsp;</span></p>
+                            <p>
+                                <span style='font-size: 6.0pt; font-family: "Arial","sans-serif";'>This e-mail and any attachment may contain confidential and/or proprietary information. If you are
+                                    not the intended recipient (or habe received this e-mail in error), please notify the sender immediately and destroy this e-mail an dall of the contained information.
+                                    Any unauthorised copying, transmitting, distribution and dispose of any content in this e-mail is strictly forbidden.</span></p>
+                            <p>
+                                &nbsp;</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

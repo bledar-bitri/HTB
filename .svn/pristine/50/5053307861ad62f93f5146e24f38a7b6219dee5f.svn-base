@@ -1,0 +1,592 @@
+﻿using System;
+using System.IO;
+using HTB.Database.HTB.StoredProcs;
+using HTBPdf;
+using HTBUtilities;
+using iTextSharp.text;
+using System.Collections;
+using HTB.Database;
+using System.Data;
+using HTB.Database.Views;
+
+namespace HTBReports
+{
+    public class AuftragReceipt
+    {
+        private int _col;
+        private int _col1;
+        private int _col2;
+        private int _col3;
+        private int _col4;
+        private int _col5;
+        private int _col6;
+        private int _col7;
+        private const int MaxLines = 2550;
+        private int _maxGegnerNameLengthLine;
+        private int _startLine;
+        private int _lin;
+        private int _gap;
+        private int _normalGap;
+        private double _totalAmount;
+
+        private readonly string _logoPath = HTBUtils.GetConfigValue("LogoPath_Mahnung");
+        private ECPPdfWriter _writer;
+        private ReportParameters _parameters;
+        private tblKlient _klient;
+        private tblAuftraggeber _ag;
+        private bool _isClient = true;
+
+        public ArrayList RecordsList { get; set; }
+
+        public void GenerateClientReceipt(ReportParameters parameters, Stream os)
+        {
+            _parameters = parameters;
+            _klient = (tblKlient)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblKlient WHERE KlientId = " + parameters.StartKlient, typeof(tblKlient));
+            _isClient = true;
+            // let the caller handle exceptions
+            //if (klient == null)
+            //    return;
+
+            Init(os);
+            PrintCoverPage();
+            
+            _writer.newPage();
+            LoadRecordsList();
+            PrintPageHeader(_writer);
+            PrintRecordsList(RecordsList);
+            PrintTotals();
+            _writer.Close();
+        }
+        public void GenerateAgReceipt(ReportParameters parameters, Stream os)
+        {
+            _parameters = parameters;
+            _ag = (tblAuftraggeber)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeber WHERE AuftraggeberID = " + parameters.StartAuftraggeber, typeof(tblAuftraggeber));
+            _isClient = false;
+            // let the caller handle exceptions
+            //if (klient == null)
+            //    return;
+
+            Init(os);
+            PrintCoverPage();
+
+            _writer.newPage();
+            LoadRecordsList();
+            PrintPageHeader(_writer);
+            PrintRecordsList(RecordsList);
+            PrintTotals();
+            _writer.Close();
+        }
+        
+        private void Init(Stream os)
+        {
+            _totalAmount = 0;
+            _startLine = 400;
+            _lin = _startLine;
+            _normalGap = 37;
+            _gap = _normalGap;
+            _col = 400;
+            _col1 = _col + 33;
+
+            _col2 = 150;         // this is the actual start columng (col 1)
+            _col3 = _col2 + 320;  // Auftragsnummer
+            _col4 = _col3 + 600;  // Gegnername
+            _col5 = _col4 + 450;  // Betreff
+            _col6 = _col5 + 200;  // Kapital
+            _col7 = _col6 + 200;  // Uebergabe
+            
+            _maxGegnerNameLengthLine = 20;
+
+            _writer = new ECPPdfWriter();
+            _writer.setFormName("A4");
+            _writer.open(os);
+        }
+
+        private void PrintCoverPage()
+        {
+            _writer.PrintLeftEcpInfo();
+            PrintPageHeader(_writer, false);
+
+            if (_isClient)
+                PrintClientCoverPage();
+            else
+                PrintAgCoverPage();
+
+            _lin += _gap * 2;
+            _writer.print((_lin += _gap), _col1, "wir möchten Ihnen für die Übermittlung Ihrer Daten");
+            _writer.print((_lin += _gap), _col1, "und das in unser Unternehmen gesetzte Vertrauen danken.");
+            _lin += _gap;
+            _writer.print((_lin += _gap), _col1, "Ihre Auftragsnummer zu den jeweiligen Akten,");
+            _writer.print((_lin += _gap), _col1, "entnehmen Sie bitte dem beiliegenden Schreiben.");
+            _lin += _gap * 3;
+            _writer.print((_lin += _gap), _col1, "Mit freundlichen Grüßen,");
+            _lin += _gap;
+            _writer.print((_lin += _gap), _col1, "E.C.P. European Car Protect KG");
+            
+        }
+        
+        private void PrintRecordsList(ArrayList list)
+        {
+            if (_isClient)
+                PrintClientRecordsList(list);
+            else
+                PrintAgRecordsList(list);
+        }
+
+        private void PrintPageHeader(ECPPdfWriter writer, bool printHeadings = true) 
+        {
+            if(_isClient)
+                PrintClientPageHeader(writer, printHeadings);
+            else
+                PrintAgPageHeader(writer, printHeadings);
+        }
+
+        private void PrintParametersInHeader()
+        {
+            if(_isClient)
+                PrintClientParametersInHeader();
+            else
+                PrintAgParametersInHeader();
+        }
+
+        #region Client
+
+        private void PrintClientCoverPage()
+        {
+            var klient = (tblKlient)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblKlient WHERE KlientId = " + _parameters.StartKlient, typeof(tblKlient));
+            if (klient != null)
+            {
+                _writer.setFont("Calibri", 8);
+                _writer.print((_lin += _gap), _col1, "E.C.P. European Car Protect KG");
+                _writer.print((_lin += _gap), _col1, "Schwarzparkstrasse 15   A 5020 Salzburg");
+                _writer.drawLine(_lin + 30, _col1, _lin + 30, _col1 + 465);
+                _lin += _gap;
+                _writer.setFont("Calibri", 11);
+                _writer.print((_lin += _gap), _col1, klient.KlientName1);
+                _writer.print((_lin += _gap), _col1, klient.KlientName2);
+                bool printAnsprechpartner = true;
+                tblUser user = null;
+                if (_parameters.KlientSB > 0)
+                {
+                    user = HTBUtils.GetUser(_parameters.KlientSB);
+                    if (user != null)
+                    {
+                        _writer.print((_lin += _gap), _col1, "z.H.  " + (user.UserSex == 1 ? "Herr ":"Frau ") + user.UserVorname+ " " + user.UserNachname);
+                        printAnsprechpartner = false;
+                    }
+                }
+                tblAnsprechpartner contact = null;
+                if (printAnsprechpartner)
+                {
+                    contact = (tblAnsprechpartner) HTBUtils.GetSqlSingleRecord( "SELECT * FROM tblAnsprechpartner WHERE AnsprechKlient = " + _parameters.StartKlient, typeof (tblAnsprechpartner));
+                    if (contact != null)
+                    {
+                        _writer.print((_lin += _gap), _col1, "z.H.  " + contact.AnsprechTitel + " " + contact.AnsprechVorname + " " + contact.AnsprechNachname);
+                    }
+                }
+
+                _writer.print((_lin += _gap), _col1, klient.KlientStrasse);
+                _writer.print((_lin += _gap), _col1, klient.KlientLKZ + " - " + klient.KlientPLZ + " " + klient.KlientOrt);
+                _writer.print((_lin += _gap), _col + 1600, "Salzburg, am " + DateTime.Now.ToShortDateString(), 'R');
+                _lin += _gap * 5;
+                _writer.setFont("Calibri", 11, true, false, false);
+                _writer.print((_lin += _gap), _col1, "Betreff: Auftragsbestätigung");
+                _writer.setFont("Calibri", 11);
+                _lin += _gap * 3;
+                if (!printAnsprechpartner)
+                {
+                    _writer.print((_lin += _gap), _col1, (user.UserSex == 1 ? "Sehr geehrter Herr " :  "Sehr geehrte Frau ")+ user.UserNachname);
+                }
+                else if (contact != null)
+                {
+                    if (contact.AnsprechTitel.Trim().ToUpper() == "HERR")
+                    {
+                        _writer.print((_lin += _gap), _col1, "Sehr geehrter Herr " + contact.AnsprechNachname);
+                    }
+                    else
+                    {
+                        _writer.print((_lin += _gap), _col1, "Sehr geehrte " + contact.AnsprechTitel + " " + contact.AnsprechNachname);
+                    }
+                }
+                else
+                {
+                    _writer.print((_lin += _gap), _col1, "Sehr geehrte Damen und Herren");
+                }
+            }
+        }
+        
+        private void PrintClientPageHeader(ECPPdfWriter writer, bool printHeadings = true)
+        {
+            writer.drawBitmap(350, _col, Image.GetInstance(_logoPath), 40);
+            for (int i = 0; i < 3; i++)
+            {
+                writer.setFont("Arial", 22, true, false, false);
+                writer.print(50, _col + 1600 + i, "EUROPEAN CAR PROTECT", 'R', BaseColor.BLUE); // give it a bolder look
+                writer.setFont("Arial", 16, true, false, false);
+                writer.print(120, _col + 1600 + i, "INKASSO-SERVICE", 'R', BaseColor.BLUE); // give it a bolder look
+            }
+            if (printHeadings)
+            {
+                _lin = _startLine;
+                writer.setFont("Arial", 8, false, false, false);
+                writer.print(_lin-100, _col7, "Datum: "+DateTime.Now.ToShortDateString(), 'R');
+
+                PrintParametersInHeader();
+                writer.setFont("Arial", 10, true, false, false);
+                writer.print(_lin + 10, _col2 + (_col3 - _col2) / 2, "Auftragsnummer", 'C');
+                writer.print(_lin + 10, _col3 + (_col4 - _col3) / 2, "Schuldnername", 'C');
+                writer.print(_lin + 10, _col4 + (_col5 - _col4) / 2, "Betreff", 'C');
+                writer.print(_lin + 10, _col5 + (_col6 - _col5) / 2, "Kapital", 'C');
+                writer.print(_lin + 10, _col6 + (_col7 - _col6) / 2, "Übergabe", 'C');
+
+                writer.drawRect(_lin, _col2, _lin + _gap + 20, _col7);    // heading rectangle
+                writer.drawLine(_lin, _col3, _lin + _gap + 20, _col3);    // vertical lines
+                writer.drawLine(_lin, _col4, _lin + _gap + 20, _col4);
+                writer.drawLine(_lin, _col5, _lin + _gap + 20, _col5);
+                writer.drawLine(_lin, _col6, _lin + _gap + 20, _col6);
+            }
+            _lin += _gap + 20;
+            
+        }
+
+        private void PrintClientParametersInHeader()
+        {
+            _writer.setFont("Arial", 12, true, false, false);
+            int gap = _normalGap + 10;
+            int leftCol = _col2 + (_col7 - _col2) / 2; // Middle Point
+            leftCol -= 200;
+            int rightCol = leftCol + 20; 
+            if (_klient != null)
+            {
+                _writer.print(_lin, leftCol, "Auftraggeber:", 'R');
+                _writer.print(_lin, rightCol, _klient.KlientName1);
+                _lin += gap;
+            }
+            if (_parameters.StartDate == _parameters.EndDate)
+            {
+                _writer.print(_lin, leftCol, "Übergabe:", 'R');
+                _writer.print(_lin, rightCol, _parameters.StartDate.ToShortDateString());
+                _lin += gap;
+            }
+            else if (_parameters.StartDate == new DateTime(1900, 1, 1))
+            {
+                _writer.print(_lin, leftCol, "Übergabe:", 'R');
+                _writer.print(_lin, rightCol, "vor " + _parameters.EndDate.ToShortDateString());
+                _lin += gap;
+            }
+            else if (_parameters.EndDate == new DateTime(1900, 1, 1))
+            {
+                _writer.print(_lin, leftCol, "Übergabe:", 'R');
+                _writer.print(_lin, rightCol, "nach " + _parameters.StartDate.ToShortDateString());
+                _lin += gap;
+            }
+            else {
+                _writer.print(_lin, leftCol, "Übergabe:", 'R');
+                _writer.print(_lin, rightCol, "von " + _parameters.StartDate.ToShortDateString() + "  bis  " + _parameters.EndDate.ToShortDateString());
+                _lin += gap;
+            }
+            _lin += gap;
+        }
+
+        private void PrintClientRecordsList(ArrayList list)
+        {
+            _writer.setFont("Calibri", 8);
+            foreach (spAGReceipt akt in list)
+            {
+                _totalAmount += akt.InvoiceAmount;
+                _gap = _normalGap;
+                string gegnerName = akt.GegnerLastName1 + " " + akt.GegnerLastName2;
+                bool printTwoLines = false;
+                _writer.print(_lin, _col2 + 10, akt.CustInkAktID);
+                if (gegnerName.Length > _maxGegnerNameLengthLine)
+                {
+                    int idx = gegnerName.IndexOf(" ", _maxGegnerNameLengthLine);
+                    if (idx >= 0)
+                    {
+                        printTwoLines = true;
+                        string name1 = gegnerName.Substring(0, idx);
+                        string name2 = gegnerName.Substring(name1.Length + 1);
+                        _writer.print(_lin, _col3 + 10, name1);
+                        _writer.print(_lin + _gap, _col3 + 10, name2);
+                    }
+                    else
+                    {
+                        _writer.print(_lin, _col3 + 10, gegnerName);
+                    }
+                }
+                else
+                {
+                    _writer.print(_lin, _col3 + 10, gegnerName);
+                }
+                _writer.print(_lin, _col4 + 10, akt.CustInkAktKunde);
+                _writer.print(_lin, _col6 - 10, HTBUtils.FormatCurrency(akt.InvoiceAmount), 'R');
+                _writer.print(_lin, _col6 + (_col7 - _col6) / 2, akt.CustInkAktEnterDate.ToShortDateString(), 'C');
+                if (!string.IsNullOrEmpty(akt.CustInkAktGothiaNr))
+                {
+                    printTwoLines = true;
+                    _writer.print(_lin + _gap, _col4 + 10, "Kundennummer: " + akt.CustInkAktGothiaNr);
+                }
+                if (printTwoLines)
+                    _gap *= 2;
+                DrawVerticalLines();
+                _lin += _gap;
+                if (CheckOverflow())
+                {
+                    _writer.newPage();
+                    PrintPageHeader(_writer);
+                    _writer.setFont("Calibri", 8);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Auftraggeber
+
+        private void PrintAgCoverPage()
+        {
+            var ag = (tblAuftraggeber)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeber WHERE AuftraggeberId = " + _parameters.StartAuftraggeber, typeof(tblAuftraggeber));
+            if (ag != null)
+            {
+                _writer.setFont("Calibri", 8);
+                _writer.print((_lin += _gap), _col1, "E.C.P. European Car Protect KG");
+                _writer.print((_lin += _gap), _col1, "Schwarzparkstrasse 15   A 5020 Salzburg");
+                _writer.drawLine(_lin + 30, _col1, _lin + 30, _col1 + 465);
+                _lin += _gap;
+                _writer.setFont("Calibri", 11);
+                _writer.print((_lin += _gap), _col1, ag.AuftraggeberName1);
+                _writer.print((_lin += _gap), _col1, ag.AuftraggeberName2);
+
+                _writer.print((_lin += _gap), _col1, ag.AuftraggeberStrasse);
+                _writer.print((_lin += _gap), _col1, ag.AuftraggeberLKZ + " - " + ag.AuftraggeberPLZ + " " + ag.AuftraggeberOrt);
+                _writer.print((_lin += _gap), _col + 1600, "Salzburg, am " + DateTime.Now.ToShortDateString(), 'R');
+                _lin += _gap * 5;
+                _writer.setFont("Calibri", 11, true, false, false);
+                _writer.print((_lin += _gap), _col1, "Betreff: Auftragsbestätigung");
+                _writer.setFont("Calibri", 11);
+                _lin += _gap * 3;
+                _writer.print((_lin += _gap), _col1, "Sehr geehrte Damen und Herren");
+            }
+        }
+
+        private void PrintAgPageHeader(ECPPdfWriter writer, bool printHeadings = true)
+        {
+            writer.drawBitmap(350, _col, Image.GetInstance(_logoPath), 40);
+            for (int i = 0; i < 3; i++)
+            {
+                writer.setFont("Arial", 22, true, false, false);
+                writer.print(50, _col + 1600 + i, "EUROPEAN CAR PROTECT", 'R', BaseColor.BLUE); // give it a bolder look
+                writer.setFont("Arial", 16, true, false, false);
+                writer.print(120, _col + 1600 + i, "INKASSO-SERVICE", 'R', BaseColor.BLUE); // give it a bolder look
+            }
+            if (printHeadings)
+            {
+                _lin = _startLine;
+                writer.setFont("Arial", 8, false, false, false);
+                writer.print(_lin - 100, _col7, "Datum: " + DateTime.Now.ToShortDateString(), 'R');
+
+                PrintParametersInHeader();
+                writer.setFont("Arial", 10, true, false, false);
+                writer.print(_lin + 10, _col2 + (_col3 - _col2) / 2, "Auftragsnummer", 'C');
+                writer.print(_lin + 10, _col3 + (_col4 - _col3) / 2, "Schuldnername", 'C');
+                writer.print(_lin + 10, _col4 + (_col5 - _col4) / 2, "Betreff", 'C');
+                writer.print(_lin + 10, _col5 + (_col6 - _col5) / 2, "Kapital", 'C');
+                writer.print(_lin + 10, _col6 + (_col7 - _col6) / 2, "Übergabe", 'C');
+
+                writer.drawRect(_lin, _col2, _lin + _gap + 20, _col7);    // heading rectangle
+                writer.drawLine(_lin, _col3, _lin + _gap + 20, _col3);    // vertical lines
+                writer.drawLine(_lin, _col4, _lin + _gap + 20, _col4);
+                writer.drawLine(_lin, _col5, _lin + _gap + 20, _col5);
+                writer.drawLine(_lin, _col6, _lin + _gap + 20, _col6);
+            }
+            _lin += _gap + 20;
+
+        }
+
+        private void PrintAgParametersInHeader()
+        {
+            _writer.setFont("Arial", 12, true, false, false);
+            int gap = _normalGap + 10;
+            int leftCol = _col2 + (_col7 - _col2) / 2; // Middle Point
+            leftCol -= 200;
+            int rightCol = leftCol + 20;
+            if (_klient != null)
+            {
+                _writer.print(_lin, leftCol, "Auftraggeber:", 'R');
+                _writer.print(_lin, rightCol, _ag.AuftraggeberName1);
+                _lin += gap;
+            }
+            if (_parameters.StartDate == _parameters.EndDate)
+            {
+                _writer.print(_lin, leftCol, "Übergabe:", 'R');
+                _writer.print(_lin, rightCol, _parameters.StartDate.ToShortDateString());
+                _lin += gap;
+            }
+            else if (_parameters.StartDate == new DateTime(1900, 1, 1))
+            {
+                _writer.print(_lin, leftCol, "Übergabe:", 'R');
+                _writer.print(_lin, rightCol, "vor " + _parameters.EndDate.ToShortDateString());
+                _lin += gap;
+            }
+            else if (_parameters.EndDate == new DateTime(1900, 1, 1))
+            {
+                _writer.print(_lin, leftCol, "Übergabe:", 'R');
+                _writer.print(_lin, rightCol, "nach " + _parameters.StartDate.ToShortDateString());
+                _lin += gap;
+            }
+            else
+            {
+                _writer.print(_lin, leftCol, "Übergabe:", 'R');
+                _writer.print(_lin, rightCol, "von " + _parameters.StartDate.ToShortDateString() + "  bis  " + _parameters.EndDate.ToShortDateString());
+                _lin += gap;
+            }
+            _lin += gap;
+        }
+
+        private void PrintAgRecordsList(ArrayList list)
+        {
+            _writer.setFont("Calibri", 8);
+            foreach (spAGReceipt akt in list)
+            {
+                _totalAmount += akt.InvoiceAmount;
+                _gap = _normalGap;
+                string gegnerName = akt.GegnerLastName1 + " " + akt.GegnerLastName2;
+                bool printTwoLines = false;
+                _writer.print(_lin, _col2 + 10, akt.AktIntAZ);
+                if (gegnerName.Length > _maxGegnerNameLengthLine)
+                {
+                    int idx = gegnerName.IndexOf(" ", _maxGegnerNameLengthLine);
+                    if (idx >= 0)
+                    {
+                        printTwoLines = true;
+                        string name1 = gegnerName.Substring(0, idx);
+                        string name2 = gegnerName.Substring(name1.Length + 1);
+                        _writer.print(_lin, _col3 + 10, name1);
+                        _writer.print(_lin + _gap, _col3 + 10, name2);
+                    }
+                    else
+                    {
+                        _writer.print(_lin, _col3 + 10, gegnerName);
+                    }
+                }
+                else
+                {
+                    _writer.print(_lin, _col3 + 10, gegnerName);
+                }
+                _writer.print(_lin, _col4 + 10, akt.AktIntAutoKZ);
+                _writer.print(_lin, _col6 - 10, HTBUtils.FormatCurrency(akt.InvoiceAmount), 'R');
+                _writer.print(_lin, _col6 + (_col7 - _col6) / 2, akt.AktIntDatum.ToShortDateString(), 'C');
+                if (!string.IsNullOrEmpty(akt.AktIntAutoIdNr))
+                {
+                    printTwoLines = true;
+                    _writer.print(_lin + _gap, _col4 + 10, "Fahrgestell Nummer: " + akt.AktIntAutoIdNr);
+                }
+                if (printTwoLines)
+                    _gap *= 2;
+                DrawVerticalLines();
+                _lin += _gap;
+                if (CheckOverflow())
+                {
+                    _writer.newPage();
+                    PrintPageHeader(_writer);
+                    _writer.setFont("Calibri", 8);
+                }
+            }
+        }
+
+        #endregion
+
+        private void PrintTotals()
+        {
+            _writer.drawRect(_lin, _col2, _lin + _gap + 20, _col7);       // top rectangle
+            //writer.drawLine(lin, col3, lin + gap + 20, col3);     // vertical lines
+            //writer.drawLine(lin, col4, lin + gap + 20, col4);
+            //writer.drawLine(lin, col5, lin + gap + 20, col5);
+            //writer.drawLine(lin, col6, lin + gap + 20, col6);
+
+            _writer.setFont("Calibri", 9, true, false, false);
+            _writer.print(_lin+10, _col6 - 10, "Total:      "+HTBUtils.FormatCurrency(_totalAmount), 'R');
+            
+        }
+
+        private void DrawVerticalLines()
+        {
+            _writer.drawRect(_lin, _col2, _lin + _gap, _col7);    // heading rectangle
+            _writer.drawLine(_lin, _col3, _lin + _gap, _col3);    // vertical lines
+            _writer.drawLine(_lin, _col4, _lin + _gap, _col4);
+            _writer.drawLine(_lin, _col5, _lin + _gap, _col5);
+            _writer.drawLine(_lin, _col6, _lin + _gap, _col6);
+        }
+
+        private bool CheckOverflow()
+        {
+            return _lin >= MaxLines;
+        }
+
+        private void LoadRecordsList()
+        {
+            const string spName = "spAGReceipt";
+            ArrayList parameters;
+            if(_isClient)
+            {
+                parameters = new ArrayList
+                    {
+                        new StoredProcedureParameter("strDate", SqlDbType.Date, _parameters.StartDate),
+                        new StoredProcedureParameter("endDate", SqlDbType.Date, _parameters.EndDate),
+                        new StoredProcedureParameter("klientStart", SqlDbType.Int, _parameters.StartKlient),
+                        new StoredProcedureParameter("klientEnd", SqlDbType.Int, _parameters.EndKlient),
+                    };
+                if (_parameters.KlientSB >= 0)
+                    parameters.Add(new StoredProcedureParameter("klientSb", SqlDbType.Int, _parameters.KlientSB));
+            }
+            else
+            {
+                parameters = new ArrayList
+                    {
+                        new StoredProcedureParameter("strDate", SqlDbType.Date, _parameters.StartDate),
+                        new StoredProcedureParameter("endDate", SqlDbType.Date, _parameters.EndDate),
+                        new StoredProcedureParameter("auftraggeberStart", SqlDbType.Int, _parameters.StartAuftraggeber),
+                        new StoredProcedureParameter("auftraggeberEnd", SqlDbType.Int, _parameters.EndAuftraggeber)
+                    };
+            }
+            RecordsList = HTBUtils.GetStoredProcedureRecords(
+                spName,
+                parameters,
+                typeof (spAGReceipt)
+                );
+        }
+ 
+        public bool HasRecords(ReportParameters reportParameters)
+        {
+            const string spName = "spAGReceipt";
+            ArrayList parameters;
+            if (_isClient)
+            {
+                parameters = new ArrayList
+                    {
+                        new StoredProcedureParameter("strDate", SqlDbType.Date, reportParameters.StartDate),
+                        new StoredProcedureParameter("endDate", SqlDbType.Date, reportParameters.EndDate),
+                        new StoredProcedureParameter("klientStart", SqlDbType.Int, reportParameters.StartKlient),
+                        new StoredProcedureParameter("klientEnd", SqlDbType.Int, reportParameters.EndKlient),
+                    };
+                if (reportParameters.KlientSB >= 0)
+                    parameters.Add(new StoredProcedureParameter("klientSb", SqlDbType.Int, reportParameters.KlientSB));
+            }
+            else
+            {
+                parameters = new ArrayList
+                    {
+                        new StoredProcedureParameter("strDate", SqlDbType.Date, reportParameters.StartDate),
+                        new StoredProcedureParameter("endDate", SqlDbType.Date, reportParameters.EndDate),
+                        new StoredProcedureParameter("auftraggeberStart", SqlDbType.Int, reportParameters.StartAuftraggeber),
+                        new StoredProcedureParameter("auftraggeberEnd", SqlDbType.Int, reportParameters.EndAuftraggeber)
+                    };
+            }
+            var list = HTBUtils.GetStoredProcedureRecords(
+                spName,
+                parameters,
+                typeof (spAGReceipt)
+                );
+            return list != null && list.Count > 0;
+        }
+    }
+}

@@ -1,0 +1,508 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using HTB.Database;
+using HTB.Database.Views;
+using HTBExtras;
+using HTBPdf;
+using HTBUtilities;
+using iTextSharp.text;
+
+namespace HTBReports
+{
+    public class ProtokolTablet : IReport
+    {
+
+
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private const int MiddleCol = 1050;
+        private const int RightCol = 2000;
+        private const int StartLine = 30;
+        private const int NormalGap = 39;
+        private const int MaxLines = 2600;
+
+        private int _col1;
+        private int _col2;
+        private int _col3;
+        private int _lin;
+        private int _gap;
+
+        private ECPPdfWriter Writer { get; set; }
+   
+        
+        private readonly string _logoPath = HTBUtils.GetConfigValue("LogoPath_Mahnung");
+
+        private tblProtokol _protokol;
+        private qryAktenInt _akt;
+        private qryAktenIntActionWithType _action;
+        private List<tblProtokolBesuch> _visits;
+        private List<VisitRecord> _visitRecordList;
+        private List<tblAktenIntPos> _invoices;
+ 
+        private void Init()
+        {
+            _lin = StartLine;
+            _gap = NormalGap;
+            _col1 = 150;
+            _col2 = _col1 + 700;
+            _col3 = _col2 + 1000;
+            if(_action != null && _action.AktIntActionTypeID == 90) // Direktzahlung
+            {
+                _action.AktIntActionTypeCaption = "Abschluss ohne Berechnung";
+            }
+        }
+        
+        public void GenerateProtokol(qryAktenInt akt, tblProtokol protokol, qryAktenIntActionWithType action, Stream os, List<VisitRecord> visits, List<tblAktenIntPos> invoices, List<Record> documents = null)
+        {
+            _akt = akt;
+            _protokol = protokol;
+            _action = action;
+            _visitRecordList = visits;
+            _invoices = invoices;
+            Init();
+            Open(os);
+            PrintPageHeader();
+            PrintProtokol();
+            PrintDocuments(documents);
+            Close();
+        }
+
+        public void GenerateOfficeProtokol(qryAktenInt akt, tblProtokol protokol, qryAktenIntActionWithType action, Stream os, List<VisitRecord> visits, List<tblAktenIntPos> invoices, List<Record> documents = null)
+        {
+            _akt = akt;
+            _protokol = protokol;
+            _action = action;
+            _visitRecordList = visits;
+            _invoices = invoices;
+            Init();
+            Open(os);
+            PrintPageHeader();
+            PrintProtokol();
+            PrintOfficeCharges();
+            Close();
+        }
+
+        public void GenerateDealerProtokol(qryAktenInt akt, tblProtokol protokol, Stream os)
+        {
+            _akt = akt;
+            _protokol = protokol;
+
+            _action = new qryAktenIntActionWithType {AktIntActionTime = DateTime.Now};
+
+            Init();
+            Open(os);
+            PrintPageHeader();
+
+            SetHeadingFont();
+            WriteHeader("Rechnungs Nr. E.C.P.:");
+            WriteInfo(_protokol.RechnungNr);
+            WriteHeader("Vertragsnummer:");
+            WriteInfo(_akt.AktIntAZ);
+            _lin += _gap;
+            WriteHeader("Verrechnungsart:");
+            WriteInfo(_action.AktIntActionTypeCaption);
+            WriteHeader("Auftraggeber:");
+//            WriteInfo(_akt.AuftraggeberName1 + " " + _akt.AuftraggeberName2);
+            WriteInfo(_akt.AuftraggeberName1);
+            WriteHeader("Vertragsart:");
+            WriteInfo(_akt.AktIntAutoVertragArt);
+            WriteHeader("Kunde:");
+            WriteInfo(_akt.GegnerLastName1 + " " + _akt.GegnerLastName2);
+            WriteHeader("Objekt:");
+            WriteInfo(_akt.AktIntAutoName);
+            WriteHeader("KZ:");
+            WriteInfo(_akt.AktIntAutoKZ);
+            _lin += _gap;
+            PrintRepossession();
+
+            Writer.print(2900, 1800, DateTime.Now.ToShortDateString(), 'R');
+
+            Close();
+        }
+
+        private void PrintProtokol()
+        {
+            SetHeadingFont();
+            WriteHeader("Rechnungs Nr. E.C.P.:");
+            WriteInfo(_protokol.RechnungNr);
+            WriteHeader("Vertragsnummer:");
+            WriteInfo(_akt.AktIntAZ);
+            _lin += _gap;
+            WriteHeader("Verrechnungsart:");
+            WriteInfo(_action.AktIntActionTypeCaption);
+            WriteHeader("Auftraggeber:");
+            WriteInfo(_akt.AuftraggeberName1 + " " + _akt.AuftraggeberName2);
+            WriteHeader("Vertragsart:");
+            WriteInfo(_akt.AktIntAutoVertragArt);
+            WriteHeader("Kunde:");
+            WriteInfo(_akt.GegnerLastName1 + " " +_akt.GegnerLastName2);
+            WriteHeader("Objekt:");
+            WriteInfo(_akt.AktIntAutoName);
+            WriteHeader("KZ:");
+            WriteInfo(_akt.AktIntAutoKZ);
+            _lin += _gap;
+            PrintVisitDates();
+            _lin += _gap;
+            if(_action.AktIntActionIsAutoRepossessed)
+                PrintRepossession();
+            else if (_action.AktIntActionIsAutoMoneyCollected)
+                PrintMoneyCollected();
+            else //if (_action.AktIntActionIsAutoNegative)
+                PrintBericht();
+            
+            Writer.print(2900, 1800, DateTime.Now.ToShortDateString(), 'R');
+        }
+
+        private void PrintRepossession()
+        {
+
+            WriteHeader("Sichergestellt am:");
+            DateTime dte = _protokol.SicherstellungDatum;
+            if(!HTBUtils.IsDateValid(dte))
+            {
+                dte = _action.AktIntActionTime;
+            }
+            if (dte.ToShortTimeString() == "00:00")
+                WriteInfo(dte.ToShortDateString());
+            else
+                WriteInfo(dte.ToShortDateString() + " " + dte.ToShortTimeString());
+
+            WriteHeader("Ort der Übernahme:");
+            WriteInfo(_protokol.UbernahmeOrt);
+            WriteHeader("Übernommen mit Zulassung:");
+            WriteInfo(_protokol.UbernommentMitZulassung ? "Ja" : "Nein");
+            WriteHeader("KZ vorhanden:");
+            WriteInfo(_protokol.KZ);
+            WriteHeader("Serviceheft:");
+            WriteInfo(_protokol.Serviceheft);
+            WriteHeader("Anzahl Schlüssel:");
+            WriteInfo(_protokol.AnzahlSchlussel.ToString());
+            WriteHeader("KM - Stand laut Tacho:");
+            WriteInfo(_protokol.Tachometer.ToString());
+            _lin += _gap;
+            WriteHeader("Abschleppdienst:");
+            WriteInfo(_protokol.Abschleppdienst ? "Ja" : "Nein");
+            WriteHeader("Abschleppdienst Name:");
+            WriteInfo(_protokol.AbschleppdienstName);
+            _lin += _gap;
+
+            WriteHeader("Sichtbare Schäden:");
+            WriteMultilineInfo(_protokol.SchadenComment);
+            WriteHeader("Erweiterter Bericht:");
+            WriteMultilineInfo(_protokol.Memo.Trim()+" "+_action.AktIntActionMemo);
+
+            WriteHeader("Zusatzkosten Treibstoff:");
+            WriteInfo(HTBUtils.FormatCurrency(_protokol.ZusatzkostenTreibstoff));
+            WriteHeader("Zusatzkosten Vignette:");
+            WriteInfo(HTBUtils.FormatCurrency(_protokol.ZusatzkostenVignette));
+            WriteHeader("Sonstige Zusatzkosten:");
+            WriteInfo(HTBUtils.FormatCurrency(_protokol.ZusatzkostenSostige));
+            _lin += _gap;
+
+            WriteHeader("Polizei informiert:");
+            WriteInfo(_protokol.PolizieInformiert ? "Ja" : "Nein");
+
+            WriteHeader("Sichersteller:");
+            WriteInfo(_akt.UserVorname + " " + _akt.UserNachname);
+            WriteHeader("Name vom Beifahrer:");
+            WriteInfo(_protokol.Beifahrer);
+            _lin += _gap;
+            WriteHeader("Händler:");
+            WriteInfo(_protokol.HandlerName);
+            WriteInfo(_protokol.HandlerStrasse, _gap);
+            WriteInfo(_protokol.HandlerLKZ + " - " + _protokol.HandlerPLZ + " " + _protokol.HandlerOrt, _gap);
+
+            WriteHeader("Übernommen von:");
+            WriteInfo(_protokol.UbernommenVon);
+            Writer.drawBitmapFromPath(_lin += _gap * 6, _col1 + (_col2-_col1) / 2, _protokol.SignaturePath, 40);
+        }
+
+        private void PrintVisitDates()
+        {
+            if (_visitRecordList != null && _visitRecordList.Count > 0)
+            {
+                int visitNumber = 1;
+                foreach (var visitRecord in _visitRecordList)
+                {
+                    DateTime visit = visitRecord.VisitTime;
+                    WriteHeader(visitNumber + ". Besuch");
+                    WriteInfo(visit.ToShortDateString() + " " + (visit.ToShortTimeString().Equals("00:00") ? "" : visit.ToShortTimeString()) +" "+visitRecord.VisitPerson+" ["+visitRecord.VisitAction+"]");
+                    if(!string.IsNullOrEmpty(visitRecord.VisitMemo))
+                    {
+                        _lin += _gap;
+                        WriteMultilineInfo(visitRecord.VisitMemo);
+                    }
+                    visitNumber++;
+                }
+            }
+        }
+
+        private void PrintVisitDates_Old()
+        {
+            if (_visits != null && _visits.Count > 0)
+            {
+                int visitNumber = 1;
+                foreach (var visit in _visits)
+                {
+                    WriteHeader(visitNumber + ". Besuch");
+                    WriteInfo(visit.BesuchAm.ToShortDateString());
+                    visitNumber++;
+                }
+            }
+        }
+
+        private void PrintMoneyCollected()
+        {
+
+            if(_invoices == null)
+                return;
+            bool kostenShown = false;
+            foreach (var invoice in _invoices)
+            {
+                double amount = invoice.AktIntPosBetrag * -1;
+                DateTime transferDate = invoice.AktIntPosTransferredDate;
+
+                if(invoice.AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_PAYMENT_CASH_COLLECTION && !kostenShown)
+                {
+                    PrintMoneyCollectedLine("Kosten bar kassiert:", amount, "Kosten überwiesen am:", HTBUtils.DefaultDate, true); // do not show Kosten uberwiesen am
+                    kostenShown = true;
+                }
+                else if(invoice.AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_PAYMENT_CASH_ORIGINAL)
+                {
+                    PrintMoneyCollectedLine("Forderung bar kassiert:", amount, "Forderung überwiesen am:", transferDate);
+                }
+                else if (invoice.AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_PAYMENT_CASH_INSURANCE)
+                {
+                    PrintMoneyCollectedLine("Versicherung bar kassiert:", amount, "Versicherung überwiesen am:", transferDate);
+                }
+                else if (invoice.AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_PAYMENT_DIRECT_AG_ORIGINAL)
+                {
+                    PrintMoneyCollectedLine("Direktzahlung an AG:", amount, "Direktzahlung am:", transferDate);
+                }
+                else if (invoice.AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_PAYMENT_DIRECT_INSURANCE)
+                {
+                    PrintMoneyCollectedLine("Direktzahlung an Versicherung:", amount, "Direktzahlung an Versicherung am:", transferDate);
+                }
+            }
+            WriteHeader("Erweiterter Bericht:");
+            WriteMultilineInfo(_protokol.Memo.Trim());
+        }
+
+        private void PrintMoneyCollected_Old()
+        {
+
+            PrintMoneyCollectedLine("Forderung bar kassiert:", _protokol.ForderungBarKassiert, "Forderung überwiesen am:", _protokol.ForderungUberwiesen);
+            PrintMoneyCollectedLine("Versicherung bar kassiert:", _protokol.VersicherungBarKassiert, "Versicherung überwiesen am:", _protokol.VersicherungUberwiesen);
+//            PrintMoneyCollectedLine("Kosten bar kassiert", _protokol.KostenBarKassiert, "Kosten überwiesen am", _protokol.KostenUberwiesen);
+            PrintMoneyCollectedLine("Direktzahlung an AG:", _protokol.Direktzahlung, "Direktzahlung am:", _protokol.DirektzahlungAm);
+            PrintMoneyCollectedLine("Direktzahlung an Versicherung:", _protokol.DirektzahlungVersicherung, "Direktzahlung an Versicherung am:", _protokol.DirektzahlungVersicherungAm);
+
+            PrintMoneyCollectedLine("Kosten bar kassiert:", _protokol.KostenBarKassiert, "Kosten überwiesen am:", HTBUtils.DefaultDate, true); // do not show Kosten uberwiesen am
+            
+            WriteHeader("Erweiterter Bericht:");
+            WriteMultilineInfo(_protokol.Memo.Trim());
+        }
+
+        private void PrintMoneyCollectedLine(string header, double amount, string headerDate, DateTime date, bool isKosten = false)
+        {
+            if(amount > 0)
+            {
+                WriteHeader(header);
+                if(isKosten)
+                {
+                    WriteInfo("JA");
+                }
+                else
+                {
+                    WriteInfo(HTBUtils.FormatCurrency(amount));
+                    if (date != HTBUtils.DefaultDate)
+                    {
+                        WriteHeader(headerDate);
+                        WriteInfo(date.ToShortDateString());
+                    }     
+                }
+                _lin += _gap/3;
+            }
+        }
+
+        private void PrintOfficeCharges()
+        {
+            _lin += _gap*2;
+
+            Writer.setFont("Arial", 14, true, false, false);
+            Writer.print(_lin, MiddleCol, "Für Office zur Verrechnung!", 'C');
+            _lin += _gap * 2;
+            WriteHeader("Aussendienst:");
+            WriteInfo(_akt.UserVorname + " " + _akt.UserNachname);
+            _lin += _gap;
+            WriteHeader("Dauer:");
+            WriteInfo(HTBUtils.BusinessDaysUntil(_akt.AktIntDatum, _action.AktIntActionTime, new DateTime[] { }) + " Arbeitstage");
+            _lin += _gap;
+
+            if (!_action.AktIntActionIsReceivable)
+            {
+                _lin += _gap;
+                Writer.print(_lin, MiddleCol, "Akt abgeschlossen ohne Verrechnung!", 'C');
+            }
+            else
+            {
+                double total = 0;
+
+                WriteHeader("Sicherstellungsgebühr:");
+                WriteInfo(HTBUtils.FormatCurrency(_akt.AKTIntKosten));
+                total += _akt.AKTIntKosten;
+                WriteHeader("Zusatzkosten Treibstoff:");
+                WriteInfo(HTBUtils.FormatCurrency(_protokol.ZusatzkostenTreibstoff));
+                total += _protokol.ZusatzkostenTreibstoff;
+                WriteHeader("Zusatzkosten Vignette:");
+                WriteInfo(HTBUtils.FormatCurrency(_protokol.ZusatzkostenVignette));
+                total += _protokol.ZusatzkostenVignette;
+                WriteHeader("Sonstige Zusatzkosten:");
+                WriteInfo(HTBUtils.FormatCurrency(_protokol.ZusatzkostenSostige));
+                total += _protokol.ZusatzkostenSostige;
+                _lin += _gap;
+
+                WriteHeader("Summe:");
+                WriteInfo(HTBUtils.FormatCurrency(total));
+                _lin += _gap;
+            }
+        }
+
+        private void PrintBericht()
+        {
+            WriteHeader("Erweiterter Bericht:");
+            WriteMultilineInfo(_protokol.Memo.Trim());
+        }
+
+        private void PrintDocuments(IEnumerable<Record> documents)
+        {
+            bool addedNewPage = false;
+            if (documents != null)
+            {
+                foreach (Record rec in documents)
+                {
+                    string description = "";
+                    string fileName = "";
+                    if (rec is qryDoksInkAkten)
+                    {
+                        var doc = (qryDoksInkAkten) rec;
+                        description = string.IsNullOrEmpty(doc.DokText) ? doc.DokCaption : doc.DokText;
+                        fileName = doc.DokAttachment;
+
+                    }
+                    else if (rec is qryDoksIntAkten)
+                    {
+                        var doc = (qryDoksIntAkten) rec;
+                        description = string.IsNullOrEmpty(doc.DokText) ? doc.DokCaption : doc.DokText;
+                        fileName = doc.DokAttachment;
+                    }
+                    if (fileName.ToLower().EndsWith(".jpg") || fileName.ToLower().EndsWith(".jpeg") || fileName.ToLower().EndsWith(".png") || fileName.ToLower().EndsWith(".gif"))
+                    {
+                        if (!addedNewPage)
+                        {
+                            Writer.newPage();
+                            Writer.Document.Add(new Paragraph("\n"));
+                            addedNewPage = true;
+                        }
+                        description += "\n ";
+                        Writer.AddImageToDocument(fileName, description);
+                    }
+                }
+            }
+        }
+        private void Open(Stream os)
+        {
+            Writer = new ECPPdfWriter();
+            Writer.setFormName("A4");
+            Writer.setImagePath(HTBUtils.GetConfigValue("DocumentsFolder"));
+            Writer.open(os);
+        }
+
+        private void Close()
+        {
+            Writer.Close();
+        }
+
+        public bool CheckOverflow(int plin)
+        {
+            return plin >= MaxLines;
+        }
+
+        public int PrintPageHeader()
+        {
+            Writer.PrintLeftEcpInfo();
+            _lin = StartLine;
+            Writer.drawBitmap(350, _col1, iTextSharp.text.Image.GetInstance(_logoPath), 40);
+            for (int i = 0; i < 3; i++)
+            {
+                Writer.setFont("Arial", 22, true, false, false);
+                Writer.print(50, MiddleCol + i, "EUROPEAN CAR PROTECT", 'C', BaseColor.BLUE); // give it a bolder look
+//                Writer.setFont("Arial", 16, true, false, false);
+//                Writer.print(120, _col + 1600 + i, "INKASSO-SERVICE", 'R', BaseColor.BLUE); // give it a bolder look
+            }
+            _lin += 150;
+            Writer.setFont("Calibri", 19, true, false, false);
+            Writer.print(_lin, MiddleCol, "Protokoll Für KFZ Einzug", 'C');
+            _lin += 200;
+            return _lin;
+        }
+
+        public ECPPdfWriter GetWriter()
+        {
+            return Writer;
+        }
+        private void WriteHeader(string str, int gap)
+        {
+            if (CheckOverflow(_lin))
+            {
+                Writer.newPage();
+                PrintPageHeader();
+            }
+
+            SetHeadingFont();
+            Writer.print(_lin += gap, _col2 - (_gap), str, 'R');
+        }
+        private void WriteHeader(string str)
+        {
+            WriteHeader(str, _gap);
+        }
+        private void WriteInfo(string str, int gap = 0)
+        {
+            SetLineFont();
+            Writer.print(_lin+=gap, _col2, str);
+        }
+        private void WriteMultilineInfo(string str, int gap = 0)
+        {
+            SetLineFont();
+            //const int maxLines = 20;
+            const int maxCharsPerLine = 65;
+            //if (str.Length > maxLines * maxCharsPerLine)
+            //    str = str.Substring(0, (maxLines * maxCharsPerLine) - 3)+"...";
+            _lin = ReportUtils.PrintTextInMultipleLines(this, _lin += gap, _col2, _gap, str, maxCharsPerLine);
+        }
+        public void SetLineFont()
+        {
+            Writer.setFont("Calibri", 11);
+        }
+        public void SetSmallHeaderFont()
+        {
+            Writer.setFont("Calibri", 9, false, true, false);
+        }
+        public void SetLineFont(bool bold, bool italics, bool underline)
+        {
+            Writer.setFont("Calibri", 11, bold, italics, underline);
+        }
+
+        private void SetHeadingFont()
+        {
+           Writer.setFont("Calibri", 11, true, false, true);
+        }
+
+        private void SetHeadingFont(bool italics, bool underline)
+        {
+            Writer.setFont("Calibri", 13, true, italics, underline);
+        }
+    }
+}

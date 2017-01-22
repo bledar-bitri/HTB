@@ -1,0 +1,108 @@
+/*
+ * Author:			Generated Code
+ * Date Created:	19.09.2011
+ * Description:		Represents a row in the tblAktenInt table
+*/
+
+using System;
+namespace HTB.Database
+{
+	public class tblAktenInt : Record
+	{
+		#region Property Declaration
+
+	    public string AktIntResearchedSource { get; set; }
+
+	    [MappingAttribute(FieldType = MappingAttribute.FIELD_TYPE_ID, FieldAutoNumber = true)]
+	    public int AktIntID { get; set; }
+	    public string AktIntAZ { get; set; }
+	    public int AktIntAuftraggeber { get; set; }
+	    public string AktIntKlient { get; set; }
+	    public string AktIntGegner { get; set; }
+	    public DateTime AktIntDatum { get; set; }
+	    public int AktIntStatus { get; set; }
+	    public DateTime AktIntTermin { get; set; }
+	    public DateTime AktIntTerminAD { get; set; }
+	    [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
+	    public double AktIntWeggebuehr { get; set; }
+	    public string AktIntIZ { get; set; }
+	    public int AktIntSB { get; set; }
+	    public string AktIntOldID { get; set; }
+	    public string AKTIntMemo { get; set; }
+	    public int AKTIntDistance { get; set; }
+	    [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
+	    public double AKTIntKosten { get; set; }
+	    [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
+	    public double AKTIntZinsen { get; set; }
+	    [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
+	    public double AKTIntZinsenBetrag { get; set; }
+	    public DateTime AKTIntRVStartDate { get; set; }
+	    [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
+	    public double AKTIntRVAmmount { get; set; }
+	    public int AKTIntRVNoMonth { get; set; }
+	    public int AKTIntRVInkassoType { get; set; }
+	    public int AKTIntRVIntervallDay { get; set; }
+	    public string AKTIntAGSB { get; set; }
+	    public int AKTIntDruckkennz { get; set; }
+	    public string AKTIntKSVAuftragsart { get; set; }
+	    public string AKTIntKSVEMail { get; set; }
+	    public int AKTIntVerrechnet { get; set; }
+	    public DateTime AKTIntDownloadDatum { get; set; }
+	    public int AKTIntDub { get; set; }
+	    public int AKTIntKommerz { get; set; }
+	    public int AKTIntGrosskunde { get; set; }
+	    public int AKTIntVormerk { get; set; }
+	    public string AKTIntRVInfo { get; set; }
+	    public int AktIntAktType { get; set; }
+	    public int AktIntCustInkAktID { get; set; }
+	    public int AktIntProcessCode { get; set; }
+	    public string AktIntUserEdit { get; set; }
+	    public int AktIntAEAktID { get; set; }
+	    public DateTime AktIntSBAssignDate { get; set; }
+        public DateTime AktIntOverdueNotifiedDate { get; set; }
+        public string AktIntOriginalMemo { get; set; }
+
+        public int AktIntMissingInstallments { get; set; }
+        public string AktIntInsuranceName { get; set; }
+        public string AktIntInsurancePhone { get; set; }
+        public string AktIntInsuranceAccount { get; set; }
+        public string AktIntInsuranceBankName { get; set; }
+        public string AktIntInsuranceBLZ { get; set; }
+        public string AktIntInsuranceKtoNr { get; set; }
+        
+        public string AktIntAutoIdNr { get; set; }          // VIN (vehicle identification number) [Fahrgestell Nummer]
+        public int AktIntAutoTypeId { get; set; }
+        public string AktIntAutoKZ { get; set; }            // license plate
+        public string AktIntAutoColor { get; set; }
+        public bool AktIntIsKaskoVinkulierung { get; set; }
+        
+        public int AktIntAutoDealerId { get; set; }
+        public string AktIntAutoName { get; set; }
+        public int AktIntGegner2 { get; set; }
+        public string AktIntAutoVertragArt { get; set; }
+        public int AktIntAgSbType { get; set; }
+        [MappingAttribute(FieldType = MappingAttribute.NO_DB_SAVE)]
+        public long AktIntTimestamp { get; set; }
+        public bool AktIntHasTransferReceiptAttached { get; set; }
+        public DateTime AktIntAutoFirstRegistrationDate { get; set; }
+        public DateTime AktIntAutoSecuredDate { get; set; }
+        
+	    #endregion
+
+        #region Non DB Fields
+
+        [MappingAttribute(FieldType = MappingAttribute.NO_DB_SAVE)]
+        public double AktIntAmountOpened { get; set; }
+        [MappingAttribute(FieldType = MappingAttribute.NO_DB_SAVE)]
+        public double AktIntAgKosten { get; set; }
+        [MappingAttribute(FieldType = MappingAttribute.NO_DB_SAVE)]
+        public double AktIntInsuranceAmount { get; set; }
+
+        #endregion
+
+        public bool IsInkasso()
+        {
+            return AktIntCustInkAktID > 0;
+        }
+	}
+}

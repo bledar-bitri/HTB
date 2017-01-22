@@ -1,0 +1,6 @@
+.seldrop {
+	float:none;
+	clear:both;
+	position:absolute;
+}
+

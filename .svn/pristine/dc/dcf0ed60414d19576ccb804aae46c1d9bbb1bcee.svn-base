@@ -1,0 +1,607 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using HTB.Database;
+using System.Net.Mail;
+using System.Collections;
+using System.Reflection;
+using System.IO;
+using HTB.Database.Views;
+using Tamir.SharpSsh.java.io;
+
+namespace HTBUtilities
+{
+    public class HTBEmail
+    {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        readonly tblServerSettings serverSettings = (tblServerSettings)HTBUtils.GetSqlSingleRecord("Select * from tblServerSettings", typeof(tblServerSettings));
+        readonly tblControl control = HTBUtils.GetControlRecord();
+        private readonly int _intAktEmailSentActionTypeId = HTBUtils.GetIntConfigValue("AktInt_EMail_Sent_Action_Type");
+        private readonly int _intAktEmailNotSentActionTypeId = HTBUtils.GetIntConfigValue("AktInt_EMail_NOT_Sent_Action_Type");
+
+        private string _replyTo = string.Empty;
+        public string ReplyTo
+        {
+            get { return _replyTo; }
+            set { _replyTo = value; }
+        }
+
+        #region Lawyer
+        public bool SendLawyerPackage(IEnumerable<string> to, qryCustInkAkt akt, IEnumerable<HTBEmailAttachment> attachments, string body = "")
+        {
+            try
+            {
+                // To
+                var mailMsg = new MailMessage();
+                foreach (string toAddr in to)
+                {
+                    mailMsg.To.Add(toAddr);
+                }
+                if (mailMsg.To.Count > 0)
+                {
+                    // From
+                    var mailAddress = new MailAddress("E.C.P. Office " + serverSettings.ServerSystemMail);
+                    mailMsg.From = mailAddress;
+
+                    // Subject and Body
+                    mailMsg.Subject = control.LawyerEmailSubject.Replace("<akt>", akt.CustInkAktID.ToString()).Replace("<gegner>", akt.GegnerName1 + " " + akt.GegnerName2);
+                    mailMsg.IsBodyHtml = true;
+                    mailMsg.Body = body;
+                    foreach (var attachment in attachments.Where(attachment => attachment != null))
+                    {
+                        mailMsg.Attachments.Add(new Attachment(attachment.AttachmentStream, akt.GegnerName1 + " " + akt.GegnerName2 + "_" + attachment.AttachmentStreamName, attachment.AttachmentStreamMime));
+                    }
+
+                    // Init SmtpClient and send
+                    var smtpClient = new SmtpClient(control.SMTPServer);
+                    if(control.SMTPPort > 0)
+                    {
+                        smtpClient.Port = control.SMTPPort;
+                    }
+                    var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
+                    smtpClient.Credentials = credentials;
+                    smtpClient.Send(mailMsg);
+                    return true;
+                }
+                return false;
+            }
+            catch(Exception ex)
+            {
+                log.Error(ex.Message);
+                return false;
+            }
+        }
+        public bool SendLawyerReminder(qryCustInkAkt akt)
+        {
+            try
+            {
+                var lawyer = (tblLawyer)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblLawyer WHERE LawyerId = " + akt.CustInkAktLawyerId, typeof(tblLawyer));
+
+                // To
+                var mailMsg = new MailMessage();
+
+                var to = HTBUtils.GetValidEmailAddressesFromStrings(new[]
+                    {
+                        lawyer.LawyerEmail,
+                        HTBUtils.GetConfigValue("Office_Email")
+                    }
+                    );
+
+                foreach (var toAdr in to)
+                {
+                    mailMsg.To.Add(toAdr);
+                }
+                if (mailMsg.To.Count > 0)
+                {
+                    // From
+                    var mailAddress = new MailAddress("E.C.P. Office " + serverSettings.ServerSystemMail);
+                    mailMsg.From = mailAddress;
+
+                    // Subject and Body
+                    mailMsg.Subject = control.LawyerEmailSubject.Replace("<akt>", akt.CustInkAktID.ToString()+" ERINERUNG").Replace("<gegner>", akt.GegnerName1 + " " + akt.GegnerName2);
+                    mailMsg.IsBodyHtml = true;
+                    mailMsg.Body = GetLawyerReminderEMailBody(akt, lawyer);
+
+
+                    // Init SmtpClient and send
+                    var smtpClient = new SmtpClient(control.SMTPServer);
+                    if (control.SMTPPort > 0)
+                    {
+                        smtpClient.Port = control.SMTPPort;
+                    }
+                    var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
+                    smtpClient.Credentials = credentials;
+                    smtpClient.Send(mailMsg);
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                log.Error(ex.StackTrace);
+                return false;
+            }
+        }
+
+        private string GetLawyerReminderEMailBody(qryCustInkAkt akt, tblLawyer lawyer)
+        {
+
+            string text = HTBUtils.GetFileText(HTBUtils.GetConfigValue("Lawyer_Reminder_EMail_Text"));
+            if (lawyer != null)
+            {
+                var sb = new StringBuilder();
+                if (lawyer.LawyerSex == 1)
+                    sb.Append("r " + lawyer.LawyerAnrede + " " + lawyer.LawyerName1);
+                else
+                    sb.Append(" " + lawyer.LawyerAnrede + " " + lawyer.LawyerName1);
+                text = text.Replace("[Recipient]", sb.ToString());
+            }
+            text = text.Replace("[Gegner]", akt.GegnerName1 + " " + akt.GegnerName2);
+            text = text.Replace("[Akt]", akt.CustInkAktID.ToString());
+
+            return text;
+        }
+
+        #endregion
+
+        #region Melde Research
+        public bool SendMeldeResearchNotice(tblAktMelde melde)
+        {
+            log.Info("Sending Research Notice");
+            try
+            {
+                // To
+                MailMessage mailMsg = new MailMessage();
+                tblUser user = (tblUser)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblUser WHERE UserID = " + control.MeldeResearchSB, typeof(tblUser));
+                mailMsg.To.Add(user.UserEMailOffice);
+                log.Info("Generic Email TO: " + user.UserEMailOffice);
+
+                // From
+                MailAddress mailAddress = new MailAddress("E.C.P. Office " + serverSettings.ServerSystemMail);
+                mailMsg.From = mailAddress;
+
+                // Subject and Body
+                mailMsg.Subject = control.MeldeEmailSubject.Replace("<akt>", melde.AMNr);
+                mailMsg.IsBodyHtml = true;
+                mailMsg.Body = "More Research Needed for this Melde Akt: " + melde.AMNr;
+
+
+                // Init SmtpClient and send
+                var smtpClient = new SmtpClient(control.SMTPServer);
+                if (control.SMTPPort > 0)
+                {
+                    smtpClient.Port = control.SMTPPort;
+                }
+                var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
+                smtpClient.Credentials = credentials;
+                smtpClient.Send(mailMsg);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                log.Error(ex.StackTrace);
+                return false;
+            }
+        } 
+
+        #endregion
+
+        #region Mahnung
+        public bool SendMahnung(string body, string attachment, string subject = null, string attachmentName = null)
+        {
+            log.Info("Sending Mahnung");
+            try
+            {
+                // To
+                var mailMsg = new MailMessage();
+                mailMsg.To.Add(control.MahnungEmail);
+                log.Info("Mahnung Email TO: " + control.MahnungEmail);
+
+                // From
+                var mailAddress = new MailAddress("E.C.P. Office " + serverSettings.ServerSystemMail);
+                mailMsg.From = mailAddress;
+
+                // Subject and Body
+                mailMsg.Subject = subject ?? control.MahnungEmailSubject;
+                mailMsg.Body = body;
+                if (attachment != null && attachment.Trim() != string.Empty)
+                {
+                    mailMsg.Attachments.Add(new Attachment(attachment)
+                                                {
+                                                    Name = attachmentName ?? "Mahnung.pdf"
+                                                });
+                }
+
+                // Init SmtpClient and send
+                var smtpClient = new SmtpClient(control.SMTPServer);
+                if (control.SMTPPort > 0)
+                {
+                    smtpClient.Port = control.SMTPPort;
+                }
+                var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
+                smtpClient.Credentials = credentials;
+                smtpClient.Send(mailMsg);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                log.Error(ex.StackTrace);
+                if (ex.InnerException != null)
+                {
+                    log.Error("Inner: "+ex.InnerException.Message);
+                }
+                return false;
+            }
+        }
+        #endregion
+
+        #region Klient Receipt
+        public bool SendKlientReceipt(tblKlient klient, List<string> toEmailAddresses, string body, Stream attachment, bool includeAgb = true)
+        {
+            log.Error("Sending Klient Receipt");
+            try
+            {
+                // To
+                var sb = new StringBuilder(body);
+                var receipients = toEmailAddresses;
+                if(receipients == null || receipients.Count == 0)
+                    receipients = HTBUtils.GetKlientEmailAddresses(klient.KlientID, klient.KlientEMail);
+
+                if (HTBUtils.IsTestEnvironment)
+                    receipients.Clear();
+
+                var subject =  control.KlientReceiptEmailSubject.Replace("<date>", DateTime.Now.ToShortDateString());
+                var subject2 = HTBUtils.GetKlientNotifiationEmailSubject(klient, sb, receipients);
+                if (!string.IsNullOrEmpty(subject2))
+                {
+                    subject += " " + subject2;
+                    receipients.Add(HTBUtils.GetConfigValue("Office_Email")); // send copy to office
+                }
+                receipients.Add(HTBUtils.GetConfigValue("Default_EMail_Addr")); // send copy to default email for backup purposes
+
+                var mailMsg = new MailMessage();
+                foreach (string to in receipients)
+                {
+                    mailMsg.To.Add(to);
+                }
+
+                // From
+                var mailAddress = new MailAddress("E.C.P. Office " + serverSettings.ServerSystemMail);
+                mailMsg.From = mailAddress;
+
+                // Subject and Body
+                mailMsg.Subject = subject;
+                mailMsg.Body = sb.ToString();
+                mailMsg.IsBodyHtml = true;
+
+                var attachFile = new Attachment(attachment, "Auftragsbestätigung_" + DateTime.Now.ToShortDateString() + ".pdf", "application/pdf");
+
+                mailMsg.Attachments.Add(attachFile);
+                if(includeAgb)
+                    mailMsg.Attachments.Add(new Attachment(new FileInputStream(HTBUtils.GetConfigValue("AGB_File")), "ECP_AGB.pdf", "application/pdf"));
+
+                // Init SmtpClient and send
+                var smtpClient = new SmtpClient(control.SMTPServer);
+                if (control.SMTPPort > 0)
+                {
+                    smtpClient.Port = control.SMTPPort;
+                }
+                var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
+                smtpClient.Credentials = credentials;
+                smtpClient.Send(mailMsg);
+                log.Info(string.Format("Klient [ID: {0}] [Name: {1}] Receipt sent to: [{2}]", klient.KlientID, klient.KlientName1, string.Join("  ", receipients)));
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                log.Error(ex.StackTrace);
+                if (ex.InnerException != null)
+                {
+                    log.Error("Inner: " + ex.InnerException.Message);
+                }
+                return false;
+            }
+        }
+        public bool SendAgReceipt(tblAuftraggeber ag, String body, Stream attachment, bool includeAgb = true)
+        {
+            log.Info("Sending Klient Receipt");
+            try
+            {
+                // To
+                var sb = new StringBuilder(body);
+
+                var receipients = HTBUtils.GetValidEmailAddressesFromString(ag.AuftraggeberEMail);
+                if (HTBUtils.IsTestEnvironment)
+                    receipients.Clear();
+                var subject = control.KlientReceiptEmailSubject.Replace("<date>", DateTime.Now.ToShortDateString());
+                receipients.Add(HTBUtils.GetConfigValue("Default_EMail_Addr")); // send copy to default email for backup purposes
+
+                var mailMsg = new MailMessage();
+                foreach (string toAdr in receipients)
+                {
+                    if(HTBUtils.IsValidEmail(toAdr))
+                        mailMsg.To.Add(toAdr);
+                }
+
+                // From
+                var mailAddress = new MailAddress("E.C.P. Office " + serverSettings.ServerSystemMail);
+                mailMsg.From = mailAddress;
+
+                // Subject and Body
+                mailMsg.Subject = subject;
+                mailMsg.Body = sb.ToString();
+                mailMsg.IsBodyHtml = true;
+
+                var attachFile = new Attachment(attachment, "Auftragsbestätigung_" + DateTime.Now.ToShortDateString() + ".pdf", "application/pdf");
+
+                mailMsg.Attachments.Add(attachFile);
+                if (includeAgb)
+                    mailMsg.Attachments.Add(new Attachment(new FileInputStream(HTBUtils.GetConfigValue("AGB_File")), "ECP_AGB.pdf", "application/pdf"));
+
+                // Init SmtpClient and send
+                var smtpClient = new SmtpClient(control.SMTPServer);
+                if (control.SMTPPort > 0)
+                {
+                    smtpClient.Port = control.SMTPPort;
+                }
+                var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
+                smtpClient.Credentials = credentials;
+                smtpClient.Send(mailMsg);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                log.Error(ex.StackTrace);
+                if (ex.InnerException != null)
+                {
+                    log.Error("Inner: " + ex.InnerException.Message);
+                }
+                return false;
+            }
+        }
+        #endregion
+
+        private String GetHtmlTableHeader(string[] header)
+        {
+            var sb = new StringBuilder("<TABLE>");
+            sb.Append("<TR>");
+            for (int i = 0; i < header.Length; i++)
+            {
+                sb.Append("<TH>");
+                sb.Append(header[i]);
+                sb.Append("</TH>");
+            }
+            sb.Append("</TR>");
+            return sb.ToString();
+        }
+
+        #region Generic Email
+
+        public bool SendGenericEmail(string to, string subject, string body, bool ishtml = true, int inkAktId = 0)
+        {
+            return SendGenericEmail(new List<string> { to }, subject, body, ishtml, inkAktId);
+        }
+
+        public bool SendGenericEmail(IEnumerable<string> to, string subject, string body, bool ishtml = true, int inkAktId = 0, int intAktId = 0)
+        {
+            return SendGenericEmail(null, to, subject, body, ishtml, inkAktId, intAktId);
+        }
+        public bool SendGenericEmail(string from, IEnumerable<string> to, string subject, string body, bool ishtml, int inkAktId, int intAktId)
+        {
+            log.Info("Sending Generic Email");
+            try
+            {
+                var mailMsg = new MailMessage();
+                foreach (string toAddr in to)
+                {
+                    mailMsg.To.Add(toAddr);
+                    log.Info("Generic Email TO: "+toAddr);
+                }
+
+                // From
+                var mailAddress = new MailAddress("E.C.P. Office " + serverSettings.ServerSystemMail);
+                mailMsg.From = mailAddress;
+
+                // Subject and Body
+                mailMsg.Subject = subject;
+                mailMsg.IsBodyHtml = ishtml;
+                mailMsg.Body = body;
+                if (from != null && HTBUtils.IsValidEmail(from))
+                {
+                    mailMsg.From = new MailAddress(from);
+                }
+                if (ReplyTo != string.Empty && HTBUtils.IsValidEmail(ReplyTo))
+                {
+                    mailMsg.ReplyToList.Add(new MailAddress(ReplyTo));
+                }
+
+                // Init SmtpClient and send
+                var smtpClient = new SmtpClient(control.SMTPServer);
+                if (control.SMTPPort > 0)
+                {
+                    smtpClient.Port = control.SMTPPort;
+                }
+                var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
+                smtpClient.Credentials = credentials;
+                smtpClient.Send(mailMsg);
+                log.Info("EMail Sent!");
+                EmailSentSuccessfully(mailMsg.Subject, to, null, inkAktId, intAktId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                log.Error(ex.StackTrace);
+                if (ex.InnerException != null)
+                {
+                    log.Error(ex.InnerException.Message);
+                    if (ex.InnerException.InnerException != null)
+                    {
+                        log.Error(ex.InnerException.InnerException.Message);
+                    }
+                }
+                EmailSentError(subject, to, inkAktId, intAktId, ex);
+                return false;
+            }
+        }
+
+        public bool SendGenericEmail(IEnumerable<string> to, string subject, string body, bool ishtml, IEnumerable<HTBEmailAttachment> attachments, int inkAktId, int intAktId)
+        {
+            return SendGenericEmail(null, to, subject, body, ishtml, attachments, inkAktId, intAktId);
+        }
+
+        public bool SendGenericEmail(string from, IEnumerable<string> to, string subject, string body, bool ishtml, IEnumerable<HTBEmailAttachment> attachments, int inkAktId, int intAktId)
+        {
+            return SendGenericEmail(from, to, null, null, subject, body, ishtml, attachments, inkAktId, intAktId);
+        }
+        public bool SendGenericEmail(string from, IEnumerable<string> to, IEnumerable<string> cc, IEnumerable<string> bcc, string subject, string body, bool ishtml, IEnumerable<HTBEmailAttachment> attachments, int inkAktId, int intAktId)
+        {
+            try
+            {
+                var mailMsg = new MailMessage();
+                foreach (string toAddr in to)
+                {
+                    mailMsg.To.Add(toAddr);
+                    log.Info("Generic Email TO [with attachments]: " + toAddr);
+                }
+
+                if(cc != null)
+                {
+                    foreach (string ccAddr in cc)
+                    {
+                        mailMsg.CC.Add(ccAddr);
+                        log.Info("Generic Email CC [with attachments]: " + ccAddr);
+                    }
+                }
+                
+                if (bcc != null)
+                {
+                    foreach (string bccAddr in bcc)
+                    {
+                        mailMsg.Bcc.Add(bccAddr);
+                        log.Info("Generic Email CC [with attachments]: " + bccAddr);
+                    }
+                }
+                
+                // From
+                var mailAddress = new MailAddress("E.C.P. Office " + serverSettings.ServerSystemMail);
+                mailMsg.From = mailAddress;
+
+                // Subject and Body
+                mailMsg.Subject = subject;
+                mailMsg.IsBodyHtml = ishtml;
+                mailMsg.Body = body;
+                if (from != null && HTBUtils.IsValidEmail(from))
+                {
+                    mailMsg.From = new MailAddress(from);
+                }
+                if (ReplyTo != string.Empty && HTBUtils.IsValidEmail(ReplyTo))
+                {
+                    mailMsg.ReplyToList.Add(new MailAddress(ReplyTo));
+                }
+                var attachmentsToDispose = new List<Stream>();
+                if (attachments != null)
+                    foreach (var attachment in attachments)
+                    {
+                        mailMsg.Attachments.Add(new Attachment(attachment.AttachmentStream, attachment.AttachmentStreamName, attachment.AttachmentStreamMime));
+                        attachmentsToDispose.Add(attachment.AttachmentStream);
+                    }
+
+                // Init SmtpClient and send
+                var smtpClient = new SmtpClient(control.SMTPServer);
+                if (control.SMTPPort > 0)
+                {
+                    smtpClient.Port = control.SMTPPort;
+                }
+                var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
+                smtpClient.Credentials = credentials;
+                smtpClient.Send(mailMsg);
+                log.Info("EMail Sent!");
+                EmailSentSuccessfully(mailMsg.Subject, to, null, inkAktId, intAktId);
+                foreach (var s in attachmentsToDispose)
+                {
+                    try
+                    {
+                        s.Close();
+                        s.Dispose();
+                    }
+                    catch
+                    {
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                EmailSentError(subject, to, inkAktId, intAktId, ex);
+                return false;
+            }
+        }
+        #endregion
+
+        #region Private Helper Methods
+        private void EmailSentSuccessfully(string subject, IEnumerable<string> to, List<string> cc, int inkAktId, int intAktId)
+        {
+            if(inkAktId > 0)
+                AddInkassoAction(subject, to, cc, inkAktId, "EMail Geschickt!");
+            if(intAktId > 0)
+                AddInterventionAction(subject, to, cc, intAktId, _intAktEmailSentActionTypeId);
+        }
+        private void EmailSentError(string subject, IEnumerable<string> to, int inkAktId, int intAktId, Exception ex)
+        {
+            if (inkAktId > 0)
+                AddInkassoAction(subject, to, null, inkAktId, string.Format("EMail Wurde NICHT Geschickt! []" + ex.Message));
+            if(intAktId > 0)
+                AddInterventionAction(subject, to, null, intAktId, _intAktEmailNotSentActionTypeId, string.Format("EMail Wurde NICHT Geschickt! []" + ex.Message));
+        }
+        private void AddInkassoAction(string subject, IEnumerable<string> to, List<string> cc, int aktId, string action)
+        {
+            if (aktId <= 0) return;
+            
+            var sb = new StringBuilder("Betref: ");
+            sb.Append(subject);
+            sb.Append("\nAN: ");
+            sb.Append(string.Join("  ", to));
+            if (cc != null && cc.Count > 0)
+            {
+                sb.Append("\nCC: ");
+                sb.Append(string.Join("  ", cc));
+            }
+            HTBUtils.AddInkassoAction(aktId, action, sb.ToString(), control.DefaultSB);       
+        }
+
+        private void AddInterventionAction(string subject, IEnumerable<string> to, List<string> cc, int aktId, int actionTypeId, string errorMessage = null)
+        {
+            if (aktId <= 0) return;
+            
+
+            var sb = new StringBuilder();
+            if (errorMessage != null)
+            {
+                sb.Append(errorMessage);
+                sb.Append(" \n");
+            }
+
+            sb.Append("Betref: ");
+            sb.Append(subject);
+            sb.Append("\nAN: ");
+            sb.Append(string.Join("  ", to));
+            if (cc != null && cc.Count > 0)
+            {
+                sb.Append("\nCC: ");
+                sb.Append(string.Join("  ", cc));
+            }
+            HTBUtils.AddInterventionAction(aktId, actionTypeId, sb.ToString(), control.DefaultSB);
+        }
+        
+        #endregion
+
+    }
+}

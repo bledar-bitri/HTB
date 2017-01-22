@@ -1,0 +1,129 @@
+﻿using System;
+
+namespace HTB.Database.Views
+{
+    public class qryAktenInt : tblAktenInt
+    {
+        #region Property Declaration from tblAktenTypeInt
+        public int AktTypeINTID { get; set; }
+        public string AktTypeINTCaption { get; set; }
+        public string AktTypeINTCaptionShort { get; set; }
+        public string AktTypeINTPic { get; set; }
+        public int AktTypeINTCode { get; set; }
+        #endregion
+        
+        #region Property Declaration from tblGegner
+        public int GegnerID { get; set; }
+        public string GegnerName1 { get; set; }
+        public string GegnerName2 { get; set; }
+        public string GegnerName3 { get; set; }
+        public string GegnerStrasse { get; set; }
+        public string GegnerZipPrefix { get; set; }
+        public string GegnerZip { get; set; }
+        public string GegnerOrt { get; set; }
+        public DateTime GegnerGebDat { get; set; }
+        public string GegnerOldID { get; set; }
+        public int GegnerVVZ { get; set; }
+        public string GegnerPhoneCountry { get; set; }
+        public string GegnerPhoneCity { get; set; }
+        public string GegnerPhone { get; set; }
+        public string GegnerLastZipPrefix { get; set; }
+        public string GegnerLastZip { get; set; }
+        public string GegnerLastOrt { get; set; }
+        public string GegnerLastStrasse { get; set; }
+        public string GegnerLastName1 { get; set; }
+        public string GegnerLastName2 { get; set; }
+        public string GegnerLastName3 { get; set; }
+        public string GegnerEmail { get; set; }
+
+        public double GegnerLatitude { get; set; }
+        public double GegnerLongitude { get; set; }
+
+        public string GegnerSVANummer { get; set; }
+        public string GegnerArbeitgeber { get; set; }
+        public string GegnerBeruf { get; set; }
+
+        public string GegnerPartnerName { get; set; }
+        public string GegnerPartnerAdresse { get; set; }
+        public string GegnerPartnerPhone { get; set; }
+        public DateTime GegnerPartnerGebDat { get; set; }
+        public string GegnerPartnerSVANummer { get; set; }
+        public string GegnerPartnerBeruf { get; set; }
+        public string GegnerPartnerArbeitgeber { get; set; }
+
+        public int Gegner2ID { get; set; }
+        public string Gegner2Name1 { get; set; }
+        public string Gegner2Name2 { get; set; }
+        public DateTime Gegner2GebDat { get; set; }
+        public string Gegner2PhoneCountry { get; set; }
+        public string Gegner2PhoneCity { get; set; }
+        public string Gegner2Phone { get; set; }
+        public string Gegner2LastZipPrefix { get; set; }
+        public string Gegner2LastZip { get; set; }
+        public string Gegner2LastOrt { get; set; }
+        public string Gegner2LastStrasse { get; set; }
+        public string Gegner2LastName1 { get; set; }
+        public string Gegner2LastName2 { get; set; }
+                      
+        #endregion
+
+        #region Property Declaration from tblKlient
+        public int KlientID { get; set; }
+        public string KlientName1 { get; set; }
+        public string KlientName2 { get; set; }
+        public string KlientName3 { get; set; }
+        public string KlientStrasse { get; set; }
+        public string KlientLKZ { get; set; }
+        public string KlientPLZ { get; set; }
+        public string KlientOrt { get; set; }
+        #endregion
+
+        #region Property Declaration from tblAuftraggeber
+        public int AuftraggeberID { get; set; }
+        public string AuftraggeberName1 { get; set; }
+        public string AuftraggeberName2 { get; set; }
+        public string AuftraggeberStrasse { get; set; }
+        public string AuftraggeberLKZ { get; set; }
+        public string AuftraggeberPLZ { get; set; }
+        public string AuftraggeberOrt { get; set; }
+        public int AuftraggeberHinterlegung { get; set; }
+        public string AuftraggeberPhoneCountry { get; set; }
+        public string AuftraggeberPhoneCity { get; set; }
+        public string AuftraggeberPhone { get; set; }
+        public string AuftraggeberEMail { get; set; }
+        public string AuftraggeberWeb { get; set; }
+        public bool AuftraggeberUseMerzedesProtocol { get; set; }
+        #endregion
+
+        #region Property Declaration from tblUser
+        public int UserID { get; set; }
+        public string UserVorname { get; set; }
+        public string UserNachname { get; set; }
+        public int UserSex { get; set; }
+        public string UserEMailOffice { get; set; }
+        public string UserEMailPrivate { get; set; }
+        #endregion
+
+        #region Property Declaration from tblAutoDealer
+        public string AutoDealerName{get; set; }
+		public string AutoDealerStrasse{get; set; }
+		public string AutoDealerLKZ{get; set; }
+		public string AutoDealerPLZ{get; set; }
+		public string AutoDealerOrt{get; set; }
+		public int AutoDealerStaat{get; set; }
+		public string AutoDealerPhoneCountry{get; set; }
+		public string AutoDealerPhoneCity{get; set; }
+		public string AutoDealerPhone{get; set; }
+        public string AutoDealerEMail{ get; set; }
+        #endregion
+
+        #region Property Declaration from tblAutoType
+        public string AutoTypeCaption { get; set; }
+        #endregion;
+
+        public bool IsAuto()
+        {
+            return AktTypeINTCode == 2 || AktTypeINTCode == 10;
+        }
+    }
+}

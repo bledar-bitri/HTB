@@ -1,0 +1,95 @@
+﻿table.report th, th.sort {
+	color: #000000;
+	BACKGROUND-COLOR: #D4D0C8;
+	font-weight: normal;
+	border-top: 1px solid rgb(255,255,255);
+	border-left: 1px solid rgb(255,255,255);
+	border-bottom: 1px solid rgb(128,128,128);
+	border-right: 1px solid rgb(128,128,128);
+	padding : 0px 9px 0px 9px;
+	text-align: left;
+}
+
+table.report td {
+	padding-left: 9px;
+}
+
+td.sectionBody p {
+	height: 1em;
+}
+
+td.tableRowHeader {
+	font-size: 11px;
+	font-weight: bold;
+	color: #ffffff;
+	background-color: #5C74A9;
+	background-image: url(/images/tableHdrbg.gif);
+	background-repeat: repeat-x;
+	padding: 0px 9px;
+	height: 20px;
+}
+
+table.report caption {
+	text-align:left;
+	font-weight:bold;
+	color:#5a75ad;
+	padding-left:10px;
+	height: 14px;
+}
+
+table.block {
+	width: 100%;
+	margin: 10px 0;
+	border-collapse: collapse;
+}
+
+table.block td, table.block th {
+	vertical-align: top;
+	border: 1px solid #fff;
+	padding: 2px 10px;
+}
+
+table.block td {
+	background-color: #eee;
+}
+
+table.block th {
+	background-color: #5C74A9;
+	color: #ffffff;
+	font-weight: bold;
+	text-align : left;
+}
+
+#shadow-container {
+	position: relative;
+	left: 3px;
+	top: 3px;
+	margin-right: 3px;
+	margin-bottom: 3px;
+}
+
+#shadow-container .shadow2,
+#shadow-container .shadow3,
+#shadow-container .container {
+	position: relative;
+	left: -1px;
+	top: -1px;
+}
+
+#shadow-container .shadow1 {
+	background: #F1F0F1;
+}
+
+#shadow-container .shadow2 {
+	background: #DBDADB;
+}
+
+#shadow-container .shadow3 {
+	background: #B8B6B8;
+}
+
+#shadow-container .container {
+	background: #f5f5f5;
+	border: 1px solid #848284;
+	padding: 10px 0px 10px 10px;
+}

@@ -1,0 +1,1 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="DownloadAktsWithOpenedTransfersTablet.aspx.cs" Inherits="HTB.v2.intranetx.aktenint.tablet.DownloadAktsWithOpenedTransfersTablet"  ValidateRequest="false"%>

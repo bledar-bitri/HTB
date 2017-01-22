@@ -1,0 +1,1 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="DownloadAktInstallmentInfoTablet.aspx.cs" Inherits="HTB.v2.intranetx.aktenint.tablet.DownloadAktInstallmentInfoTablet"  ValidateRequest="false"%>

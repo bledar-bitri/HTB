@@ -1,0 +1,83 @@
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
+using System.Text;
+using System.Xml.Serialization;
+using HTBAntColonyTSP;
+
+namespace HTB.v2.intranetx.routeplanter
+{
+    [DebuggerDisplay("City {DebuggerDisplay}")]
+    [XmlRoot(ElementName = "City", IsNullable = false)]
+    [Serializable]
+    public class City : ISerializable
+    {
+        public const int Radius = 6;
+
+        private AddressLocation _location;
+        private TspCity _mTspTspCity;
+
+        public AddressLocation Location
+        {
+            get { return _location; }
+            set { _location = value;  }
+        }
+
+        public AddressWithID Address
+        {
+            get { return _location.Address; }
+        }
+
+        public TspCity TspTspCity
+        {
+            get { return _mTspTspCity; }
+            set { _mTspTspCity = value; }
+        }
+
+        public City()
+        {
+        }
+
+        public City(AddressLocation location, TspCity tspTspCity)
+        {
+            _location = location;
+            _mTspTspCity = tspTspCity;
+        }
+
+        public bool Equals(City c)
+        {
+            return Address.Equals(c.Address);
+        }
+
+        public string DebuggerDisplay
+        {
+            get {return Location.DebuggerDisplay;}
+        }
+
+        #region ISerializable
+        //note: this is private to control access;
+        //the serializer can still access this constructor
+        private City(SerializationInfo info, StreamingContext ctxt)
+        {
+            _mTspTspCity = (TspCity) info.GetValue("TspCity", typeof (TspCity));
+            _location = (AddressLocation) info.GetValue("AddressLocation", typeof (AddressLocation));
+        }
+
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
+        {
+            info.AddValue("TspCity", _mTspTspCity, typeof(TspCity));
+            info.AddValue("AddressLocation", _location, typeof(AddressLocation));
+        }
+        #endregion
+
+        public string GetDumpData()
+        {
+            var sb = new StringBuilder();
+            sb.Append("City: ");
+            sb.Append(Location.DebuggerDisplay);
+            return sb.ToString();
+        }
+    }
+}

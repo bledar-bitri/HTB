@@ -1,0 +1,1 @@
+﻿<%@ Page Async="true" Language="C#" AutoEventWireup="true" CodeBehind="BingRoutePlanerProgressTabletApp.aspx.cs" Inherits="HTB.v2.intranetx.routeplanter.bingmaps.tabletApp.BingRoutePlanerProgressTabletApp" ValidateRequest="false" %>

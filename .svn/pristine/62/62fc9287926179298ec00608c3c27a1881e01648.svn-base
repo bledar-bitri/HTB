@@ -1,0 +1,232 @@
+﻿using System;
+using System.Web.UI.WebControls;
+using HTB.Database;
+using HTBUtilities;
+using HTB.v2.intranetx.util;
+using System.Collections;
+using System.Data;
+
+namespace HTB.v2.intranetx.auftraggeber
+{
+    public partial class EditAuftraggeber : System.Web.UI.Page
+    {
+        string agId;
+        tblAuftraggeber auftraggeber;
+        bool isNew = false;
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                GlobalUtilArea.LoadDropdownList(ddlState,
+                        "SELECT * FROM tblState ORDER BY tblStateID ASC",
+                        typeof(tblState),
+                        "tblStateID",
+                        "tblStateCaption", false);
+
+                GlobalUtilArea.LoadDropdownList(ddlAGBank,
+                        "SELECT * FROM tblBank ORDER BY BankBez ASC",
+                        typeof(tblBank),
+                        "BankID",
+                        "BankBez", true);
+            }
+
+            if (Request.QueryString["ID"] != null && !Request.QueryString["ID"].ToString().Trim().Equals(""))
+            {
+                agId = Request.QueryString["ID"];
+                auftraggeber = (tblAuftraggeber)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeber WHERE AuftraggeberID = " + agId, typeof(tblAuftraggeber));
+                if (auftraggeber == null)
+                    isNew = true;
+                else if (!IsPostBack)
+                {
+                    SetValues();
+                }
+            }
+            else
+            {
+                isNew = true;
+            }
+            
+            if (!IsPostBack)
+            {
+                PopulateKostenGrid();
+            }
+
+            lblHeader.Text = isNew ? "NEUER AUFTRAGGEBER" : "AUFTRAGGEBER EDITIEREN";
+            litTitle.Text = isNew ? "HTB.ASP [ Neuer Auftraggeber ]" : "HTB.ASP [ Auftraggeber editieren ]";
+            lblNavTitle.Text = isNew ? "Neu Auftraggeber" : "Auftraggeber Editieren";
+        }
+
+        private void SetValues()
+        {
+            txtAnrede.Text = auftraggeber.AuftraggeberAnrede;
+            txtName1.Text = auftraggeber.AuftraggeberName1;
+            txtName2.Text = auftraggeber.AuftraggeberName2;
+            txtName3.Text = auftraggeber.AuftraggeberName3;
+            txtStrasse.Text = auftraggeber.AuftraggeberStrasse;
+            txtZIPPrefix.Text = auftraggeber.AuftraggeberLKZ;
+            txtZIP.Text = auftraggeber.AuftraggeberPLZ;
+            txtOrt.Text = auftraggeber.AuftraggeberOrt;
+            txtPhoneCountry.Text = auftraggeber.AuftraggeberPhoneCountry;
+            txtPhoneCity.Text = auftraggeber.AuftraggeberPhoneCity;
+            txtPhone.Text = auftraggeber.AuftraggeberPhone;
+            txtFaxCountry.Text = auftraggeber.AuftraggeberFaxCountry;
+            txtFaxCity.Text = auftraggeber.AuftraggeberFaxCity;
+            txtFax.Text = auftraggeber.AuftraggeberFax;
+            txtemail.Text = auftraggeber.AuftraggeberEMail;
+            chksendconfirmation.Checked = auftraggeber.AuftraggeberSendConfirmation;
+            txtweb.Text = auftraggeber.AuftraggeberWeb;
+            txtInterventionshonorar.Text = HTBUtils.FormatCurrencyNumber(auftraggeber.AuftraggeberInterventionshonorar);
+            txtIntProv.Text = HTBUtils.FormatCurrencyNumber(auftraggeber.AuftraggeberInterventionsProvision);
+            txtInterventionsKosten.Text = HTBUtils.FormatCurrencyNumber(auftraggeber.AuftraggeberInterventionsKost);
+            //txtIntProv2.Text = auftraggeber.AuftraggeberInterventionsProvision2.ToString();
+            txtMemo.Text = auftraggeber.AuftraggeberMemo;
+
+            chkHl.Checked = auftraggeber.AuftraggeberHinterlegung == 1;
+            chkProv.Checked = auftraggeber.AuftraggeberIntAktPovAbzug == 1;
+
+            ddlState.SelectedValue = auftraggeber.AuftraggeberStaat.ToString();
+            ddlAGBank.SelectedValue = auftraggeber.AuftraggeberBank.ToString();
+        }
+
+        private void LoadValues()
+        {
+            if (isNew)
+                auftraggeber = new tblAuftraggeber();
+
+            auftraggeber.AuftraggeberAnrede = txtAnrede.Text;
+            auftraggeber.AuftraggeberName1 = txtName1.Text;
+            auftraggeber.AuftraggeberName2 = txtName2.Text;
+            auftraggeber.AuftraggeberName3 = txtName3.Text;
+            auftraggeber.AuftraggeberStrasse = txtStrasse.Text;
+            auftraggeber.AuftraggeberLKZ = txtZIPPrefix.Text;
+            auftraggeber.AuftraggeberPLZ = txtZIP.Text;
+            auftraggeber.AuftraggeberOrt = txtOrt.Text;
+            auftraggeber.AuftraggeberPhoneCountry = txtPhoneCountry.Text;
+            auftraggeber.AuftraggeberPhoneCity = txtPhoneCity.Text;
+            auftraggeber.AuftraggeberPhone = txtPhone.Text;
+            auftraggeber.AuftraggeberFaxCountry = txtFaxCountry.Text;
+            auftraggeber.AuftraggeberFaxCity = txtFaxCity.Text;
+            auftraggeber.AuftraggeberFax = txtFax.Text;
+            auftraggeber.AuftraggeberEMail = txtemail.Text;
+            auftraggeber.AuftraggeberSendConfirmation = chksendconfirmation.Checked;
+            auftraggeber.AuftraggeberWeb = txtweb.Text;
+            auftraggeber.AuftraggeberInterventionsKost = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtInterventionsKosten.Text);
+            auftraggeber.AuftraggeberInterventionshonorar = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtInterventionshonorar.Text);
+            auftraggeber.AuftraggeberInterventionsProvision = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtIntProv.Text);
+            //auftraggeber.AuftraggeberInterventionsProvision2 = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtIntProv2.Text);
+            auftraggeber.AuftraggeberMemo = txtMemo.Text;
+
+            auftraggeber.AuftraggeberHinterlegung = chkHl.Checked ? 1 : 0;
+            auftraggeber.AuftraggeberIntAktPovAbzug = chkProv.Checked ? 1 : 0;
+
+            auftraggeber.AuftraggeberStaat = GlobalUtilArea.GetZeroIfConvertToIntError(ddlState.SelectedValue);
+            auftraggeber.AuftraggeberBank = GlobalUtilArea.GetZeroIfConvertToIntError(ddlAGBank.SelectedValue);
+        }
+
+        protected void btnSubmit_Click(object sender, EventArgs e)
+        {
+            LoadValues();
+            if (isNew)
+            {
+                RecordSet.Insert(auftraggeber);
+                auftraggeber = (tblAuftraggeber)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeber ORDER BY AuftraggeberID DESC ", typeof(tblAuftraggeber));
+            }
+            else
+                RecordSet.Update(auftraggeber);
+            SaveKosten();
+            ShowAuftraggeberPage();
+        }
+
+        protected void btnCancel_Click(object sender, EventArgs e)
+        {
+            ShowAuftraggeberPage();
+        }
+
+        private void ShowAuftraggeberPage()
+        {
+            Response.Redirect("../../intranet/auftraggeber/auftraggeber.asp?" + Request.QueryString);
+        }
+
+        #region Kosten
+        private void PopulateKostenGrid()
+        {
+            ArrayList list = HTBUtils.GetSqlRecords("SELECT * FROM tblAktTypeINT ORDER BY AktTypeINTCaption ASC", typeof(tblAktTypeInt));
+            DataTable dt = GetKostenDataTableStructure();
+            foreach (tblAktTypeInt aktType in list)
+            {
+                DataRow dr = dt.NewRow();
+                tblAuftraggeberAktTypeProv aktTypeKost = null;
+                if (auftraggeber != null)
+                {
+                    aktTypeKost = (tblAuftraggeberAktTypeProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeberAktTypeProv WHERE AGAktTypeProvAuftraggeberID = " + auftraggeber.AuftraggeberID + " AND AGAktTypeProvAktTypeIntID = " + aktType.AktTypeINTID, typeof(tblAuftraggeberAktTypeProv));
+                }
+                double amount = 0;
+                double provisionAmt = 0;
+                double provisionForZeroAmt = 0;
+                double provisionPct = 0;
+                if (aktTypeKost != null)
+                {
+                    amount = aktTypeKost.AGAktTypeProvChargeAmount;
+                    provisionAmt = aktTypeKost.AGAktTypeProvProvisionAmount;
+                    provisionForZeroAmt = aktTypeKost.AGAktTypeProvProvisionAmountForZeroCollection;
+                    provisionPct = aktTypeKost.AGAktTypeProvProvisionPct;
+                }
+                dr["AktTypeId"] = aktType.AktTypeINTID;
+                dr["AktType"] = aktType.AktTypeINTCaption;
+                dr["Amount"] = amount == 0 ? "" : amount.ToString();
+                dr["ProvAmount"] = provisionAmt == 0 ? "" : provisionAmt.ToString();
+                dr["ProvAmountForZero"] = provisionForZeroAmt == 0 ? "" : provisionForZeroAmt.ToString(); 
+                dr["ProvPct"] = provisionPct == 0 ? "" : provisionPct.ToString();
+                
+                dt.Rows.Add(dr);
+            }
+            gvKosten.DataSource = dt;
+            gvKosten.DataBind();
+        }
+        private DataTable GetKostenDataTableStructure()
+        {
+            DataTable dt = new DataTable();
+
+            dt.Columns.Add(new DataColumn("AktTypeId", typeof(int)));
+            dt.Columns.Add(new DataColumn("AktType", typeof(string)));
+            dt.Columns.Add(new DataColumn("Amount", typeof(string)));
+            dt.Columns.Add(new DataColumn("ProvAmount", typeof(string)));
+            dt.Columns.Add(new DataColumn("ProvPct", typeof(string)));
+            dt.Columns.Add(new DataColumn("ProvAmountForZero", typeof(string)));
+            return dt;
+        }
+        private void SaveKosten()
+        {
+            
+            if (!isNew)
+            {
+                RecordSet set = new RecordSet();
+                set.ExecuteNonQuery("DELETE tblAuftraggeberAktTypeProv WHERE AGAktTypeProvAuftraggeberID = " + auftraggeber.AuftraggeberID);
+            }
+            for (int i = 0; i < gvKosten.Rows.Count; i++)
+            {
+                GridViewRow row = gvKosten.Rows[i];
+                Label lblAktTypeId = (Label)row.Cells[0].FindControl("lblAktTypeId");
+                TextBox txtAmount = (TextBox)row.Cells[2].FindControl("txtAmount");
+                TextBox txtProvAmount = (TextBox)row.Cells[3].FindControl("txtProvAmount");
+                TextBox txtProvForZeroAmount = (TextBox)row.Cells[4].FindControl("txtProvAmountForZero");
+                TextBox txtProvPct = (TextBox)row.Cells[5].FindControl("txtProvPct");
+
+                tblAuftraggeberAktTypeProv prov = new tblAuftraggeberAktTypeProv();
+
+                prov.AGAktTypeProvAuftraggeberID = auftraggeber.AuftraggeberID;
+                prov.AGAktTypeProvAktTypeIntID = Convert.ToInt32(lblAktTypeId.Text);
+                prov.AGAktTypeProvChargeAmount = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtAmount.Text);
+                prov.AGAktTypeProvProvisionAmount = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtProvAmount.Text);
+                prov.AGAktTypeProvProvisionAmountForZeroCollection = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtProvForZeroAmount.Text);
+                prov.AGAktTypeProvProvisionPct = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtProvPct.Text);
+
+                if (prov.AGAktTypeProvChargeAmount > 0)
+                {
+                    RecordSet.Insert(prov);
+                }
+            }
+        }
+        #endregion
+    }
+}

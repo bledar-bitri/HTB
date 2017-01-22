@@ -1,0 +1,331 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1F23BAED-3CF6-43B9-ACAC-06600A0104E6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HTB.Database</RootNamespace>
+    <AssemblyName>HTBDatabase</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Lib\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Lib\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Lib\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>..\Lib\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="IBM.Data.DB2, Version=9.7.4.4, Culture=neutral, PublicKeyToken=7c307b91aa13d208, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\IBM.Data.DB2.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.2.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="HTB\LookupRecords\AuftraggeberDetailLookup.cs" />
+    <Compile Include="HTB\LookupRecords\GegnerPhoneDetailLookup.cs" />
+    <Compile Include="HTB\StoredProcs\spGetAussendienstTransferList.cs" />
+    <Compile Include="HTB\StringValueRec.cs" />
+    <Compile Include="HTB\StoredProcs\spGetPromoterProvision.cs" />
+    <Compile Include="HTB\StoredProcs\spGetBankTransferList.cs" />
+    <Compile Include="HTB\StoredProcs\spGetActionCoordinates.cs" />
+    <Compile Include="HTB\StoredProcs\spAGReceipt.cs" />
+    <Compile Include="HTB\tblAktenIntPosType.cs" />
+    <Compile Include="HTB\tblCountry.cs" />
+    <Compile Include="HTB\tblCustInkAktInvoiceTransfer.cs" />
+    <Compile Include="HTB\tblCustInkAktInvoiceTransferType.cs" />
+    <Compile Include="HTB\tblKlientCommunication.cs" />
+    <Compile Include="HTB\tblLawyerLetter.cs" />
+    <Compile Include="HTB\tblLawyerCost.cs" />
+    <Compile Include="HTB\tblProtokolPayment.cs" />
+    <Compile Include="HTB\tblProtokolPaymentType.cs" />
+    <Compile Include="HTB\tblRoad.cs" />
+    <Compile Include="HTB\LookupRecords\AutoDealerLookup.cs" />
+    <Compile Include="HTB\LookupRecords\SearchAktLookup.cs" />
+    <Compile Include="HTB\LookupRecords\KlientDetailLookup.cs" />
+    <Compile Include="HTB\LookupRecords\GegnerDetailLookup.cs" />
+    <Compile Include="HTB\LookupRecords\CustomerAktLookup.cs" />
+    <Compile Include="HTB\LookupRecords\UserLookup.cs" />
+    <Compile Include="HTB\LookupRecords\GegnerLookup.cs" />
+    <Compile Include="HTB\StoredProcs\spGetInkassoProvision.cs" />
+    <Compile Include="HTB\StoredProcs\spGetInkassoTransactions.cs" />
+    <Compile Include="HTB\StoredProcs\spGetAktiveUsersAndAktCount.cs" />
+    <Compile Include="HTB\StoredProcs\spGetAktsAssignedToWrongUser.cs" />
+    <Compile Include="HTB\StoredProcs\spGetGegnerAddressLatAndLgnByAktID.cs" />
+    <Compile Include="HTB\StoredProcs\spGetInfoForLawyerAkt.cs" />
+    <Compile Include="HTB\StoredProcs\spGetIntActions.cs" />
+    <Compile Include="HTB\StoredProcs\spGetNextWorkflowActionCode.cs" />
+    <Compile Include="HTB\StoredProcs\spGetWeeklyValidationResults.cs" />
+    <Compile Include="HTB\StoredProcs\spInvoiceAppliedToRate.cs" />
+    <Compile Include="HTB\StoredProcs\spProvisionDetailAG.cs" />
+    <Compile Include="HTB\StoredProcs\spProvisionHeaderAG.cs" />
+    <Compile Include="HTB\LookupRecords\KlientLookup.cs" />
+    <Compile Include="HTB\tblAbteilung.cs" />
+    <Compile Include="HTB\tblAkten.cs" />
+    <Compile Include="HTB\tblAktenIntRatenansuchen.cs" />
+    <Compile Include="HTB\tblAktenIntReceipt.cs" />
+    <Compile Include="HTB\tblAktenIntSB.cs" />
+    <Compile Include="HTB\tblAktenTypeAE.cs" />
+    <Compile Include="HTB\tblAktMeldeInfoAuswahl.cs" />
+    <Compile Include="HTB\tblAktTypeIntActionRel.cs" />
+    <Compile Include="HTB\tblASPSessionState.cs" />
+    <Compile Include="HTB\tblAuftraggeberAktTypeAktionRel.cs" />
+    <Compile Include="HTB\tblAutoDealer.cs" />
+    <Compile Include="HTB\tblAutoType.cs" />
+    <Compile Include="HTB\tblBankAccountTransaction.cs" />
+    <Compile Include="HTB\tblCustInkAktStatus.cs" />
+    <Compile Include="HTB\tblGegnerAdressen.cs" />
+    <Compile Include="HTB\tblGegnerPhone.cs" />
+    <Compile Include="HTB\tblKassablock.cs" />
+    <Compile Include="HTB\tblKassaBlockError.cs" />
+    <Compile Include="HTB\tblKassablockMissingNr.cs" />
+    <Compile Include="HTB\tblLawyer.cs" />
+    <Compile Include="HTB\tblMandant.cs" />
+    <Compile Include="HTB\tblPhoneType.cs" />
+    <Compile Include="HTB\tblProtokolUbername.cs" />
+    <Compile Include="HTB\tblRoadInfo.cs" />
+    <Compile Include="HTB\tblUserLevel.cs" />
+    <Compile Include="HTB\Views\qryAktenIntPos.cs" />
+    <Compile Include="HTB\Views\qryCustAktStatus.cs" />
+    <Compile Include="HTB\Views\qryADGebiete.cs" />
+    <Compile Include="HTB\Views\qryAktAktionKosten.cs" />
+    <Compile Include="HTB\Views\qryAkten.cs" />
+    <Compile Include="HTB\Views\qryAktenIntActionType.cs" />
+    <Compile Include="HTB\Views\qryAktenIntActionWithType.cs" />
+    <Compile Include="HTB\Views\qryAktenIntAktionen.cs" />
+    <Compile Include="HTB\Views\qryAktenIntExtension.cs" />
+    <Compile Include="HTB\Views\qryAktenIntGroupHonorar.cs" />
+    <Compile Include="HTB\Views\qryAktIntProvabrechnung.cs" />
+    <Compile Include="HTB\Views\qryAktTypeAction.cs" />
+    <Compile Include="HTB\Views\qryAuftraggeberActionProv.cs" />
+    <Compile Include="HTB\Views\qryAuftraggeberAction.cs" />
+    <Compile Include="HTB\Views\qryAuftraggeberAktTypeAction.cs" />
+    <Compile Include="HTB\Views\qryAuftraggeberAktTypeActionProv.cs" />
+    <Compile Include="HTB\Views\qryAuftraggeberAktTypeActionUserProv.cs" />
+    <Compile Include="HTB\Views\qryAuftraggeberUserProv.cs" />
+    <Compile Include="HTB\Views\qryCustInkAkt.cs" />
+    <Compile Include="HTB\Views\qryCustAktEdit.cs" />
+    <Compile Include="HTB\Views\qryCustInkAktAktionen.cs" />
+    <Compile Include="HTB\Views\qryCustInkAktInvoiceApply.cs" />
+    <Compile Include="HTB\Views\qryCustInkRate.cs" />
+    <Compile Include="HTB\Views\qryCustInkUberwiesung.cs" />
+    <Compile Include="HTB\Views\qryDoksInkAkten.cs" />
+    <Compile Include="HTB\Views\qryDoksIntAkten.cs" />
+    <Compile Include="HTB\Views\qryGegnerPhone.cs" />
+    <Compile Include="HTB\Views\qryInktAktAction.cs" />
+    <Compile Include="HTB\Views\qryKassaBlockMissingNr.cs" />
+    <Compile Include="HTB\Views\qryLookupAuftraggeber.cs" />
+    <Compile Include="HTB\Views\qryLookupGegner.cs" />
+    <Compile Include="HTB\Views\qryLookupKlient.cs" />
+    <Compile Include="HTB\Views\qryLookupUser.cs" />
+    <Compile Include="HTB\Views\qryMeldeResult.cs" />
+    <Compile Include="HTB\Views\qryUserActionProv.cs" />
+    <Compile Include="HTB\Views\qryUserAktionen.cs" />
+    <Compile Include="HTB\Views\qryUserAktTypeActionProv.cs" />
+    <Compile Include="HTB\Views\qryUsers.cs" />
+    <Compile Include="HTB\Views\qryWorkreportInfoscore.cs" />
+    <Compile Include="HTB\SingleValue.cs" />
+    <Compile Include="HTB\StoredProcs\spProvisionDetail.cs" />
+    <Compile Include="HTB\StoredProcs\spProvisionHeader.cs" />
+    <Compile Include="HTB\tblADGebiete.cs" />
+    <Compile Include="HTB\tblAktAktionen.cs" />
+    <Compile Include="HTB\tblAktAktionKostenArt.cs" />
+    <Compile Include="HTB\tblAktenDokumente.cs" />
+    <Compile Include="HTB\tblAktenIntAction.cs" />
+    <Compile Include="HTB\tblAktenIntActionTypeNextStep.cs" />
+    <Compile Include="HTB\tblAktenIntExtension.cs" />
+    <Compile Include="HTB\tblAktenIntHonorar.cs" />
+    <Compile Include="HTB\tblAktenIntHonorarGroup.cs" />
+    <Compile Include="HTB\tblAktenIntHonorarGroupRel.cs" />
+    <Compile Include="HTB\tblAktenIntProcessType.cs" />
+    <Compile Include="HTB\tblAktMelde.cs" />
+    <Compile Include="HTB\tblAnsprechpartner.cs" />
+    <Compile Include="HTB\tblAuftraggeberActionProv.cs" />
+    <Compile Include="HTB\tblAuftraggeberAktionRel.cs" />
+    <Compile Include="HTB\tblAuftraggeberAktTypeActionProv.cs" />
+    <Compile Include="HTB\tblAuftraggeberAktTypeActionUserProv.cs" />
+    <Compile Include="HTB\tblAuftraggeberAktTypeProv.cs" />
+    <Compile Include="HTB\tblAuftraggeberUserProv.cs" />
+    <Compile Include="HTB\tblBank.cs" />
+    <Compile Include="HTB\tblCommunicationLog.cs" />
+    <Compile Include="HTB\tblConfig.cs" />
+    <Compile Include="HTB\tblControl.cs" />
+    <Compile Include="HTB\tblCustInkAkt.cs" />
+    <Compile Include="HTB\tblCustInkAktAktion.cs" />
+    <Compile Include="HTB\tblCustInkAktDok.cs" />
+    <Compile Include="HTB\tblCustInkAktExpPayment.cs" />
+    <Compile Include="HTB\tblCustInkAktFord.cs" />
+    <Compile Include="HTB\tblCustInkAktInvoice.cs" />
+    <Compile Include="HTB\tblCustInkAktInvoiceApply.cs" />
+    <Compile Include="HTB\tblCustInkAktKosten.cs" />
+    <Compile Include="HTB\tblCustInkAktKostenKlient.cs" />
+    <Compile Include="HTB\tblCustInkAktPayment.cs" />
+    <Compile Include="HTB\tblCustInkAktPos.cs" />
+    <Compile Include="HTB\tblCustInkAktRate.cs" />
+    <Compile Include="HTB\tblCustInkAktRateApply.cs" />
+    <Compile Include="HTB\tblCustInkAktRV.cs" />
+    <Compile Include="HTB\tblCustInkAktZinsen.cs" />
+    <Compile Include="HTB\tblDokument.cs" />
+    <Compile Include="HTB\tblDokumentType.cs" />
+    <Compile Include="HTB\tblInkIntAktRel.cs" />
+    <Compile Include="HTB\tblKlientType.cs" />
+    <Compile Include="HTB\tblKZ.cs" />
+    <Compile Include="HTB\tblMahnungKostenArtId.cs" />
+    <Compile Include="HTB\tblMahnungSet.cs" />
+    <Compile Include="HTB\tblAktenIntPosSet.cs" />
+    <Compile Include="HTB\Views\qryAktenIntSet.cs" />
+    <Compile Include="HTB\Views\qryAktenInt.cs" />
+    <Compile Include="HTB\Views\qryKostenSet.cs" />
+    <Compile Include="HTB\Views\qryKosten.cs" />
+    <Compile Include="HTB\Views\qryProtokol.cs" />
+    <Compile Include="HTB\tblAktenInt.cs" />
+    <Compile Include="HTB\tblAktenIntActionType.cs" />
+    <Compile Include="HTB\tblAktenIntPos.cs" />
+    <Compile Include="HTB\tblAktKostenMahnung.cs" />
+    <Compile Include="HTB\tblAktTypeInt.cs" />
+    <Compile Include="HTB\tblAuftraggeber.cs" />
+    <Compile Include="HTB\tblGegner.cs" />
+    <Compile Include="HTB\tblKlient.cs" />
+    <Compile Include="HTB\tblKosten.cs" />
+    <Compile Include="HTB\tblKostenArt.cs" />
+    <Compile Include="HTB\tblMahnung.cs" />
+    <Compile Include="HTB\tblMahnungKosten.cs" />
+    <Compile Include="HTB\tblOrte.cs" />
+    <Compile Include="HTB\tblProtokol.cs" />
+    <Compile Include="HTB\tblProtokolBesuch.cs" />
+    <Compile Include="HTB\tblProtokolServiceheft.cs" />
+    <Compile Include="HTB\tblRoleDefinition.cs" />
+    <Compile Include="HTB\tblRoleFunctions.cs" />
+    <Compile Include="HTB\tblRoles.cs" />
+    <Compile Include="HTB\tblServerSettings.cs" />
+    <Compile Include="HTB\tblState.cs" />
+    <Compile Include="HTB\tblTarifeABG.cs" />
+    <Compile Include="HTB\tblTarifeAllgemein.cs" />
+    <Compile Include="HTB\tblTarifeEvidenz.cs" />
+    <Compile Include="HTB\tblTarifeMahnung.cs" />
+    <Compile Include="HTB\tblTarifeRaten.cs" />
+    <Compile Include="HTB\tblUser.cs" />
+    <Compile Include="HTB\tblUserActionProv.cs" />
+    <Compile Include="HTB\tblUserAktionRel.cs" />
+    <Compile Include="HTB\tblUserAktTypeActionProv.cs" />
+    <Compile Include="HTB\tblUserRoles.cs" />
+    <Compile Include="DatabasePool.cs" />
+    <Compile Include="DbConnection.cs" />
+    <Compile Include="Globals.cs" />
+    <Compile Include="HTB\tblWege.cs" />
+    <Compile Include="HTB\tblWFA.cs" />
+    <Compile Include="HTB\tblWFK.cs" />
+    <Compile Include="HTB\tblWKFeeGlobal.cs" />
+    <Compile Include="HTB\tblWKFeeKlient.cs" />
+    <Compile Include="MappingAttributes.cs" />
+    <Compile Include="GenericRecordset.cs" />
+    <Compile Include="Record.cs" />
+    <Compile Include="RecordLoader.cs" />
+    <Compile Include="DbUtil.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RecordSet.cs" />
+    <Compile Include="StoredProcedureParameter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="lib\MySql.Data.dll" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

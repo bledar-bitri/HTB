@@ -1,0 +1,21 @@
+.clearfixplain {
+	clear: both;
+}
+.clearfix:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+/* Hides from IE-mac \*/
+* html .clearfix {
+	height: 1%;
+}
+
+/* HACK : Mozilla span.widget_container has display space */
+.widget_container {
+	border: 1px solid transparent;
+}
+/* End hide from IE-mac */ 

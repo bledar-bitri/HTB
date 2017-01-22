@@ -1,0 +1,764 @@
+using System;
+using System.IO;
+using System.Reflection;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+
+namespace HTBPdf
+{
+    public class ECPPdfWriter 
+    {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        protected String			filePath		= "C:/temp/testPdfWriter.pdf";
+	    protected String			imagePath		= "";
+        private const int IMAGE_MAX_WIDTH = 400;
+        private const int IMAGE_MAX_HEIGHT = 600;
+
+        private Document _document;
+        public Document Document
+        {
+            get { return _document; }
+            set { _document = value; }
+        }
+	    
+        protected iTextSharp.text.Rectangle			pageSize;
+	    protected BaseFont			font;
+        private PdfWriter _writer;
+        public PdfWriter Writer
+        {
+            get { return _writer; }
+            set { _writer = value; }
+        }
+
+	    protected float				orgLineWidth	= .5f;
+	    protected float				lineWidth		= .5f;
+	    protected float				barcodeX		= 1;
+	    protected float				barcodeN		= 2;
+	    protected int				fontSize		= 12;
+	    protected bool			    landscapeMode	= false;
+
+	    protected float				marginLeft;
+	    protected float				marginRight;
+	    protected float				marginTop;
+	    protected float				marginBottom;
+	    protected int				pageHeight;
+
+	    private bool				canDrawRects	= true;
+	    private bool				canDrawLines	= true;
+	    private bool				canPrint		= true;
+
+	    private String				_fontsDir = "c:/windows/fonts";
+
+        public String FontsDir
+        {
+            get { return _fontsDir; }
+            set { _fontsDir = value; }
+        }
+
+        public ECPPdfWriter() : this(PageSize.LETTER, 0, 0, 0, 0) {
+	    }
+	    public ECPPdfWriter(iTextSharp.text.Rectangle ppageSize, int pmarginLeft, int pmarginRight, int pmarginTop, int pmarginBottom)  : this (ppageSize, pmarginLeft, pmarginRight, pmarginTop, pmarginBottom, BaseColor.WHITE) {
+	    }
+
+	    public ECPPdfWriter(iTextSharp.text.Rectangle ppageSize, int pmarginLeft, int pmarginRight, int pmarginTop, int pmarginBottom, BaseColor pbgColor) {
+
+		    pageSize = ppageSize;
+		    //pageSize.BackgroundColor = pbgColor;
+		    try {
+			    font = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+		    }
+		    catch (DocumentException) {
+			    //e.printStackTrace();
+		    }
+		    catch (Exception) {
+			    //e.printStackTrace();
+		    }
+	    }
+
+        #region draw
+        public void drawLine(int urow, int ucol, int lrow, int lcol)
+        {
+            drawLine(urow, ucol, lrow, lcol, lineWidth);
+        }
+
+        public void drawLine(int urow, int ucol, int lrow, int lcol, float width)
+        {
+
+            if (canDrawLines)
+            {
+                float wx1 = (float)adjustX(ucol);
+                float wy1 = (float)adjustY(urow);
+                float wx2 = (float)adjustX(lcol);
+                float wy2 = (float)adjustY(lrow);
+
+                if (HTBUtilities.HTBUtils.AlmostEqual(width, 0, .005)) width = lineWidth; 
+                _writer.DirectContent.SetLineWidth(width);
+                _writer.DirectContent.MoveTo(wx1, wy1);
+                _writer.DirectContent.LineTo(wx2, wy2);
+                _writer.DirectContent.Stroke();
+            }
+        }
+
+	    public void drawLineGray(int px, int py, int pw, int ph)
+	    {
+		    drawLine(px, py, pw, ph, BaseColor.LIGHT_GRAY);
+	    }
+
+	    public void drawLine(int urow, int ucol, int lrow, int lcol, BaseColor pbgc) {
+
+		    if (canDrawLines) {
+			    float ww, wh = 0;
+			    float wx1 = (float) adjustX(ucol);
+			    float wy1 = (float) adjustY(urow);
+			    float wx2 = (float) adjustX(lcol);
+			    float wy2 = (float) adjustY(lrow);
+			    ww = wx2 - wx1;
+			    wh = wy1 - wy2;
+
+                _writer.DirectContentUnder.SetLineWidth(lineWidth);
+                _writer.DirectContentUnder.Rectangle(wx1, wy2, ww, wh);
+                _writer.DirectContentUnder.SetColorFill(pbgc);
+                _writer.DirectContentUnder.FillStroke();
+                _writer.DirectContentUnder.Stroke();
+		    }
+	    }
+
+	    public void drawRectGray(int px, int py, int pw, int ph) {
+		    drawRectangle(px, py, pw, ph, BaseColor.LIGHT_GRAY);
+	    }
+
+	    public void drawRect(int px, int py, int pw, int ph) {
+		    drawRectangle(px, py, pw, ph, BaseColor.WHITE);
+	    }
+
+	    public void drawRectangle(int urow, int ucol, int lrow, int lcol, BaseColor pbgc) {
+
+		    if (canDrawRects) {
+			    float ww, wh = 0;
+			    float wx1 = (float) adjustX(ucol);
+			    float wy1 = (float) adjustY(urow);
+			    float wx2 = (float) adjustX(lcol);
+			    float wy2 = (float) adjustY(lrow);
+			    ww = wx2 - wx1;
+			    wh = wy1 - wy2;
+
+                _writer.DirectContentUnder.SetLineWidth(lineWidth);
+                _writer.DirectContentUnder.Rectangle(wx1, wy2, ww, wh);
+                _writer.DirectContentUnder.SetColorFill(pbgc);
+                _writer.DirectContentUnder.FillStroke();
+                _writer.DirectContentUnder.Stroke();
+		    }
+	    }
+
+	    public void drawRoundRectGray(int px, int py, int pw, int ph) {
+		    drawRoundRectGray(px, py, pw, ph, 10);
+	    }
+
+	    public void drawRoundRectGray(int px, int py, int pw, int ph, int pr) {
+		    drawRoundRectangle(px, py, pw, ph, pr, BaseColor.LIGHT_GRAY);
+	    }
+
+	    public void drawRoundRect(int px, int py, int pw, int ph, int pr) {
+		    drawRoundRectangle(px, py, pw, ph, pr, BaseColor.WHITE);
+	    }
+
+	    public void drawRoundRect(int px, int py, int pw, int ph) {
+		    drawRoundRectangle(px, py, pw, ph);
+	    }
+
+	    public void drawRoundRectangle(int px, int py, int pw, int ph) {
+		    drawRoundRectangle(px, py, pw, ph, 10, BaseColor.WHITE);
+	    }
+
+	    public void drawRoundRectangle(int urow, int ucol, int lrow, int lcol, int pr, BaseColor pbgc) {
+
+		    if (canDrawRects) {
+			    float ww, wh, wr = 0;
+			    float wx1 = (float) adjustX(ucol);
+			    float wy1 = (float) adjustY(urow);
+			    float wx2 = (float) adjustX(lcol);
+			    float wy2 = (float) adjustY(lrow);
+			    ww = wx2 - wx1;
+			    wh = wy1 - wy2;
+			    wr = wh / 4;
+			    if (wr > 10) {
+				    wr = 10;
+			    }
+                
+                _writer.DirectContentUnder.SetLineWidth(lineWidth);
+
+                _writer.DirectContentUnder.RoundRectangle(wx1, wy2, ww, wh, wr);
+                _writer.DirectContentUnder.SetColorFill(pbgc);
+                _writer.DirectContentUnder.FillStroke();
+                _writer.DirectContentUnder.Stroke();
+		    }
+	    }
+
+        public void drawBitmap(int py, int px, String pname)
+        {
+            drawBitmap(py, px, pname, 100);
+        }
+
+        public void drawBitmap(int py, int px, String pname, int pspct)
+        {
+            try
+            {
+                Image img = Image.GetInstance(imagePath + "/" + pname);
+                drawBitmap(py, px, img, pspct);
+            }
+            catch (Exception)
+            {
+                //e.printStackTrace();
+            }
+        }
+
+        public void drawBitmapFromPath(int py, int px, String ppath, int pspct)
+        {
+            try
+            {
+                Image img = Image.GetInstance(ppath);
+                drawBitmap(py, px, img, pspct);
+            }
+            catch (Exception)
+            {
+                //e.printStackTrace();
+            }
+        }
+
+        public void drawBitmap(int py, int px, byte[] pimg, int pspct=100)
+        {
+            drawBitmap(py, px, Image.GetInstance(pimg), pspct);
+        }
+
+        public void drawBitmap(int py, int px, Image pimg)
+        {
+            drawBitmap(py, px, pimg, 100);
+        }
+
+        public void drawBitmap(int py, int px, Image pimg, int pspct)
+        {
+
+            var wy = (float)adjustY(py);
+            var wx = (float)adjustX(px);
+
+            try
+            {
+                pimg.ScalePercent(pspct);
+                pimg.SetAbsolutePosition(wx, wy);
+                _document.Add(pimg);
+            }
+            catch (Exception)
+            {
+                //e.printStackTrace();
+            }
+        }
+
+
+        public void AddImageToDocument(String pname, String description = null)
+        {
+            if (File.Exists(imagePath + "/" + pname) && new FileInfo(imagePath + "/" + pname).Length > 0)
+            {
+                Image img = Image.GetInstance(imagePath + "/" + pname);
+                try
+                {
+                    img.Alignment = Element.ALIGN_CENTER;
+                    if (img.Width > IMAGE_MAX_WIDTH || img.Height > IMAGE_MAX_HEIGHT)
+                    {
+                        ResizeImage(img);
+                    }
+                    _document.Add(img);
+                    if (!string.IsNullOrEmpty(description))
+                    {
+                        var p = new Paragraph(description)
+                                    {
+                                        Alignment = Element.ALIGN_CENTER
+                                    };
+                        _document.Add(p);
+                    }
+                }
+                catch (Exception)
+                {
+                    //e.printStackTrace();
+                }
+            }
+        }
+        private void ResizeImage(Image img)
+        {
+            double srcWidth = img.Width;
+            double srcHeight = img.Height;
+
+            var resizeWidth = (float)srcWidth;
+            var resizeHeight = (float)srcHeight;
+
+            float aspect = resizeWidth / resizeHeight;
+
+            if (resizeWidth > IMAGE_MAX_WIDTH)
+            {
+                resizeWidth = IMAGE_MAX_WIDTH;
+                resizeHeight = resizeWidth / aspect;
+            }
+            if (resizeHeight > IMAGE_MAX_HEIGHT)
+            {
+                aspect = resizeWidth / resizeHeight;
+                resizeHeight = IMAGE_MAX_HEIGHT;
+                resizeWidth = resizeHeight * aspect;
+            }
+            img.ScaleAbsolute(resizeWidth, resizeHeight);
+        }
+        #endregion
+
+        #region print
+        public void print(int px, int py, long pvalue, String pedit) {
+		    print(px, py, pvalue.ToString(), 'L');
+	    }
+
+	    public void print(int px, int py, long pvalue, String pedit, char palign) {
+		    print(px, py, pvalue.ToString(), palign);
+	    }
+
+	    public void print(int px, int py, String pstr) {
+		    print(px, py, pstr, 'L');
+	    }
+
+        public void print(int px, int py, String pstr, BaseColor pbgc)
+        {
+            print(px, py, pstr, 'L', pbgc);
+        }
+	    public void print(int px, int py, double pdec) {
+		    print(px, py, pdec.ToString(), 'L');
+	    }
+
+        public void print(int px, int py, double pdec, char palign)
+        {
+            print(px, py, pdec.ToString(), palign);
+        }
+
+        public void print(int py, int px, String pstr, char palign)
+        {
+            print(py, px, pstr, palign, BaseColor.BLACK);
+        }
+
+	    public void print(int py, int px, String pstr, char palign, BaseColor pbgc) {
+		    if (canPrint) {
+			    float wy = (float) roundTo2(adjustY(py) + (fontSize / 10.0) - fontSize);
+			    float wx = (float) adjustX(px);
+
+			    _writer.DirectContent.SetLineWidth(lineWidth);
+			    int walignment = PdfContentByte.ALIGN_LEFT;
+
+                _writer.DirectContent.BeginText();
+                _writer.DirectContent.SetFontAndSize(font, fontSize);
+                _writer.DirectContent.SetColorFill(pbgc);
+			    if ('R' == palign) {
+				    wx = (float) roundTo2(wx - font.GetWidthPoint(pstr, fontSize));
+			    }
+			    else if ('C' == palign) {
+				    wx = (float) roundTo2(wx - (font.GetWidthPoint(pstr, fontSize) / 2.0));
+			    }
+                _writer.DirectContent.ShowTextAligned(walignment, pstr, wx, wy, 0);
+                _writer.DirectContent.EndText();
+		    }
+	    }
+
+	    public void printBarcode39(int py, int px, String pstr) {
+		    printBarcode39(py, px, pstr, 'L');
+	    }
+
+	    public void printBarcode39(int py, int px, String pstr, char palign) {
+    /*
+		    getContentByte();
+		    int wx = px;
+		    Barcode39 code = new Barcode39();
+		    code.setCode(pstr);
+		    code.setFont(font);
+		    code.setX(barcodeX);
+		    code.setN(barcodeN);
+		    if (palign == 'C') {
+			    wx -= code.getBarcodeSize().width() / 2;
+		    }
+		    else if (palign == 'R') {
+			    wx -= code.getBarcodeSize().width();
+		    }
+		    Image img = code.createImageWithBarcode(contentByte, null, null);
+		    drawBitmap(py, wx, img);
+     */ 
+	    }
+        #endregion
+
+        #region set
+        public void setFont(String pname, int psize) {
+		    setFont(pname, psize, false, false, false);
+	    }
+
+	    public void setFont(String pname, int psize, bool pbold, bool pitalics, bool punderline) {
+
+		    String wname = "Helvetica";
+            switch (pname.ToLower())
+            {
+                case "helvetica":
+                    wname = BaseFont.HELVETICA;
+                    if (pbold && pitalics)
+                    {
+                        wname = BaseFont.HELVETICA_BOLDOBLIQUE;
+                    }
+                    else if (pbold)
+                    {
+                        wname = BaseFont.HELVETICA_BOLD;
+                    }
+                    else if (pitalics)
+                    {
+                        wname = BaseFont.HELVETICA_OBLIQUE;
+                    }
+                    break;
+                case "arial":
+                    wname = FontsDir + "/arial.ttf";
+                    if (pbold && pitalics)
+                    {
+                        wname = FontsDir + "/arialbi.ttf";
+                    }
+                    else if (pbold)
+                    {
+                        wname = FontsDir + "/arialbd.ttf";
+                    }
+                    else if (pitalics)
+                    {
+                        wname = FontsDir + "/ariali.ttf";
+                    }
+                    break;
+                case "verdana":
+                    wname = FontsDir + "/verdana.ttf";
+                    if (pbold && pitalics)
+                    {
+                        wname = FontsDir + "/verdanaz.ttf";
+                    }
+                    else if (pbold)
+                    {
+                        wname = FontsDir + "/verdanab.ttf";
+                    }
+                    else if (pitalics)
+                    {
+                        wname = FontsDir + "/verdanai.ttf";
+                    }
+                    break;
+                case "calibri":
+                    wname = FontsDir + "/calibri.ttf";
+                    if (pbold && pitalics)
+                    {
+                        wname = FontsDir + "/calibriz.ttf";
+                    }
+                    else if (pbold)
+                    {
+                        wname = FontsDir + "/calibrib.ttf";
+                    }
+                    else if (pitalics)
+                    {
+                        wname = FontsDir + "/calibrii.ttf";
+                    }
+                    break;
+                case "letter gothic std":
+                    wname = FontsDir + "/LetterGothicStd.otf";
+                    if (pbold && pitalics)
+                    {
+                        wname = FontsDir + "/LetterGothicStd-BoldSlanted.otf";
+                    }
+                    else if (pbold)
+                    {
+                        wname = FontsDir + "/LetterGothicStd-Bold.otf";
+                    }
+                    else if (pitalics)
+                    {
+                        wname = FontsDir + "/LetterGothicStd-Slanted.otf";
+                    }
+                    break;
+                case "tahoma":
+                    wname = FontsDir + "/tahoma.ttf";
+                    if (pbold && pitalics)
+                    {
+                        wname = FontsDir + "/tahomabd.ttf";
+                    }
+                    else if (pbold)
+                    {
+                        wname = FontsDir + "/tahomabd.ttf";
+                    }
+                    else if (pitalics)
+                    {
+                        wname = FontsDir + "/tahoma.ttf";
+                    }
+                    break;
+            }
+            try
+            {
+                font = BaseFont.CreateFont(wname, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+            }
+            catch (Exception)
+            {
+                //e.printStackTrace();
+            }
+		    fontSize = psize;
+	    }
+
+	    public void setBarcodeX(float px) {
+		    if (px < 0) {
+			    px = 0;
+		    }
+		    barcodeX = px;
+	    }
+
+	    public void setBarcodeN(float pn) {
+		    if (pn < 0) {
+			    pn = 0;
+		    }
+		    barcodeN = pn;
+	    }
+
+	    public void setLandscapeMode(bool plandscapeMode) {
+
+		    if ((landscapeMode && !plandscapeMode) || (!landscapeMode && plandscapeMode)) {
+			    pageSize = pageSize.Rotate();
+                _writer.SetPageSize(pageSize);
+		    }
+		    landscapeMode = plandscapeMode;
+	    }
+
+	    public void setFormName(String pname) {
+
+		    if (pname.ToLower().Equals("letter")) {
+                pageSize = PageSize.LETTER;
+            }
+            else if (pname.ToLower().Equals("legal")) {
+                pageSize = PageSize.LEGAL;
+            }
+            else if (pname.ToLower().Equals("a4"))
+            {
+                pageSize = PageSize.A4;
+            }
+            if (landscapeMode)
+        	    pageSize = pageSize.Rotate();
+	    }
+
+	    public void setImagePath(String pimgPath) {
+		    imagePath = pimgPath;
+	    }
+
+	    public void setFilePath(String pfilePath) {
+		    filePath = pfilePath;
+	    }
+
+	    public void setLineWidth(float pwidth) {
+		    lineWidth = pwidth;
+	    }
+
+	    /*
+	     * this method sets the original line width. resetLineWidth() will set the line width to the
+	     * value passed to this method.
+	     */
+	    public void setOrgLineWidth(float pwidth) {
+		    orgLineWidth = pwidth;
+	    }
+
+	    public void resetLineWidth() {
+		    lineWidth = orgLineWidth;
+	    }
+
+	    public void newPage() {
+		    try {
+			    _document.NewPage();
+		    }
+		    catch (DocumentException) {
+			    //e.printStackTrace();
+		    }
+	    }
+
+	    public void setMargins(float pmarginLeft, float pmarginRight, float pmarginTop, float pmarginBottom) {
+		    marginLeft = pmarginLeft;
+		    marginRight = pmarginRight;
+		    marginTop = pmarginTop;
+		    marginBottom = pmarginBottom;
+	    }
+        #endregion
+
+        public void open()
+        {
+            open(filePath);
+        }
+        public void open(String fileName)
+        {
+            open(new FileStream(fileName, FileMode.OpenOrCreate));
+        }
+        public void open(Stream os) {
+		    try {
+			    _document = new Document(pageSize);
+			    _writer = PdfWriter.GetInstance(_document, os);
+			    //writer.setPageSize(pageSize);
+			    _document.SetMargins(marginLeft, marginRight, marginTop, marginBottom);
+			    _document.Open();
+                newPage();
+		    }
+		    catch (DocumentException) {
+			    //e.printStackTrace();
+		    }
+		    catch (Exception) {
+			    //e.printStackTrace();
+		    }
+	    }
+
+	    public void Close() {
+		    _document.Close();
+            _document.Dispose();
+	    }
+
+	    public double adjustX(int px) {
+
+		    double wx = metricToPoints(px) + 2.0;
+		    return (roundTo2(wx));
+	    }
+
+	    public double adjustY(int py) {
+
+		    double wy = (double) pageSize.Height - metricToPoints(py) - 2.0;
+		    // double wy = (double)pageSize.height() - 25 - metricToPoints(py) - 2.0;
+		    return (roundTo2(wy));
+	    }
+
+	    public double metricToPoints(int pm) {
+		    double wp = (((double) pm * 72.0) / 254.0);
+		    return (roundTo2(wp));
+	    }
+
+	    public double roundTo2(double pnum) {
+		    long inum = (long)Math.Round((pnum * 100.0));
+		    return (inum / 100.0);
+	    }
+
+	    public int getFontSize() {
+		    return fontSize;
+	    }
+
+	    public float getBarcodeX() {
+		    return barcodeX;
+	    }
+
+	    public float getBarcodeN() {
+		    return barcodeN;
+	    }
+	    
+        public void PrintLeftEcpInfo()
+        {
+            int lin = 1500;
+            int gap = 33;
+            int col = 400;
+            BaseColor bc = BaseColor.BLUE;
+            setFont("Arial", 7, false, false, false);
+            print((lin += gap), col, "FIRMA", 'R', bc);
+            print((lin += gap), col, "E.C.P.", 'R', bc);
+            print((lin += gap), col, "EUROPEAN CAR PROTECT KG", 'R', bc);
+            lin += gap;
+            print((lin += gap), col, "ADRESSE", 'R', bc);
+            print((lin += gap), col, "Loigerstr. 89", 'R', bc);
+            print((lin += gap), col, "5071  Wals", 'R', bc);
+            print((lin += gap), col, "Austria, Europe", 'R', bc);
+            lin += gap;
+            print((lin += gap), col, "TELEFON", 'R', bc);
+            print((lin += gap), col, "+43 662 20 34 10 - 10", 'R', bc);
+            lin += gap;
+            print((lin += gap), col, "FAX", 'R', bc);
+            print((lin += gap), col, "+43 662 20 34 10 - 90", 'R', bc);
+            lin += gap;
+            print((lin += gap), col, "INTERNET / EMAIL", 'R', bc);
+
+            setFont("Arial", 7, true, false, false);
+            print((lin += gap), col, "www.ecp.or.at", 'R', bc);
+            setFont("Arial", 7, false, false, false);
+            print((lin += gap), col, "office@ecp.or.at", 'R', bc);
+            lin += gap;
+            print((lin += gap), col, "UID NUMMER", 'R', bc);
+            print((lin += gap), col, "ATU64079767", 'R', bc);
+            lin += gap;
+            print((lin += gap), col, "FIRMENBUCHGERICHT", 'R', bc);
+            print((lin += gap), col, "Landes- und Handelsgericht", 'R', bc);
+            print((lin += gap), col, "Salzburg", 'R', bc);
+            lin += gap;
+            print((lin += gap), col, "FIRMENBUCHNUMMER", 'R', bc);
+            print((lin += gap), col, "FN 305953g", 'R', bc);
+            lin += gap;
+            print((lin += gap), col, "BANKVERBINDUNG", 'R', bc);
+            print((lin += gap), col, "Raiffeisenbank Schallmoos", 'R', bc);
+            print((lin += gap), col, "BLZ 35000", 'R', bc);
+            print((lin += gap), col, "Konto Nr. 02.149110", 'R', bc);
+            print((lin += gap), col, "BIC: SLHYAT2S", 'R', bc);
+            print((lin += gap), col, "IBAN: AT915500011500010415", 'R', bc);
+            lin += gap;
+            print((lin += gap), col, "GESCHÄFTSFÜHRUNG", 'R', bc);
+            print((lin += gap), col, "Thomas Jaky", 'R', bc);
+            print((lin += gap), col, "Helmut Ammer", 'R', bc);
+        }
+
+	    public void test() {
+		    log.Info("Testing.....");
+		    testNewDocument();
+            log.Info("Testing Ended");
+	    }
+
+	    public int getTotalWidth(int[] warr, int pidx) {
+		    int wrett = 0;
+		    for (int i = 0; i <= pidx; i++) {
+			    wrett += warr[i];
+		    }
+		    return wrett;
+	    }
+
+	    public void testNewDocument() {
+
+		    // step 1: creation of a document-object
+		    _document = new Document(PageSize.LEGAL);
+
+		    try {
+
+			    // step 2:
+			    // we create a writer that listens to the document
+			    // and directs a PDF-stream to a file
+                _writer = PdfWriter.GetInstance(_document, new FileStream(filePath, FileMode.OpenOrCreate));
+
+			    // step 3: we open the document
+			    // writer.setPageSize(PageSize.LEGAL);
+			    _document.Open();
+
+			    // step 4: we add a paragraph to the document
+			    // document.add(new Paragraph("Hello World"));
+			    // drawRoundRectangle(10, 10, 100, 50);
+			    // drawRectangle(10, 70, 100, 50, Color.WHITE);
+			    // drawRectGray (0, 0, 2500, 1950);
+			    setFont("Arial", 9);
+			    setBarcodeX(2);
+			    printBarcode39(100, 100, "MDEMO2");
+			    // writer.setPageSize(pageSize);
+
+			    // mpdf.drawRect (0, 0, 2500, 1950);
+
+			    // drawRoundRect (10, 10, 100, 100);
+			    /*
+			     * font = BaseFont.createFont("c:/windows/fonts/arial.ttf", BaseFont.CP1250,
+			     * BaseFont.NOT_EMBEDDED); print(10, 10, "Test Text", "L"); font =
+			     * BaseFont.createFont(BaseFont.HELVETICA_BOLD, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+			     * print(110, 10, "Test Text", "L"); font =
+			     * BaseFont.createFont(BaseFont.HELVETICA_BOLDOBLIQUE, BaseFont.CP1252,
+			     * BaseFont.NOT_EMBEDDED); print(210, 10, "Test Text", "L");
+			     */
+			    // drawLine(100, 770, 110, 770);
+		    }
+		    catch (DocumentException de) {
+                log.Error(de.Message);
+		    }
+		    catch (Exception ioe) {
+			    log.Error(ioe.Message);
+		    }
+
+		    // step 5: we close the document
+		    _document.Close();
+            _document.Dispose();
+        }
+    }
+}
+    
+    
+

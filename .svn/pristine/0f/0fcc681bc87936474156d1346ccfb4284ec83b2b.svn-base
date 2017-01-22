@@ -1,0 +1,282 @@
+<?xml version="1.0"?>
+<!--
+  For more information on how to configure your ASP.NET application, please visit
+  http://go.microsoft.com/fwlink/?LinkId=169433
+  -->
+<configuration>
+ 
+	<appSettings>
+    <add key="HTBConnectionString" value="Data Source=localhost\sqlexpress;Initial Catalog=htb;User Id=ecp;Password=ecp" />
+    
+    <!-- values below must be changed for production -->
+    <add key="DB2RoadsConnectionString" value="Database=HTBRTE;UserID=db2admin;Password=13tetor77;Server=localhost:50000" />
+    <!--<add key="DB2Schema" value="b.bitri" />-->
+    <add key="DB2Schema" value="ADMINISTRATOR" />
+
+    <add key="BiFriConnectionString" value="Database=BiFri;UserID=b.bitri;Password=13tetor77;Server=localhost:50000" />
+    <add key="BiFriSchema" value="" />
+    
+    <!-- no more changing required -->
+    
+    <add key="RoutePlannerManager_MaximumRoadsPerThread" value="3000" />
+    
+    <add key="ChartImageHandler" value="storage=file;timeout=20;dir=c:\Temp\;" />
+    <add key="log4net.Config" value="log4net.config"/>
+ </appSettings>
+	<system.web>
+    <httpRuntime executionTimeout="1200" maxRequestLength="512000"/>
+    <sessionState timeout="1200"/>
+    <httpHandlers>
+      <add path="ChartImg.axd" verb="GET,HEAD,POST" type="System.Web.UI.DataVisualization.Charting.ChartHttpHandler, System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" validate="false" />
+  </httpHandlers>
+    <customErrors mode="Off"/>
+		<compilation debug="true" targetFramework="4.0">
+			<assemblies>
+				<add assembly="System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="System.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A"/>
+				<add assembly="System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A"/>
+				<add assembly="System.ServiceModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="System.Web.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A"/>
+				<add assembly="System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="System.Data.Linq, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A"/>
+				<add assembly="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="System.ServiceModel.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+				<add assembly="System.Data.Services.Client, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="System.Data.Services.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="System.Data.Entity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A"/>
+				<add assembly="System.Web.Extensions.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+				<add assembly="Microsoft.Vsa, Version=8.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A"/>
+				<add assembly="System.Data.OracleClient, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
+				<add assembly="Microsoft.JScript, Version=10.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A"/>
+				<add assembly="System.Runtime.Serialization.Formatters.Soap, Version=4.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A"/>
+				<add assembly="System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/></assemblies>
+		</compilation>
+		<pages controlRenderingCompatibilityVersion="3.5" clientIDMode="AutoID">
+   <controls>
+    <add tagPrefix="ctl" tagName="header" src="~/v2/intranetx/global_files/intranet_header.ascx" />
+    <add tagPrefix="ctl" tagName="headerNoMenu" src="~/v2/intranetx/global_files/intranet_header_no_menu.ascx" />
+    <add tagPrefix="ctl" tagName="headerNoMenuTablet" src="~/v2/intranetx/global_files/intranet_header_no_menu_tablet.ascx" />
+    <add tagPrefix="ctl" tagName="footer" src="~/v2/intranetx/global_files/intranet_footer.ascx" />
+    <add tagPrefix="ctl" tagName="message" src="~/v2/intranetx/global_files/CtlMessage.ascx" />
+    <add tagPrefix="ctl" namespace="HTB.v2.intranetx.controls" assembly="HTB" />
+    <add tagPrefix="ajax" namespace="AjaxControlToolkit" assembly="AjaxControlToolkit" />
+    <add tagPrefix="asp" namespace="System.Web.UI.DataVisualization.Charting"
+     assembly="System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+   </controls>
+  </pages>
+  </system.web>
+	<system.webServer>
+    <modules runAllManagedModulesForAllRequests="true"/>
+    <validation validateIntegratedModeConfiguration="false" />
+  <handlers>
+   <remove name="ChartImageHandler" />
+   <add name="ChartImageHandler" preCondition="integratedMode" verb="GET,HEAD,POST" path="ChartImg.axd" type="System.Web.UI.DataVisualization.Charting.ChartHttpHandler, System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+  </handlers>
+ </system.webServer>
+ <system.serviceModel>
+  <behaviors>
+   
+    <serviceBehaviors>
+    <behavior name="">
+     <serviceMetadata httpGetEnabled="true" />
+     <serviceDebug includeExceptionDetailInFaults="false" />
+    </behavior>
+   </serviceBehaviors>
+
+    <endpointBehaviors>
+      <behavior name="web">
+        <webHttp/>
+      </behavior>
+    </endpointBehaviors>
+    
+    
+  </behaviors>
+  <serviceHostingEnvironment multipleSiteBindingsEnabled="true" />
+  <bindings>
+   <basicHttpBinding>
+    <binding name="BasicHttpBinding_IGeocodeService" closeTimeout="00:01:00"
+     openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00"
+     allowCookies="false" bypassProxyOnLocal="false" hostNameComparisonMode="StrongWildcard"
+     maxBufferSize="200000000" maxBufferPoolSize="524288" maxReceivedMessageSize="200000000"
+     messageEncoding="Text" textEncoding="utf-8" transferMode="Buffered"
+     useDefaultWebProxy="true">
+     <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384"
+      maxBytesPerRead="4096" maxNameTableCharCount="16384" />
+     <security mode="None">
+      <transport clientCredentialType="None" proxyCredentialType="None"
+       realm="" />
+      <message clientCredentialType="UserName" algorithmSuite="Default" />
+     </security>
+    </binding>
+    <binding name="BasicHttpBinding_ISearchService" closeTimeout="00:01:00"
+     openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00"
+     allowCookies="false" bypassProxyOnLocal="false" hostNameComparisonMode="StrongWildcard"
+     maxBufferSize="200000000" maxBufferPoolSize="524288" maxReceivedMessageSize="200000000"
+     messageEncoding="Text" textEncoding="utf-8" transferMode="Buffered"
+     useDefaultWebProxy="true">
+     <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384"
+      maxBytesPerRead="4096" maxNameTableCharCount="16384" />
+     <security mode="None">
+      <transport clientCredentialType="None" proxyCredentialType="None"
+       realm="" />
+      <message clientCredentialType="UserName" algorithmSuite="Default" />
+     </security>
+    </binding>
+    <binding name="BasicHttpBinding_IImageryService" closeTimeout="00:01:00"
+     openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00"
+     allowCookies="false" bypassProxyOnLocal="false" hostNameComparisonMode="StrongWildcard"
+     maxBufferSize="200000000" maxBufferPoolSize="524288" maxReceivedMessageSize="200000000"
+     messageEncoding="Text" textEncoding="utf-8" transferMode="Buffered"
+     useDefaultWebProxy="true">
+     <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384"
+      maxBytesPerRead="4096" maxNameTableCharCount="16384" />
+     <security mode="None">
+      <transport clientCredentialType="None" proxyCredentialType="None"
+       realm="" />
+      <message clientCredentialType="UserName" algorithmSuite="Default" />
+     </security>
+    </binding>
+    <binding name="BasicHttpBinding_IRouteService" closeTimeout="00:03:00"
+     openTimeout="00:03:00" receiveTimeout="00:10:00" sendTimeout="00:03:00"
+     allowCookies="false" bypassProxyOnLocal="false" hostNameComparisonMode="StrongWildcard"
+     maxBufferSize="200000000" maxBufferPoolSize="524288" maxReceivedMessageSize="200000000"
+     messageEncoding="Text" textEncoding="utf-8" transferMode="Buffered"
+     useDefaultWebProxy="true">
+     <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384"
+      maxBytesPerRead="4096" maxNameTableCharCount="16384" />
+     <security mode="None">
+      <transport clientCredentialType="None" proxyCredentialType="None"
+       realm="" />
+      <message clientCredentialType="UserName" algorithmSuite="Default" />
+     </security>
+    </binding>
+    <binding name="BasicHttpBinding_IGetData" closeTimeout="00:01:00"
+     openTimeout="00:01:00" receiveTimeout="00:10:00" sendTimeout="00:01:00"
+     allowCookies="false" bypassProxyOnLocal="false" hostNameComparisonMode="StrongWildcard"
+     maxBufferSize="65536" maxBufferPoolSize="524288" maxReceivedMessageSize="65536"
+     messageEncoding="Text" textEncoding="utf-8" transferMode="Buffered"
+     useDefaultWebProxy="true">
+     <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384"
+      maxBytesPerRead="4096" maxNameTableCharCount="16384" />
+     <security mode="None">
+      <transport clientCredentialType="None" proxyCredentialType="None"
+       realm="" />
+      <message clientCredentialType="UserName" algorithmSuite="Default" />
+     </security>
+    </binding>
+   </basicHttpBinding>
+   <customBinding>
+    <binding name="CustomBinding_IGeocodeService">
+     <binaryMessageEncoding maxReadPoolSize="64" maxWritePoolSize="16"
+      maxSessionSize="2048">
+      <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384"
+       maxBytesPerRead="4096" maxNameTableCharCount="16384" />
+     </binaryMessageEncoding>
+     <httpTransport manualAddressing="false" maxBufferPoolSize="524288"
+      maxReceivedMessageSize="65536" allowCookies="false" authenticationScheme="Anonymous"
+      bypassProxyOnLocal="false" decompressionEnabled="true" hostNameComparisonMode="StrongWildcard"
+      keepAliveEnabled="true" maxBufferSize="65536" proxyAuthenticationScheme="Anonymous"
+      realm="" transferMode="Buffered" unsafeConnectionNtlmAuthentication="false"
+      useDefaultWebProxy="true" />
+    </binding>
+    <binding name="CustomBinding_ISearchService">
+     <textMessageEncoding maxReadPoolSize="64" maxWritePoolSize="16"
+      messageVersion="Soap12" writeEncoding="utf-8">
+      <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384"
+       maxBytesPerRead="4096" maxNameTableCharCount="16384" />
+     </textMessageEncoding>
+     <httpTransport manualAddressing="false" maxBufferPoolSize="524288"
+      maxReceivedMessageSize="65536" allowCookies="false" authenticationScheme="Anonymous"
+      bypassProxyOnLocal="false" decompressionEnabled="true" hostNameComparisonMode="StrongWildcard"
+      keepAliveEnabled="true" maxBufferSize="65536" proxyAuthenticationScheme="Anonymous"
+      realm="" transferMode="Buffered" unsafeConnectionNtlmAuthentication="false"
+      useDefaultWebProxy="true" />
+    </binding>
+    <binding name="CustomBinding_IImageryService">
+     <binaryMessageEncoding maxReadPoolSize="64" maxWritePoolSize="16"
+      maxSessionSize="2048">
+      <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384"
+       maxBytesPerRead="4096" maxNameTableCharCount="16384" />
+     </binaryMessageEncoding>
+     <httpTransport manualAddressing="false" maxBufferPoolSize="524288"
+      maxReceivedMessageSize="65536" allowCookies="false" authenticationScheme="Anonymous"
+      bypassProxyOnLocal="false" decompressionEnabled="true" hostNameComparisonMode="StrongWildcard"
+      keepAliveEnabled="true" maxBufferSize="65536" proxyAuthenticationScheme="Anonymous"
+      realm="" transferMode="Buffered" unsafeConnectionNtlmAuthentication="false"
+      useDefaultWebProxy="true" />
+    </binding>
+    <binding name="CustomBinding_IRouteService">
+     <binaryMessageEncoding maxReadPoolSize="64" maxWritePoolSize="16"
+      maxSessionSize="2048">
+      <readerQuotas maxDepth="32" maxStringContentLength="8192" maxArrayLength="16384"
+       maxBytesPerRead="4096" maxNameTableCharCount="16384" />
+     </binaryMessageEncoding>
+     <httpTransport manualAddressing="false" maxBufferPoolSize="524288"
+      maxReceivedMessageSize="65536" allowCookies="false" authenticationScheme="Anonymous"
+      bypassProxyOnLocal="false" decompressionEnabled="true" hostNameComparisonMode="StrongWildcard"
+      keepAliveEnabled="true" maxBufferSize="65536" proxyAuthenticationScheme="Anonymous"
+      realm="" transferMode="Buffered" unsafeConnectionNtlmAuthentication="false"
+      useDefaultWebProxy="true" />
+    </binding>
+   </customBinding>
+
+    <webHttpBinding>
+      <binding name="StreamedRequestWebBinding"
+               bypassProxyOnLocal="true"
+               useDefaultWebProxy="false"
+               hostNameComparisonMode="WeakWildcard"
+               sendTimeout="10:15:00"
+               openTimeout="10:15:00"
+               receiveTimeout="10:15:00"
+               maxReceivedMessageSize="2147483647"
+               maxBufferSize="2147483647"
+               maxBufferPoolSize="2147483647"
+               transferMode="StreamedRequest">
+        <readerQuotas maxArrayLength="2147483647" maxStringContentLength="2147483647" />
+      </binding>
+    </webHttpBinding>
+    
+    
+  </bindings>
+  <client>
+   <endpoint address="http://dev.virtualearth.net/webservices/v1/geocodeservice/GeocodeService.svc"
+    binding="basicHttpBinding" bindingConfiguration="BasicHttpBinding_IGeocodeService"
+    contract="GeocodeService.IGeocodeService" name="BasicHttpBinding_IGeocodeService" />
+   <endpoint address="http://dev.virtualearth.net/webservices/v1/geocodeservice/GeocodeService.svc/binaryHttp"
+    binding="customBinding" bindingConfiguration="CustomBinding_IGeocodeService"
+    contract="GeocodeService.IGeocodeService" name="CustomBinding_IGeocodeService" />
+   <endpoint address="http://dev.virtualearth.net/webservices/v1/searchservice/searchservice.svc"
+    binding="basicHttpBinding" bindingConfiguration="BasicHttpBinding_ISearchService"
+    contract="SearchService.ISearchService" name="BasicHttpBinding_ISearchService" />
+   <endpoint address="http://dev.virtualearth.net/webservices/v1/searchservice/searchservice.svc/binaryHttp"
+    binding="customBinding" bindingConfiguration="CustomBinding_ISearchService"
+    contract="SearchService.ISearchService" name="CustomBinding_ISearchService" />
+   <endpoint address="http://dev.virtualearth.net/webservices/v1/imageryservice/imageryservice.svc"
+    binding="basicHttpBinding" bindingConfiguration="BasicHttpBinding_IImageryService"
+    contract="ImageryService.IImageryService" name="BasicHttpBinding_IImageryService" />
+   <endpoint address="http://dev.virtualearth.net/webservices/v1/imageryservice/imageryservice.svc/binaryHttp"
+    binding="customBinding" bindingConfiguration="CustomBinding_IImageryService"
+    contract="ImageryService.IImageryService" name="CustomBinding_IImageryService" />
+   <endpoint address="http://dev.virtualearth.net/webservices/v1/routeservice/routeservice.svc"
+    binding="basicHttpBinding" bindingConfiguration="BasicHttpBinding_IRouteService"
+    contract="RouteService.IRouteService" name="BasicHttpBinding_IRouteService" />
+   <endpoint address="http://dev.virtualearth.net/webservices/v1/routeservice/routeservice.svc/binaryHttp"
+    binding="customBinding" bindingConfiguration="CustomBinding_IRouteService"
+    contract="RouteService.IRouteService" name="CustomBinding_IRouteService" />
+   <endpoint address="http://localhost/v2/intranetx/wfc/aktenint/GetData.svc"
+    binding="basicHttpBinding" bindingConfiguration="BasicHttpBinding_IGetData"
+    contract="TabletService.IGetData" name="BasicHttpBinding_IGetData" />
+  </client>
+  
+   <services>
+     <service behaviorConfiguration="" name="HTB.v2.intranetx.wfc.aktenint.GetData">
+       <endpoint address="" behaviorConfiguration="web" binding="webHttpBinding" contract="HTB.v2.intranetx.wfc.aktenint.IGetData" />
+     </service>
+   </services>
+   
+ </system.serviceModel>
+</configuration>

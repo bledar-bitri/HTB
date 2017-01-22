@@ -1,0 +1,30 @@
+/*
+ * the navigation markup : container div with a ul inside. 
+ * each list element has a class to differentiate it ( prev, next etc)
+ * inside each list element there is a link.
+ */
+div.KT_textnav, div.KT_textnav div {
+	display: inline;
+	text-align: center;
+}
+	/* hide list markers  and padding / margin */
+	div.KT_textnav ul {
+		text-align: center;
+		display: inline;
+		list-style-type: none;
+	}
+		/* make list display "inline" */
+		div.KT_textnav ul li {
+			display: inline;
+			/* float: left; */
+		}
+			div.KT_textnav ul li a, div.KT_textnav ul li a:hover, div.KT_textnav ul li a:visited, div.KT_textnav ul li a:active {
+				padding: 0; 
+				margin: 0;
+			}
+			div.KT_textnav ul li a.disabled {
+				text-decoration: none;
+				color: #000;
+				cursor: default;
+			}
+
