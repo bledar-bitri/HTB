@@ -30,16 +30,17 @@ namespace HTB.Database
 		public double UbernameLongitude{get; set; }
 		public string UbernameMemo{get; set; }
 
-        public bool MasterKey { get; set; }
-        public bool KzImKfz { get; set; }
-        public bool Typenschein { get; set; }
-        public bool KzDurchBehoerdeEingezogen{ get; set; }
-        public bool KfzAbgemeldet { get; set; }
-        public bool InnenraumVerschmutzt{ get; set; }
-        public bool SichtbareSchaden{ get; set; }
-        public int AnzahlDerBilder { get; set; }
-        public bool MoechteAusloesen{ get; set; }
-        public DateTime AusloesenDatum{ get; set; }
+        public bool UbernameMasterKey { get; set; }
+        public bool UbernameKzImKfz { get; set; }
+        public bool UbernameTypenschein { get; set; }
+        public bool UbernameKzDurchBehoerdeEingezogen { get; set; }
+        public bool UbernameKfzAbgemeldet { get; set; }
+        public bool UbernameInnenraumVerschmutzt { get; set; }
+        public bool UbernameSichtbareSchaden { get; set; }
+        public int UbernameAnzahlDerBilder { get; set; }
+        public bool UbernameMoechteAusloesen { get; set; }
+        public DateTime UbernameAusloesenDatum { get; set; }
+        public int UbernameTachometer { get; set; }
 
 
         #endregion

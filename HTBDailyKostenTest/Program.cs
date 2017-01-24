@@ -917,7 +917,7 @@ namespace HTBDailyKosten
 
         private static void TestProtokol()
         {
-            var protocol = (tblProtokol) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblProtokol order by ProtokolID DESC", typeof (tblProtokol));
+            var protocol = (tblProtokol) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblProtokol where protokolid = 2212 order by ProtokolID DESC", typeof (tblProtokol));
             //protocol.ProtokolAkt = 221504; // test
             var akt = (qryAktenInt) HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenInt WHERE AktIntID = " + protocol.ProtokolAkt, typeof (qryAktenInt));
             var action = (qryAktenIntActionWithType) HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionAkt = " + protocol.ProtokolAkt + " and AktIntActionIsInternal = 0 ORDER BY AktIntActionTime DESC", typeof (qryAktenIntActionWithType));
@@ -927,7 +927,12 @@ namespace HTBDailyKosten
             ms = File.Exists(filepath) ? new FileStream(filepath, FileMode.Truncate) : new FileStream(filepath, FileMode.Create);
 
             var rpt = new ProtokolTablet();
-            rpt.GenerateProtokol(akt, protocol, action, ms, new List<VisitRecord>(), new List<tblAktenIntPos>());
+            var emailAddresses = new List<string>();
+            emailAddresses.AddRange(HTBUtils.GetConfigValue("Office_Email").Split(' '));
+            emailAddresses.AddRange(akt.AuftraggeberEMail.Split(' '));
+            emailAddresses.AddRange(protocol.HandlerEMail.Split(' '));
+            
+            rpt.GenerateProtokol(akt, protocol, action, ms, new List<VisitRecord>(), new List<tblAktenIntPos>(), null, emailAddresses);
             ms.Close();
             ms.Dispose();
             Thread.Sleep(100);

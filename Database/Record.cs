@@ -362,6 +362,17 @@ namespace HTB.Database
             var init = new StringBuilder();
             var setnil = new StringBuilder();
             var release = new StringBuilder();
+            var select = new StringBuilder("- (NSString*) sqlSelect\n{\n NSMutableString *sb = [[NSMutableString alloc] initWithString:@\"SELECT \"];\n[sb appendString:@");
+
+            var insert = new StringBuilder("- (BOOL) insertIntoDB:(FMDatabase *) db\n{\nreturn [db executeUpdate:@\"INSERT INTO "+ recordType.Name + "( ");
+            var insertFieldName = new StringBuilder();
+            var insertQuestionMarks = new StringBuilder();
+            var insertValues = new StringBuilder();
+            var update = new StringBuilder("- (BOOL) updateDB:(FMDatabase *) db\n{\nreturn [db executeUpdate:@\"UPDATE " + recordType.Name + " SET ");
+            var updateFieldName = new StringBuilder();
+            var updateValues = new StringBuilder();
+            var load = new StringBuilder("- (BOOL) loadFromFMResultSetRow:(FMResultSet*)set\n{\n ");
+
             var toXml = new StringBuilder("-(NSString *) toXmlString \n{\n\tNSMutableString *retString = [[[NSMutableString alloc]init] autorelease];\n\n");
             toXml.Append("\t[retString appendString:@\"<");
             toXml.Append(recordType.Name);
@@ -411,7 +422,7 @@ namespace HTB.Database
                     /********** property **********/
                     property.Append("@property (nonatomic");
                     if (addPointer)
-                        property.Append(", retain");
+                        property.Append(", strong");
                     property.Append(") ");
                     property.Append(objCtype);
                     property.Append(addPointer ? " *" : " ");
@@ -424,6 +435,21 @@ namespace HTB.Database
                     synthesize.Append("=_");
                     synthesize.Append(varName);
                     synthesize.Append(";\n");
+
+                    #region db  operations
+
+                    select.Append("\"");
+                    select.Append(propInfo.Name);
+                    select.Append(", \"\n");
+
+                    insertFieldName.Append(propInfo.Name);
+                    insertFieldName.Append(", ");
+                    insertQuestionMarks.Append("?, ");
+
+                    updateFieldName.Append(propInfo.Name);
+                    updateFieldName.Append(" = ?, ");
+                    #endregion
+
 
                     /********** init **********/
                     if (defaultValue != "XXX")
@@ -459,25 +485,54 @@ namespace HTB.Database
                         toXml.Append("\t[retString appendString:[NSString stringWithFormat:@\"%i\",  [self ");
                         toXml.Append(varName);
                         toXml.Append("]]];");
+
+                        var valString = "[NSNumber numberWithLong:self." + varName +"], ";
+                        insertValues.Append(valString);
+                        updateValues.Append(valString);
+
+                        load.Append("[self set" + propInfo.Name + ":[set intForColumn:@\"" + propInfo.Name + "\"]];\n");
                     }
                     else if (datatype == "decimal" || datatype == "double")
                     {
                         toXml.Append("\t[retString appendString:[Util formatCurrencyNumber:[self ");
                         toXml.Append(varName);
                         toXml.Append("] replaceDotsWithCommas:YES]];");
+
+                        var valString = "[NSNumber numberWithDouble:self."+varName+"], ";
+                        insertValues.Append(valString);
+                        updateValues.Append(valString);
+
+                        load.Append("[self set" + propInfo.Name + ":[set doubleForColumn:@\"" + propInfo.Name + "\"]];\n");
+
                         importUtil = true;
+
                     }
                     else if (datatype == "boolean")
                     {
                         toXml.Append("\t[retString appendString:[NSString stringWithFormat:@\"%i\",  [self ");
                         toXml.Append(varName);
                         toXml.Append("]]];");
+
+                        var valString = "[NSNumber numberWithBool:self." + varName + "], ";
+                        insertValues.Append(valString);
+                        updateValues.Append(valString);
+
+                        load.Append("[self set" + propInfo.Name + ":[set boolForColumn:@\"" + propInfo.Name + "\"]];\n");
+
                     }
                     else if (datatype == "datetime")
                     {
                         toXml.Append("\t[retString appendString:[Util formatDate:[self ");
                         toXml.Append(varName);
                         toXml.Append("]]];");
+
+                        var valString = varName + ", ";
+
+                        insertValues.Append(valString);
+                        updateValues.Append(valString);
+
+                        load.Append("[self set" + propInfo.Name + ":[set dateForColumn:@\"" + propInfo.Name + "\"]];\n");
+
                         importUtil = true;
                     }
                     else
@@ -485,6 +540,14 @@ namespace HTB.Database
                         toXml.Append("\t[retString appendString:[self ");
                         toXml.Append(varName);
                         toXml.Append("]];");
+
+                        var valString = varName + ", ";
+
+                        insertValues.Append(valString);
+                        updateValues.Append(valString);
+
+                        load.Append("[self set" + propInfo.Name + ":[set stringForColumn:@\"" + propInfo.Name + "\"]];\n");
+
                     }
                     toXml.Append("\n\t[retString appendString:@\"</");
                     toXml.Append(propInfo.Name);
@@ -495,15 +558,31 @@ namespace HTB.Database
             toXml.Append("\t[retString appendString:@\"</");
             toXml.Append(recordType.Name);
             toXml.Append(">\"];\n\n\treturn retString;\n}\n\n");
-            
+
+            select.Remove(select.ToString().LastIndexOf(','), 2);
+            select.Append("];\n[sb appendFormat:@\"FROM @% \", tableName];\nreturn sb;\n}\n\n");
+
+            insert.Append(insertFieldName.ToString().Substring(0, insertFieldName.Length-2));
+            insert.Append(") VALUES (");
+            insert.Append(insertQuestionMarks.ToString().Substring(0, insertQuestionMarks.Length - 2));
+            insert.Append(") \", ");
+            insert.Append(insertValues.ToString().Substring(0, insertValues.Length - 2));
+            insert.Append("];\n}\n\n");
+
+            update.Append(updateFieldName.ToString().Substring(0, updateFieldName.Length - 2));
+            update.Append("\", ");
+            update.Append(updateValues.ToString().Substring(0, updateValues.Length - 2));
+            update.Append("];\n}\n\n");
+
+            load.Append("\nreturn YES;\n}\n\n");
             #region H file
             AppendToString(sbH, "#import \"Record.h\"\n\n");
             AppendToString(sbH, "@interface ");
             AppendToString(sbH, recordType.Name);
-            AppendToString(sbH, " : Record");
-            AppendToString(sbH, "\n{\n\n");
-            AppendToString(sbH, declaration.ToString());
-            AppendToString(sbH, "\n}\n\n");
+            AppendToString(sbH, " : Record\n");
+            //AppendToString(sbH, "\n{\n\n");
+            //AppendToString(sbH, declaration.ToString());
+            //AppendToString(sbH, "\n}\n\n");
             AppendToString(sbH, property.ToString());
             AppendToString(sbH, "\n\n- (NSString *) toXmlString;\n\n@end");
             #endregion
@@ -539,8 +618,19 @@ namespace HTB.Database
 
             // toXml
             AppendToString(sbM, toXml.ToString());
+            // tableName
+            AppendToString(sbM, "-(NSString *) tableName {return tableName; }\n\n");
 
-            AppendToString(sbM, "@end");
+            // select
+            AppendToString(sbM, select.ToString());
+            // insert
+            AppendToString(sbM, insert.ToString());
+            // update
+            AppendToString(sbM, update.ToString());
+            // load
+            AppendToString(sbM, load.ToString());
+
+            AppendToString(sbM, "\n@end");
             #endregion
             
             list.Add(sbH);

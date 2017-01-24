@@ -6,48 +6,52 @@ using iTextSharp.text.pdf;
 
 namespace HTBPdf
 {
-    public class ECPPdfWriter 
+    public class ECPPdfWriter
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        protected String			filePath		= "C:/temp/testPdfWriter.pdf";
-	    protected String			imagePath		= "";
+        private static readonly log4net.ILog log =
+            log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        protected String filePath = "C:/temp/testPdfWriter.pdf";
+        protected String imagePath = "";
         private const int IMAGE_MAX_WIDTH = 400;
         private const int IMAGE_MAX_HEIGHT = 600;
 
         private Document _document;
+
         public Document Document
         {
             get { return _document; }
             set { _document = value; }
         }
-	    
-        protected iTextSharp.text.Rectangle			pageSize;
-	    protected BaseFont			font;
+
+        protected iTextSharp.text.Rectangle pageSize;
+        public BaseFont font;
         private PdfWriter _writer;
+
         public PdfWriter Writer
         {
             get { return _writer; }
             set { _writer = value; }
         }
 
-	    protected float				orgLineWidth	= .5f;
-	    protected float				lineWidth		= .5f;
-	    protected float				barcodeX		= 1;
-	    protected float				barcodeN		= 2;
-	    protected int				fontSize		= 12;
-	    protected bool			    landscapeMode	= false;
+        protected float orgLineWidth = .5f;
+        protected float lineWidth = .5f;
+        protected float barcodeX = 1;
+        protected float barcodeN = 2;
+        protected int fontSize = 12;
+        protected bool landscapeMode = false;
 
-	    protected float				marginLeft;
-	    protected float				marginRight;
-	    protected float				marginTop;
-	    protected float				marginBottom;
-	    protected int				pageHeight;
+        protected float marginLeft;
+        protected float marginRight;
+        protected float marginTop;
+        protected float marginBottom;
+        protected int pageHeight;
 
-	    private bool				canDrawRects	= true;
-	    private bool				canDrawLines	= true;
-	    private bool				canPrint		= true;
+        private bool canDrawRects = true;
+        private bool canDrawLines = true;
+        private bool canPrint = true;
 
-	    private String				_fontsDir = "c:/windows/fonts";
+        private String _fontsDir = "c:/windows/fonts";
 
         public String FontsDir
         {
@@ -55,27 +59,37 @@ namespace HTBPdf
             set { _fontsDir = value; }
         }
 
-        public ECPPdfWriter() : this(PageSize.LETTER, 0, 0, 0, 0) {
-	    }
-	    public ECPPdfWriter(iTextSharp.text.Rectangle ppageSize, int pmarginLeft, int pmarginRight, int pmarginTop, int pmarginBottom)  : this (ppageSize, pmarginLeft, pmarginRight, pmarginTop, pmarginBottom, BaseColor.WHITE) {
-	    }
+        public ECPPdfWriter() : this(PageSize.LETTER, 0, 0, 0, 0)
+        {
+        }
 
-	    public ECPPdfWriter(iTextSharp.text.Rectangle ppageSize, int pmarginLeft, int pmarginRight, int pmarginTop, int pmarginBottom, BaseColor pbgColor) {
+        public ECPPdfWriter(iTextSharp.text.Rectangle ppageSize, int pmarginLeft, int pmarginRight, int pmarginTop,
+            int pmarginBottom) : this(ppageSize, pmarginLeft, pmarginRight, pmarginTop, pmarginBottom, BaseColor.WHITE)
+        {
+        }
 
-		    pageSize = ppageSize;
-		    //pageSize.BackgroundColor = pbgColor;
-		    try {
-			    font = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
-		    }
-		    catch (DocumentException) {
-			    //e.printStackTrace();
-		    }
-		    catch (Exception) {
-			    //e.printStackTrace();
-		    }
-	    }
+        public ECPPdfWriter(iTextSharp.text.Rectangle ppageSize, int pmarginLeft, int pmarginRight, int pmarginTop,
+            int pmarginBottom, BaseColor pbgColor)
+        {
+
+            pageSize = ppageSize;
+            //pageSize.BackgroundColor = pbgColor;
+            try
+            {
+                font = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+            }
+            catch (DocumentException)
+            {
+                //e.printStackTrace();
+            }
+            catch (Exception)
+            {
+                //e.printStackTrace();
+            }
+        }
 
         #region draw
+
         public void drawLine(int urow, int ucol, int lrow, int lcol)
         {
             drawLine(urow, ucol, lrow, lcol, lineWidth);
@@ -86,12 +100,12 @@ namespace HTBPdf
 
             if (canDrawLines)
             {
-                float wx1 = (float)adjustX(ucol);
-                float wy1 = (float)adjustY(urow);
-                float wx2 = (float)adjustX(lcol);
-                float wy2 = (float)adjustY(lrow);
+                float wx1 = (float) adjustX(ucol);
+                float wy1 = (float) adjustY(urow);
+                float wx2 = (float) adjustX(lcol);
+                float wy2 = (float) adjustY(lrow);
 
-                if (HTBUtilities.HTBUtils.AlmostEqual(width, 0, .005)) width = lineWidth; 
+                if (HTBUtilities.HTBUtils.AlmostEqual(width, 0, .005)) width = lineWidth;
                 _writer.DirectContent.SetLineWidth(width);
                 _writer.DirectContent.MoveTo(wx1, wy1);
                 _writer.DirectContent.LineTo(wx2, wy2);
@@ -99,100 +113,114 @@ namespace HTBPdf
             }
         }
 
-	    public void drawLineGray(int px, int py, int pw, int ph)
-	    {
-		    drawLine(px, py, pw, ph, BaseColor.LIGHT_GRAY);
-	    }
+        public void drawLineGray(int px, int py, int pw, int ph)
+        {
+            drawLine(px, py, pw, ph, BaseColor.LIGHT_GRAY);
+        }
 
-	    public void drawLine(int urow, int ucol, int lrow, int lcol, BaseColor pbgc) {
+        public void drawLine(int urow, int ucol, int lrow, int lcol, BaseColor pbgc)
+        {
 
-		    if (canDrawLines) {
-			    float ww, wh = 0;
-			    float wx1 = (float) adjustX(ucol);
-			    float wy1 = (float) adjustY(urow);
-			    float wx2 = (float) adjustX(lcol);
-			    float wy2 = (float) adjustY(lrow);
-			    ww = wx2 - wx1;
-			    wh = wy1 - wy2;
-
-                _writer.DirectContentUnder.SetLineWidth(lineWidth);
-                _writer.DirectContentUnder.Rectangle(wx1, wy2, ww, wh);
-                _writer.DirectContentUnder.SetColorFill(pbgc);
-                _writer.DirectContentUnder.FillStroke();
-                _writer.DirectContentUnder.Stroke();
-		    }
-	    }
-
-	    public void drawRectGray(int px, int py, int pw, int ph) {
-		    drawRectangle(px, py, pw, ph, BaseColor.LIGHT_GRAY);
-	    }
-
-	    public void drawRect(int px, int py, int pw, int ph) {
-		    drawRectangle(px, py, pw, ph, BaseColor.WHITE);
-	    }
-
-	    public void drawRectangle(int urow, int ucol, int lrow, int lcol, BaseColor pbgc) {
-
-		    if (canDrawRects) {
-			    float ww, wh = 0;
-			    float wx1 = (float) adjustX(ucol);
-			    float wy1 = (float) adjustY(urow);
-			    float wx2 = (float) adjustX(lcol);
-			    float wy2 = (float) adjustY(lrow);
-			    ww = wx2 - wx1;
-			    wh = wy1 - wy2;
+            if (canDrawLines)
+            {
+                float ww, wh = 0;
+                float wx1 = (float) adjustX(ucol);
+                float wy1 = (float) adjustY(urow);
+                float wx2 = (float) adjustX(lcol);
+                float wy2 = (float) adjustY(lrow);
+                ww = wx2 - wx1;
+                wh = wy1 - wy2;
 
                 _writer.DirectContentUnder.SetLineWidth(lineWidth);
                 _writer.DirectContentUnder.Rectangle(wx1, wy2, ww, wh);
                 _writer.DirectContentUnder.SetColorFill(pbgc);
                 _writer.DirectContentUnder.FillStroke();
                 _writer.DirectContentUnder.Stroke();
-		    }
-	    }
+            }
+        }
 
-	    public void drawRoundRectGray(int px, int py, int pw, int ph) {
-		    drawRoundRectGray(px, py, pw, ph, 10);
-	    }
+        public void drawRectGray(int px, int py, int pw, int ph)
+        {
+            drawRectangle(px, py, pw, ph, BaseColor.LIGHT_GRAY);
+        }
 
-	    public void drawRoundRectGray(int px, int py, int pw, int ph, int pr) {
-		    drawRoundRectangle(px, py, pw, ph, pr, BaseColor.LIGHT_GRAY);
-	    }
+        public void drawRect(int px, int py, int pw, int ph)
+        {
+            drawRectangle(px, py, pw, ph, BaseColor.WHITE);
+        }
 
-	    public void drawRoundRect(int px, int py, int pw, int ph, int pr) {
-		    drawRoundRectangle(px, py, pw, ph, pr, BaseColor.WHITE);
-	    }
+        public void drawRectangle(int urow, int ucol, int lrow, int lcol, BaseColor pbgc)
+        {
 
-	    public void drawRoundRect(int px, int py, int pw, int ph) {
-		    drawRoundRectangle(px, py, pw, ph);
-	    }
+            if (canDrawRects)
+            {
+                float ww, wh = 0;
+                float wx1 = (float) adjustX(ucol);
+                float wy1 = (float) adjustY(urow);
+                float wx2 = (float) adjustX(lcol);
+                float wy2 = (float) adjustY(lrow);
+                ww = wx2 - wx1;
+                wh = wy1 - wy2;
 
-	    public void drawRoundRectangle(int px, int py, int pw, int ph) {
-		    drawRoundRectangle(px, py, pw, ph, 10, BaseColor.WHITE);
-	    }
+                _writer.DirectContentUnder.SetLineWidth(lineWidth);
+                _writer.DirectContentUnder.Rectangle(wx1, wy2, ww, wh);
+                _writer.DirectContentUnder.SetColorFill(pbgc);
+                _writer.DirectContentUnder.FillStroke();
+                _writer.DirectContentUnder.Stroke();
+            }
+        }
 
-	    public void drawRoundRectangle(int urow, int ucol, int lrow, int lcol, int pr, BaseColor pbgc) {
+        public void drawRoundRectGray(int px, int py, int pw, int ph)
+        {
+            drawRoundRectGray(px, py, pw, ph, 10);
+        }
 
-		    if (canDrawRects) {
-			    float ww, wh, wr = 0;
-			    float wx1 = (float) adjustX(ucol);
-			    float wy1 = (float) adjustY(urow);
-			    float wx2 = (float) adjustX(lcol);
-			    float wy2 = (float) adjustY(lrow);
-			    ww = wx2 - wx1;
-			    wh = wy1 - wy2;
-			    wr = wh / 4;
-			    if (wr > 10) {
-				    wr = 10;
-			    }
-                
+        public void drawRoundRectGray(int px, int py, int pw, int ph, int pr)
+        {
+            drawRoundRectangle(px, py, pw, ph, pr, BaseColor.LIGHT_GRAY);
+        }
+
+        public void drawRoundRect(int px, int py, int pw, int ph, int pr)
+        {
+            drawRoundRectangle(px, py, pw, ph, pr, BaseColor.WHITE);
+        }
+
+        public void drawRoundRect(int px, int py, int pw, int ph)
+        {
+            drawRoundRectangle(px, py, pw, ph);
+        }
+
+        public void drawRoundRectangle(int px, int py, int pw, int ph)
+        {
+            drawRoundRectangle(px, py, pw, ph, 10, BaseColor.WHITE);
+        }
+
+        public void drawRoundRectangle(int urow, int ucol, int lrow, int lcol, int pr, BaseColor pbgc)
+        {
+
+            if (canDrawRects)
+            {
+                float ww, wh, wr = 0;
+                float wx1 = (float) adjustX(ucol);
+                float wy1 = (float) adjustY(urow);
+                float wx2 = (float) adjustX(lcol);
+                float wy2 = (float) adjustY(lrow);
+                ww = wx2 - wx1;
+                wh = wy1 - wy2;
+                wr = wh / 4;
+                if (wr > 10)
+                {
+                    wr = 10;
+                }
+
                 _writer.DirectContentUnder.SetLineWidth(lineWidth);
 
                 _writer.DirectContentUnder.RoundRectangle(wx1, wy2, ww, wh, wr);
                 _writer.DirectContentUnder.SetColorFill(pbgc);
                 _writer.DirectContentUnder.FillStroke();
                 _writer.DirectContentUnder.Stroke();
-		    }
-	    }
+            }
+        }
 
         public void drawBitmap(int py, int px, String pname)
         {
@@ -225,7 +253,7 @@ namespace HTBPdf
             }
         }
 
-        public void drawBitmap(int py, int px, byte[] pimg, int pspct=100)
+        public void drawBitmap(int py, int px, byte[] pimg, int pspct = 100)
         {
             drawBitmap(py, px, Image.GetInstance(pimg), pspct);
         }
@@ -238,8 +266,8 @@ namespace HTBPdf
         public void drawBitmap(int py, int px, Image pimg, int pspct)
         {
 
-            var wy = (float)adjustY(py);
-            var wx = (float)adjustX(px);
+            var wy = (float) adjustY(py);
+            var wx = (float) adjustX(px);
 
             try
             {
@@ -270,9 +298,9 @@ namespace HTBPdf
                     if (!string.IsNullOrEmpty(description))
                     {
                         var p = new Paragraph(description)
-                                    {
-                                        Alignment = Element.ALIGN_CENTER
-                                    };
+                        {
+                            Alignment = Element.ALIGN_CENTER
+                        };
                         _document.Add(p);
                     }
                 }
@@ -282,13 +310,14 @@ namespace HTBPdf
                 }
             }
         }
+
         private void ResizeImage(Image img)
         {
             double srcWidth = img.Width;
             double srcHeight = img.Height;
 
-            var resizeWidth = (float)srcWidth;
-            var resizeHeight = (float)srcHeight;
+            var resizeWidth = (float) srcWidth;
+            var resizeHeight = (float) srcHeight;
 
             float aspect = resizeWidth / resizeHeight;
 
@@ -305,28 +334,35 @@ namespace HTBPdf
             }
             img.ScaleAbsolute(resizeWidth, resizeHeight);
         }
+
         #endregion
 
         #region print
-        public void print(int px, int py, long pvalue, String pedit) {
-		    print(px, py, pvalue.ToString(), 'L');
-	    }
 
-	    public void print(int px, int py, long pvalue, String pedit, char palign) {
-		    print(px, py, pvalue.ToString(), palign);
-	    }
+        public void print(int px, int py, long pvalue, String pedit)
+        {
+            print(px, py, pvalue.ToString(), 'L');
+        }
 
-	    public void print(int px, int py, String pstr) {
-		    print(px, py, pstr, 'L');
-	    }
+        public void print(int px, int py, long pvalue, String pedit, char palign)
+        {
+            print(px, py, pvalue.ToString(), palign);
+        }
+
+        public void print(int px, int py, String pstr)
+        {
+            print(px, py, pstr, 'L');
+        }
 
         public void print(int px, int py, String pstr, BaseColor pbgc)
         {
             print(px, py, pstr, 'L', pbgc);
         }
-	    public void print(int px, int py, double pdec) {
-		    print(px, py, pdec.ToString(), 'L');
-	    }
+
+        public void print(int px, int py, double pdec)
+        {
+            print(px, py, pdec.ToString(), 'L');
+        }
 
         public void print(int px, int py, double pdec, char palign)
         {
@@ -338,61 +374,77 @@ namespace HTBPdf
             print(py, px, pstr, palign, BaseColor.BLACK);
         }
 
-	    public void print(int py, int px, String pstr, char palign, BaseColor pbgc) {
-		    if (canPrint) {
-			    float wy = (float) roundTo2(adjustY(py) + (fontSize / 10.0) - fontSize);
-			    float wx = (float) adjustX(px);
+        public void print(int py, int px, String pstr, char palign, BaseColor pbgc)
+        {
+            if (canPrint)
+            {
+                float wy = (float) roundTo2(adjustY(py) + (fontSize / 10.0) - fontSize);
+                float wx = (float) adjustX(px);
 
-			    _writer.DirectContent.SetLineWidth(lineWidth);
-			    int walignment = PdfContentByte.ALIGN_LEFT;
+                _writer.DirectContent.SetLineWidth(lineWidth);
+                int walignment = PdfContentByte.ALIGN_LEFT;
 
                 _writer.DirectContent.BeginText();
                 _writer.DirectContent.SetFontAndSize(font, fontSize);
                 _writer.DirectContent.SetColorFill(pbgc);
-			    if ('R' == palign) {
-				    wx = (float) roundTo2(wx - font.GetWidthPoint(pstr, fontSize));
-			    }
-			    else if ('C' == palign) {
-				    wx = (float) roundTo2(wx - (font.GetWidthPoint(pstr, fontSize) / 2.0));
-			    }
+                if ('R' == palign)
+                {
+                    wx = (float) roundTo2(wx - font.GetWidthPoint(pstr, fontSize));
+                }
+                else if ('C' == palign)
+                {
+                    wx = (float) roundTo2(wx - (font.GetWidthPoint(pstr, fontSize) / 2.0));
+                }
                 _writer.DirectContent.ShowTextAligned(walignment, pstr, wx, wy, 0);
                 _writer.DirectContent.EndText();
-		    }
-	    }
+            }
+        }
 
-	    public void printBarcode39(int py, int px, String pstr) {
-		    printBarcode39(py, px, pstr, 'L');
-	    }
+        public float GetTextWidth(string pstr)
+        {
+            var width = (double) roundTo2(font.GetWidthPoint(pstr, fontSize));
+            return (float)adjustXReverse(width);
+        }
 
-	    public void printBarcode39(int py, int px, String pstr, char palign) {
-    /*
-		    getContentByte();
-		    int wx = px;
-		    Barcode39 code = new Barcode39();
-		    code.setCode(pstr);
-		    code.setFont(font);
-		    code.setX(barcodeX);
-		    code.setN(barcodeN);
-		    if (palign == 'C') {
-			    wx -= code.getBarcodeSize().width() / 2;
-		    }
-		    else if (palign == 'R') {
-			    wx -= code.getBarcodeSize().width();
-		    }
-		    Image img = code.createImageWithBarcode(contentByte, null, null);
-		    drawBitmap(py, wx, img);
-     */ 
-	    }
+        public void printBarcode39(int py, int px, String pstr)
+        {
+            printBarcode39(py, px, pstr, 'L');
+        }
+
+        public void printBarcode39(int py, int px, String pstr, char palign)
+        {
+            /*
+                    getContentByte();
+                    int wx = px;
+                    Barcode39 code = new Barcode39();
+                    code.setCode(pstr);
+                    code.setFont(font);
+                    code.setX(barcodeX);
+                    code.setN(barcodeN);
+                    if (palign == 'C') {
+                        wx -= code.getBarcodeSize().width() / 2;
+                    }
+                    else if (palign == 'R') {
+                        wx -= code.getBarcodeSize().width();
+                    }
+                    Image img = code.createImageWithBarcode(contentByte, null, null);
+                    drawBitmap(py, wx, img);
+             */
+        }
+
         #endregion
 
         #region set
-        public void setFont(String pname, int psize) {
-		    setFont(pname, psize, false, false, false);
-	    }
 
-	    public void setFont(String pname, int psize, bool pbold, bool pitalics, bool punderline) {
+        public void setFont(String pname, int psize)
+        {
+            setFont(pname, psize, false, false, false);
+        }
 
-		    String wname = "Helvetica";
+        public void setFont(String pname, int psize, bool pbold, bool pitalics, bool punderline)
+        {
+
+            String wname = "Helvetica";
             switch (pname.ToLower())
             {
                 case "helvetica":
@@ -494,38 +546,158 @@ namespace HTBPdf
             {
                 //e.printStackTrace();
             }
-		    fontSize = psize;
-	    }
+            fontSize = psize;
+        }
 
-	    public void setBarcodeX(float px) {
-		    if (px < 0) {
-			    px = 0;
-		    }
-		    barcodeX = px;
-	    }
+        public BaseFont GetFont(String pname, int psize, bool pbold, bool pitalics, bool punderline)
+        {
 
-	    public void setBarcodeN(float pn) {
-		    if (pn < 0) {
-			    pn = 0;
-		    }
-		    barcodeN = pn;
-	    }
+            BaseFont wfont;
+            String wname = "Helvetica";
+            switch (pname.ToLower())
+            {
+                case "helvetica":
+                    wname = BaseFont.HELVETICA;
+                    if (pbold && pitalics)
+                    {
+                        wname = BaseFont.HELVETICA_BOLDOBLIQUE;
+                    }
+                    else if (pbold)
+                    {
+                        wname = BaseFont.HELVETICA_BOLD;
+                    }
+                    else if (pitalics)
+                    {
+                        wname = BaseFont.HELVETICA_OBLIQUE;
+                    }
+                    break;
+                case "arial":
+                    wname = FontsDir + "/arial.ttf";
+                    if (pbold && pitalics)
+                    {
+                        wname = FontsDir + "/arialbi.ttf";
+                    }
+                    else if (pbold)
+                    {
+                        wname = FontsDir + "/arialbd.ttf";
+                    }
+                    else if (pitalics)
+                    {
+                        wname = FontsDir + "/ariali.ttf";
+                    }
+                    break;
+                case "verdana":
+                    wname = FontsDir + "/verdana.ttf";
+                    if (pbold && pitalics)
+                    {
+                        wname = FontsDir + "/verdanaz.ttf";
+                    }
+                    else if (pbold)
+                    {
+                        wname = FontsDir + "/verdanab.ttf";
+                    }
+                    else if (pitalics)
+                    {
+                        wname = FontsDir + "/verdanai.ttf";
+                    }
+                    break;
+                case "calibri":
+                    wname = FontsDir + "/calibri.ttf";
+                    if (pbold && pitalics)
+                    {
+                        wname = FontsDir + "/calibriz.ttf";
+                    }
+                    else if (pbold)
+                    {
+                        wname = FontsDir + "/calibrib.ttf";
+                    }
+                    else if (pitalics)
+                    {
+                        wname = FontsDir + "/calibrii.ttf";
+                    }
+                    break;
+                case "letter gothic std":
+                    wname = FontsDir + "/LetterGothicStd.otf";
+                    if (pbold && pitalics)
+                    {
+                        wname = FontsDir + "/LetterGothicStd-BoldSlanted.otf";
+                    }
+                    else if (pbold)
+                    {
+                        wname = FontsDir + "/LetterGothicStd-Bold.otf";
+                    }
+                    else if (pitalics)
+                    {
+                        wname = FontsDir + "/LetterGothicStd-Slanted.otf";
+                    }
+                    break;
+                case "tahoma":
+                    wname = FontsDir + "/tahoma.ttf";
+                    if (pbold && pitalics)
+                    {
+                        wname = FontsDir + "/tahomabd.ttf";
+                    }
+                    else if (pbold)
+                    {
+                        wname = FontsDir + "/tahomabd.ttf";
+                    }
+                    else if (pitalics)
+                    {
+                        wname = FontsDir + "/tahoma.ttf";
+                    }
+                    break;
+            }
+            try
+            {
+                wfont = BaseFont.CreateFont(wname, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+            }
+            catch (Exception)
+            {
+                //e.printStackTrace();
+            }
+            fontSize = psize;
+            return font;
+        }
 
-	    public void setLandscapeMode(bool plandscapeMode) {
 
-		    if ((landscapeMode && !plandscapeMode) || (!landscapeMode && plandscapeMode)) {
-			    pageSize = pageSize.Rotate();
+        public void setBarcodeX(float px)
+        {
+            if (px < 0)
+            {
+                px = 0;
+            }
+            barcodeX = px;
+        }
+
+        public void setBarcodeN(float pn)
+        {
+            if (pn < 0)
+            {
+                pn = 0;
+            }
+            barcodeN = pn;
+        }
+
+        public void setLandscapeMode(bool plandscapeMode)
+        {
+
+            if ((landscapeMode && !plandscapeMode) || (!landscapeMode && plandscapeMode))
+            {
+                pageSize = pageSize.Rotate();
                 _writer.SetPageSize(pageSize);
-		    }
-		    landscapeMode = plandscapeMode;
-	    }
+            }
+            landscapeMode = plandscapeMode;
+        }
 
-	    public void setFormName(String pname) {
+        public void setFormName(String pname)
+        {
 
-		    if (pname.ToLower().Equals("letter")) {
+            if (pname.ToLower().Equals("letter"))
+            {
                 pageSize = PageSize.LETTER;
             }
-            else if (pname.ToLower().Equals("legal")) {
+            else if (pname.ToLower().Equals("legal"))
+            {
                 pageSize = PageSize.LEGAL;
             }
             else if (pname.ToLower().Equals("a4"))
@@ -533,115 +705,164 @@ namespace HTBPdf
                 pageSize = PageSize.A4;
             }
             if (landscapeMode)
-        	    pageSize = pageSize.Rotate();
-	    }
+                pageSize = pageSize.Rotate();
+        }
 
-	    public void setImagePath(String pimgPath) {
-		    imagePath = pimgPath;
-	    }
+        public void setImagePath(String pimgPath)
+        {
+            imagePath = pimgPath;
+        }
 
-	    public void setFilePath(String pfilePath) {
-		    filePath = pfilePath;
-	    }
+        public void setFilePath(String pfilePath)
+        {
+            filePath = pfilePath;
+        }
 
-	    public void setLineWidth(float pwidth) {
-		    lineWidth = pwidth;
-	    }
+        public void setLineWidth(float pwidth)
+        {
+            lineWidth = pwidth;
+        }
 
-	    /*
-	     * this method sets the original line width. resetLineWidth() will set the line width to the
-	     * value passed to this method.
-	     */
-	    public void setOrgLineWidth(float pwidth) {
-		    orgLineWidth = pwidth;
-	    }
+        /*
+         * this method sets the original line width. resetLineWidth() will set the line width to the
+         * value passed to this method.
+         */
 
-	    public void resetLineWidth() {
-		    lineWidth = orgLineWidth;
-	    }
+        public void setOrgLineWidth(float pwidth)
+        {
+            orgLineWidth = pwidth;
+        }
 
-	    public void newPage() {
-		    try {
-			    _document.NewPage();
-		    }
-		    catch (DocumentException) {
-			    //e.printStackTrace();
-		    }
-	    }
+        public void resetLineWidth()
+        {
+            lineWidth = orgLineWidth;
+        }
 
-	    public void setMargins(float pmarginLeft, float pmarginRight, float pmarginTop, float pmarginBottom) {
-		    marginLeft = pmarginLeft;
-		    marginRight = pmarginRight;
-		    marginTop = pmarginTop;
-		    marginBottom = pmarginBottom;
-	    }
+        public void newPage()
+        {
+            try
+            {
+                _document.NewPage();
+            }
+            catch (DocumentException)
+            {
+                //e.printStackTrace();
+            }
+        }
+
+        public void setMargins(float pmarginLeft, float pmarginRight, float pmarginTop, float pmarginBottom)
+        {
+            marginLeft = pmarginLeft;
+            marginRight = pmarginRight;
+            marginTop = pmarginTop;
+            marginBottom = pmarginBottom;
+        }
+
         #endregion
 
         public void open()
         {
             open(filePath);
         }
+
         public void open(String fileName)
         {
             open(new FileStream(fileName, FileMode.OpenOrCreate));
         }
-        public void open(Stream os) {
-		    try {
-			    _document = new Document(pageSize);
-			    _writer = PdfWriter.GetInstance(_document, os);
-			    //writer.setPageSize(pageSize);
-			    _document.SetMargins(marginLeft, marginRight, marginTop, marginBottom);
-			    _document.Open();
+
+        public void open(Stream os)
+        {
+            try
+            {
+                _document = new Document(pageSize);
+                _writer = PdfWriter.GetInstance(_document, os);
+                //writer.setPageSize(pageSize);
+                _document.SetMargins(marginLeft, marginRight, marginTop, marginBottom);
+                _document.Open();
                 newPage();
-		    }
-		    catch (DocumentException) {
-			    //e.printStackTrace();
-		    }
-		    catch (Exception) {
-			    //e.printStackTrace();
-		    }
-	    }
+            }
+            catch (DocumentException)
+            {
+                //e.printStackTrace();
+            }
+            catch (Exception)
+            {
+                //e.printStackTrace();
+            }
+        }
 
-	    public void Close() {
-		    _document.Close();
+        public void Close()
+        {
+            _document.Close();
             _document.Dispose();
-	    }
+        }
 
-	    public double adjustX(int px) {
+        public double adjustX(int px)
+        {
 
-		    double wx = metricToPoints(px) + 2.0;
-		    return (roundTo2(wx));
-	    }
+            double wx = metricToPoints(px) + 2.0;
+            return (roundTo2(wx));
+        }
 
-	    public double adjustY(int py) {
+        public double adjustY(int py)
+        {
 
-		    double wy = (double) pageSize.Height - metricToPoints(py) - 2.0;
-		    // double wy = (double)pageSize.height() - 25 - metricToPoints(py) - 2.0;
-		    return (roundTo2(wy));
-	    }
+            double wy = (double) pageSize.Height - metricToPoints(py) - 2.0;
+            // double wy = (double)pageSize.height() - 25 - metricToPoints(py) - 2.0;
+            return (roundTo2(wy));
+        }
 
-	    public double metricToPoints(int pm) {
-		    double wp = (((double) pm * 72.0) / 254.0);
-		    return (roundTo2(wp));
-	    }
 
-	    public double roundTo2(double pnum) {
-		    long inum = (long)Math.Round((pnum * 100.0));
-		    return (inum / 100.0);
-	    }
+        public double adjustXReverse(int px)
+        {
+            double wx = pointsToMetric(px) - 2.0;
+            return (roundTo2(wx));
+        }
 
-	    public int getFontSize() {
-		    return fontSize;
-	    }
+        public double adjustXReverse(double px)
+        {
+            return pointsToMetric(px);
+        }
 
-	    public float getBarcodeX() {
-		    return barcodeX;
-	    }
+        public double adjustYReverse(int py)
+        {
+            double wy = (metricToPoints(py) - pageSize.Height) *-1;
+            return (roundTo2(wy));
+        }
 
-	    public float getBarcodeN() {
-		    return barcodeN;
-	    }
-	    
+        public double metricToPoints(int pm)
+        {
+            double wp = (((double) pm * 72.0) / 254.0);
+            return (roundTo2(wp));
+        }
+
+        public double pointsToMetric(double pp)
+        {
+            double wm = (((double) pp * 254.0) / 72.0);
+            return (roundTo2(wm));
+        }
+
+        public double roundTo2(double pnum)
+        {
+            long inum = (long) Math.Round((pnum * 100.0));
+            return (inum / 100.0);
+        }
+
+        public int getFontSize()
+        {
+            return fontSize;
+        }
+
+        public float getBarcodeX()
+        {
+            return barcodeX;
+        }
+
+        public float getBarcodeN()
+        {
+            return barcodeN;
+        }
+
         public void PrintLeftEcpInfo()
         {
             int lin = 1500;
@@ -693,7 +914,32 @@ namespace HTBPdf
             print((lin += gap), col, "Helmut Ammer", 'R', bc);
         }
 
-	    public void test() {
+        public void AddPhrase(Phrase p, int lin, int col, int width, int height=39, int leadingLineHeight = 15)
+        {
+            ColumnText ct = new ColumnText(_writer.DirectContent);
+            /*
+                the phrase
+                the lower left x corner(left)
+                the lower left y corner(bottom)
+                the upper right x corner(right)
+                the upper right y corner(top)
+                line height (leading)
+                alignment.
+            */
+
+            ct.SetSimpleColumn(
+                p, 
+                (int)adjustX(col),        // col
+                (int)adjustYReverse(lin), // lin 
+                width,                    // width
+                col+height,               // text height
+                leadingLineHeight,
+                Element.ALIGN_LEFT);
+            ct.Go();
+        }
+    
+
+    public void test() {
 		    log.Info("Testing.....");
 		    testNewDocument();
             log.Info("Testing Ended");
