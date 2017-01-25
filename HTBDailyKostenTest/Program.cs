@@ -19,6 +19,7 @@ using HTBExtras;
 using System.Diagnostics;
 using HTB.v2.intranetx.routeplanter;
 using System.Collections.Generic;
+using HTB.v2.intranetx.util;
 using Microsoft.VisualBasic;
 
 namespace HTBDailyKosten
@@ -917,7 +918,7 @@ namespace HTBDailyKosten
 
         private static void TestProtokol()
         {
-            var protocol = (tblProtokol) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblProtokol where protokolid = 2212 order by ProtokolID DESC", typeof (tblProtokol));
+            var protocol = (tblProtokol) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblProtokol where protokolid = 2238 order by ProtokolID DESC", typeof (tblProtokol));
             //protocol.ProtokolAkt = 221504; // test
             var akt = (qryAktenInt) HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenInt WHERE AktIntID = " + protocol.ProtokolAkt, typeof (qryAktenInt));
             var action = (qryAktenIntActionWithType) HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionAkt = " + protocol.ProtokolAkt + " and AktIntActionIsInternal = 0 ORDER BY AktIntActionTime DESC", typeof (qryAktenIntActionWithType));
@@ -932,7 +933,8 @@ namespace HTBDailyKosten
             emailAddresses.AddRange(akt.AuftraggeberEMail.Split(' '));
             emailAddresses.AddRange(protocol.HandlerEMail.Split(' '));
             
-            rpt.GenerateProtokol(akt, protocol, action, ms, new List<VisitRecord>(), new List<tblAktenIntPos>(), null, emailAddresses);
+            rpt.GenerateProtokol(akt, protocol, action, ms, 
+                GlobalUtilArea.GetVisitedDates(akt.AktIntID), GlobalUtilArea.GetPosList(akt.AktIntID), null, emailAddresses);
             ms.Close();
             ms.Dispose();
             Thread.Sleep(100);

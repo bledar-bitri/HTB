@@ -26,5 +26,14 @@ namespace HTB.Database
         public DateTime AktIntPosTransferredDate { get; set; }
         public int AktIntPosTypeCode { get; set; }
 	    #endregion
+
+	    public bool IsPayment()
+	    {
+	        return AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_PAYMENT_CASH_ORIGINAL ||
+	               AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_PAYMENT_CASH_INSURANCE ||
+	               AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_PAYMENT_CASH_COLLECTION ||
+	               AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_PAYMENT_DIRECT_INSURANCE ||
+	               AktIntPosTypeCode == tblAktenIntPosType.INVOICE_TYPE_PAYMENT_DIRECT_AG_ORIGINAL;
+	    }
 	}
 }
