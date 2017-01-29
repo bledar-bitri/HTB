@@ -29,6 +29,7 @@ namespace HTB.intranetx.aktenint
         private readonly ArrayList _negativRows = new ArrayList();
 
         private tblProtokol _protokol;
+        private tblProtokolUbername _protokolUbername;
         private qryAktenInt _akt;
         private qryAktenIntActionWithType _action;
         private ArrayList _protocolVisits;
@@ -49,8 +50,10 @@ namespace HTB.intranetx.aktenint
                 if (_protokol != null)
                 {
                     _akt = (qryAktenInt)HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenInt WHERE AktIntID = " + _protokol.ProtokolAkt, typeof(qryAktenInt));
-                    _action = (qryAktenIntActionWithType)HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionIsInternal = 0 AND AktIntActionAkt = " + _protokol.ProtokolAkt + " ORDER BY AktIntActionTime DESC", typeof(qryAktenIntActionWithType));
-                    _protocolVisits = HTBUtils.GetSqlRecords("SELECT * FROM tblProtokolBesuch WHERE ProtokolID = " + _protokol.ProtokolID, typeof(tblProtokolBesuch));
+                    _action = (qryAktenIntActionWithType)HTBUtils.GetSqlSingleRecord($"SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionIsInternal = 0 AND AktIntActionAkt = {_protokol.ProtokolAkt } ORDER BY AktIntActionTime DESC", typeof(qryAktenIntActionWithType));
+                    _protocolVisits = HTBUtils.GetSqlRecords($"SELECT * FROM tblProtokolBesuch WHERE ProtokolID = {_protokol.ProtokolID}", typeof(tblProtokolBesuch));
+                    _protokolUbername = (tblProtokolUbername)HTBUtils.GetSqlSingleRecord($"SELECT * FROM tblProtokolUbername WHERE UbernameAktIntID = { _protokol.ProtokolAkt} ORDER BY UbernameDatum DESC" , typeof(tblProtokolUbername));
+
                     if (_action != null)
                     {
                         SetRowsVisible();
@@ -230,6 +233,7 @@ namespace HTB.intranetx.aktenint
 
                 var akt = (qryAktenInt)HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenInt WHERE AktIntID = " + _protokol.ProtokolAkt, typeof(qryAktenInt));
                 var action = (qryAktenIntActionWithType)HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionIsInternal = 0 AND AktIntActionAkt = " + _protokol.ProtokolAkt + " ORDER BY AktIntActionTime DESC", typeof(qryAktenIntActionWithType));
+                _protokolUbername = (tblProtokolUbername)HTBUtils.GetSqlSingleRecord($"SELECT * FROM tblProtokolUbername WHERE UbernameAktIntID = { _protokol.ProtokolAkt} ORDER BY UbernameDatum DESC", typeof(tblProtokolUbername));
 
                 ArrayList docsList = HTBUtils.GetSqlRecords("SELECT * FROM qryDoksIntAkten WHERE AktIntID = " + _protokol.ProtokolAkt, typeof(qryDoksIntAkten));
                 if (akt.IsInkasso())
@@ -237,8 +241,8 @@ namespace HTB.intranetx.aktenint
 
 
                 var fileName = "Protokoll_" + akt.AktIntAZ + ".pdf";
-                string filepath = HTBUtils.GetConfigValue("DocumentsFolder") + fileName;
-                FileStream ms = File.Exists(filepath) ? new FileStream(filepath, FileMode.Truncate) : new FileStream(filepath, FileMode.Create);
+                var filepath = HTBUtils.GetConfigValue("DocumentsFolder") + fileName;
+                var ms = File.Exists(filepath) ? new FileStream(filepath, FileMode.Truncate) : new FileStream(filepath, FileMode.Create);
 
                 var rpt = new ProtokolTablet();
                 try
@@ -260,7 +264,7 @@ namespace HTB.intranetx.aktenint
                         Log.Error("Could not find Akt Documents... docsList is null");
 
                     if (ok)
-                        rpt.GenerateProtokol(akt, _protokol, action, ms, GlobalUtilArea.GetVisitedDates(akt.AktIntID), GlobalUtilArea.GetPosList(akt.AktIntID), docsList.Cast<Record>().ToList());
+                        rpt.GenerateProtokol(akt, _protokol, _protokolUbername, action, ms, GlobalUtilArea.GetVisitedDates(akt.AktIntID), GlobalUtilArea.GetPosList(akt.AktIntID), docsList.Cast<Record>().ToList());
                 }
                 catch (Exception ex)
                 {

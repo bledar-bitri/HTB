@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using HTBUtilities;
 using iTextSharp.text;
 
@@ -29,6 +30,13 @@ namespace HTBReports
                 }
             }
             return lin;
+        }
+
+        public static int GetMultipleLinesHeight(int linGap, string text, int maxChars)
+        {
+            var lines = text.Split('\n');
+            var lin = lines.Select(line => HTBUtils.SplitStringInPdfLines(line, maxChars)).Select(lins => linGap * lins.Count()).Sum();
+            return lin + linGap;
         }
     }
 }

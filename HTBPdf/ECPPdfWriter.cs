@@ -13,8 +13,8 @@ namespace HTBPdf
 
         protected String filePath = "C:/temp/testPdfWriter.pdf";
         protected String imagePath = "";
-        private const int IMAGE_MAX_WIDTH = 400;
-        private const int IMAGE_MAX_HEIGHT = 600;
+        private const int IMAGE_MAX_WIDTH = 300;
+        private const int IMAGE_MAX_HEIGHT = 300;
 
         private Document _document;
 
@@ -281,6 +281,65 @@ namespace HTBPdf
             }
         }
 
+        public int GetImageHeight(string pname)
+        {
+            if (File.Exists(imagePath + "/" + pname) && new FileInfo(imagePath + "/" + pname).Length > 0)
+            {
+                try
+                {
+                    var img = Image.GetInstance(imagePath + "/" + pname);
+                    if (img.Width > IMAGE_MAX_WIDTH || img.Height > IMAGE_MAX_HEIGHT)
+                    {
+                        img.ScaleToFit(IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT);
+                    }
+
+                    return (int)adjustY((int)img.ScaledHeight);
+                }
+                catch (Exception)
+                {
+                    //e.printStackTrace();
+                }
+            }
+            return 0;
+        }
+
+
+        public int AddImageToDocument(int py, int px, string pname, string pdescription = null)
+        {
+            float height = 0;
+            if (File.Exists(imagePath + "/" + pname) && new FileInfo(imagePath + "/" + pname).Length > 0)
+            {
+                try
+                {
+                    
+                    var img = Image.GetInstance(imagePath + "/" + pname);
+                    if (img.Width > IMAGE_MAX_WIDTH || img.Height > IMAGE_MAX_HEIGHT)
+                    {
+                        img.ScaleToFit(IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT);
+                    }
+                    img.Border = Rectangle.BOX;
+                    img.BorderWidth = 2f;
+                    height = (float)adjustY((int)img.Height);
+
+                    //img.SetAbsolutePosition((float)adjustX(px), (float)reverseY(py + (int)(img.Height)));
+                    img.SetAbsolutePosition(0,0);
+
+                    print(py, px, pdescription);
+                    _document.Add(img);
+                }
+                catch (Exception)
+                {
+                    //e.printStackTrace();
+                }
+            }
+            setFont("Calibri", 4);
+            for (int i = 0; i < 3000; i += 100)
+            {
+                drawLine(i, 0, i, 10);
+                print(i, 20, i);
+            }
+            return (int) height;
+        }
 
         public void AddImageToDocument(String pname, String description = null)
         {
@@ -311,6 +370,134 @@ namespace HTBPdf
             }
         }
 
+        private PdfPTable pdfTable;
+
+        public void StartPdfTable2(int columns)
+        {
+            pdfTable = new PdfPTable(columns);
+            PdfPCell cell = new PdfPCell();
+            Paragraph p = new Paragraph();
+            var chunk = new Chunk("BILDER");
+            chunk.Font =  FontFactory.GetFont(BaseFont.TIMES_BOLD, 18, BaseColor.BLUE);
+            p.Add(chunk);
+            cell.AddElement(p);
+            pdfTable.AddCell(cell);
+        }
+
+        public void StartPdfTable(int columns)
+        {
+            pdfTable = new PdfPTable(columns);
+            pdfTable.DefaultCell.Border = Rectangle.NO_BORDER;
+            pdfTable.DefaultCell.HorizontalAlignment = Element.ALIGN_CENTER;
+
+            var cell = new PdfPCell();
+            var p = new Paragraph();
+            var chunk = new Chunk("BILDER\n")
+            {
+                Font = FontFactory.GetFont(BaseFont.TIMES_BOLD, 18, BaseColor.BLUE)
+            };
+            p.Add(chunk);
+            cell.Colspan = 2;
+            cell.AddElement(p);
+            pdfTable.AddCell("");
+            pdfTable.AddCell("");
+            pdfTable.AddCell(cell);
+            
+        }
+
+        public void AddImageToPdfTable2(string pname, string pdescription = null)
+        {
+            PdfPCell cell = new PdfPCell();
+            Paragraph p = new Paragraph();
+
+            float height = 0;
+            if (File.Exists(imagePath + "/" + pname) && new FileInfo(imagePath + "/" + pname).Length > 0)
+            {
+                try
+                {
+
+                    var img = Image.GetInstance(imagePath + "/" + pname);
+                    if (img.Width > IMAGE_MAX_WIDTH || img.Height > IMAGE_MAX_HEIGHT)
+                    {
+                        img.ScaleToFit(IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT);
+                    }
+                    p.Add(new Phrase(pdescription));
+                    p.Add(new Chunk(img, 0, 0));
+                    cell.AddElement(p);
+                    pdfTable.AddCell(cell);
+                }
+                catch (Exception)
+                {
+                    //e.printStackTrace();
+                }
+            }
+        }
+
+        public void AddImageToPdfTable(string pname, string pdescription = null)
+        {
+            PdfPCell cell = new PdfPCell();
+            Paragraph p = new Paragraph();
+
+            float height = 0;
+            if (File.Exists(imagePath + "/" + pname) && new FileInfo(imagePath + "/" + pname).Length > 0)
+            {
+                try
+                {
+                    
+                    var img = Image.GetInstance(imagePath + "/" + pname);
+                    // Setting image resolution
+                    if (img.Height > img.Width)
+                    {
+                        var percentage = 0.0f;
+                        percentage = 400 / img.Height;
+                        img.ScalePercent(percentage * 100);
+                    }
+                    else
+                    {
+                        var percentage = 0.0f;
+                        percentage = 240 / img.Width;
+                        img.ScalePercent(percentage * 100);
+                    }
+
+                    img.Border = iTextSharp.text.Rectangle.BOX;
+                    img.BorderColor = iTextSharp.text.BaseColor.BLACK;
+                    img.BorderWidth = 3.0f;
+
+                    pdfTable.AddCell(pdescription);
+                    pdfTable.AddCell("");
+                    pdfTable.AddCell(img);
+                    pdfTable.AddCell("");
+                    pdfTable.AddCell(" ");
+                    pdfTable.AddCell(" ");
+                }
+                catch (Exception)
+                {
+                    //e.printStackTrace();
+                }
+            }
+        }
+
+        public void FinishPdfTable()
+        {
+            _document.Add(pdfTable);
+        }
+        /*
+        public void AddImagesToDocument()
+        {
+            PdfPTable table = new PdfPTable(2);
+            PdfPCell cell = new PdfPCell();
+            Paragraph p = new Paragraph();
+            p.Add(new Phrase("Test "));
+            p.Add(new Chunk(image, 0, 0));
+            p.Add(new Phrase(" more text "));
+            p.Add(new Chunk(image, 0, 0));
+            p.Add(new Chunk(image, 0, 0));
+            p.Add(new Phrase(" end."));
+            cell.AddElement(p);
+            table.AddCell(cell);
+            table.AddCell(new PdfPCell(new Phrase("test 2")));
+            document.Add(table);
+        }*/
         private void ResizeImage(Image img)
         {
             double srcWidth = img.Width;
@@ -332,6 +519,7 @@ namespace HTBPdf
                 resizeHeight = IMAGE_MAX_HEIGHT;
                 resizeWidth = resizeHeight * aspect;
             }
+            
             img.ScaleAbsolute(resizeWidth, resizeHeight);
         }
 
@@ -827,6 +1015,12 @@ namespace HTBPdf
         public double adjustYReverse(int py)
         {
             double wy = (metricToPoints(py) - pageSize.Height) *-1;
+            return (roundTo2(wy));
+        }
+
+        public double reverseY(int py)
+        {
+            double wy = (metricToPoints(py) - pageSize.Height + 2) * -1;
             return (roundTo2(wy));
         }
 

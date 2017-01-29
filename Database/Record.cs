@@ -372,6 +372,7 @@ namespace HTB.Database
             var updateFieldName = new StringBuilder();
             var updateValues = new StringBuilder();
             var load = new StringBuilder("- (BOOL) loadFromFMResultSetRow:(FMResultSet*)set\n{\n ");
+            var description = new StringBuilder("- (NSString*) description\n{\n [[NSMutableString* alloc]initWithFormat:@\"\\n%@\", tableName];\n");
 
             var toXml = new StringBuilder("-(NSString *) toXmlString \n{\n\tNSMutableString *retString = [[[NSMutableString alloc]init] autorelease];\n\n");
             toXml.Append("\t[retString appendString:@\"<");
@@ -479,7 +480,8 @@ namespace HTB.Database
                     toXml.Append("\t[retString appendString:@\"<");
                     toXml.Append(propInfo.Name);
                     toXml.Append(">\"];\n");
-
+                    var descriptionFirstPart = "[sb appenFormat:@\"\\n\\t" + propInfo.Name + " = ";
+                    var descriptionSecondPart = "self."+varName+"];\n";
                     if (datatype.StartsWith("int"))
                     {
                         toXml.Append("\t[retString appendString:[NSString stringWithFormat:@\"%i\",  [self ");
@@ -487,8 +489,10 @@ namespace HTB.Database
                         toXml.Append("]]];");
 
                         var valString = "[NSNumber numberWithLong:self." + varName +"], ";
+
                         insertValues.Append(valString);
                         updateValues.Append(valString);
+                        description.Append(descriptionFirstPart + "%ld \", (long)" + descriptionSecondPart);
 
                         load.Append("[self set" + propInfo.Name + ":[set intForColumn:@\"" + propInfo.Name + "\"]];\n");
                     }
@@ -503,6 +507,7 @@ namespace HTB.Database
                         updateValues.Append(valString);
 
                         load.Append("[self set" + propInfo.Name + ":[set doubleForColumn:@\"" + propInfo.Name + "\"]];\n");
+                        description.Append(descriptionFirstPart + "%lf \", " + descriptionSecondPart);
 
                         importUtil = true;
 
@@ -518,7 +523,7 @@ namespace HTB.Database
                         updateValues.Append(valString);
 
                         load.Append("[self set" + propInfo.Name + ":[set boolForColumn:@\"" + propInfo.Name + "\"]];\n");
-
+                        description.Append(descriptionFirstPart + "%d \", " + descriptionSecondPart);
                     }
                     else if (datatype == "datetime")
                     {
@@ -532,7 +537,7 @@ namespace HTB.Database
                         updateValues.Append(valString);
 
                         load.Append("[self set" + propInfo.Name + ":[set dateForColumn:@\"" + propInfo.Name + "\"]];\n");
-
+                        description.Append(descriptionFirstPart + "%@ \", " + descriptionSecondPart);
                         importUtil = true;
                     }
                     else
@@ -547,7 +552,7 @@ namespace HTB.Database
                         updateValues.Append(valString);
 
                         load.Append("[self set" + propInfo.Name + ":[set stringForColumn:@\"" + propInfo.Name + "\"]];\n");
-
+                        description.Append(descriptionFirstPart + "%@ \", " + descriptionSecondPart);
                     }
                     toXml.Append("\n\t[retString appendString:@\"</");
                     toXml.Append(propInfo.Name);
@@ -575,6 +580,7 @@ namespace HTB.Database
             update.Append("];\n}\n\n");
 
             load.Append("\nreturn YES;\n}\n\n");
+            description.Append("\nreturn sb;\n};\n\n");
             #region H file
             AppendToString(sbH, "#import \"Record.h\"\n\n");
             AppendToString(sbH, "@interface ");
@@ -629,6 +635,9 @@ namespace HTB.Database
             AppendToString(sbM, update.ToString());
             // load
             AppendToString(sbM, load.ToString());
+
+            // description
+            AppendToString(sbM, description.ToString());
 
             AppendToString(sbM, "\n@end");
             #endregion

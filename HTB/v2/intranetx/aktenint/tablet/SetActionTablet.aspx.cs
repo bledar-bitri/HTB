@@ -517,12 +517,13 @@ namespace HTB.v2.intranetx.aktenint.tablet
                 var action = (qryAktenIntActionWithType)HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionAkt = " + akt.AktIntID + " ORDER BY AktIntActionTime DESC", typeof(qryAktenIntActionWithType));
                 if (action != null)
                 {
+                    var protokolUbername = (tblProtokolUbername)HTBUtils.GetSqlSingleRecord($"SELECT * FROM tblProtokolUbername WHERE UbernameAktIntID = { akt.AktIntID } ORDER BY UbernameDatum DESC", typeof(tblProtokolUbername));
 
                     // create protocol in pdf
                     var fileName = "Protocol_" + protocol.ProtokolAkt + ".pdf";
                     var ms = new FileStream(HTBUtils.GetConfigValue("DocumentsFolder") + fileName, FileMode.OpenOrCreate);
                     var rpt = new ProtokolTablet();
-                    rpt.GenerateProtokol(akt, protocol, action, ms, GlobalUtilArea.GetVisitedDates(akt.AktIntID), GlobalUtilArea.GetPosList(akt.AktIntID));
+                    rpt.GenerateProtokol(akt, protocol, protokolUbername, action, ms, GlobalUtilArea.GetVisitedDates(akt.AktIntID), GlobalUtilArea.GetPosList(akt.AktIntID));
                     ms.Close();
                     ms.Dispose();
                     SaveDocumentRecord(protocol.ProtokolAkt, fileName, akt.AktIntSB);

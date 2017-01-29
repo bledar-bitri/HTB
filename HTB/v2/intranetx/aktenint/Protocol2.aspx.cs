@@ -153,9 +153,11 @@ namespace HTB.intranetx.aktenint
                     bool ok = true;
 
                     var akt = (qryAktenInt)HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenInt WHERE AktIntID = " + _protokol.ProtokolAkt, typeof(qryAktenInt));
-                    var action = (qryAktenIntActionWithType)HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionIsInternal = 0 AND AktIntActionAkt = " + _protokol.ProtokolAkt + " ORDER BY AktIntActionTime DESC", typeof(qryAktenIntActionWithType));
-//                    var protocolVisits = HTBUtils.GetSqlRecords("SELECT * FROM tblProtokolBesuch WHERE ProtokolID = " + _protokol.ProtokolID, typeof(tblProtokolBesuch));
-                    
+                    var action = (qryAktenIntActionWithType)HTBUtils.GetSqlSingleRecord($"SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionIsInternal = 0 AND AktIntActionAkt = " + _protokol.ProtokolAkt + " ORDER BY AktIntActionTime DESC", typeof(qryAktenIntActionWithType));
+                    var protokolUbername = (tblProtokolUbername)HTBUtils.GetSqlSingleRecord($"SELECT * FROM tblProtokolUbername WHERE UbernameAktIntID = { akt.AktIntID } ORDER BY UbernameDatum DESC", typeof(tblProtokolUbername));
+
+                    //                    var protocolVisits = HTBUtils.GetSqlRecords("SELECT * FROM tblProtokolBesuch WHERE ProtokolID = " + _protokol.ProtokolID, typeof(tblProtokolBesuch));
+
                     ArrayList docsList = HTBUtils.GetSqlRecords("SELECT * FROM qryDoksIntAkten WHERE AktIntID = " + _protokol.ProtokolAkt, typeof(qryDoksIntAkten));
                     if (akt.IsInkasso())
                         HTBUtils.AddListToList(HTBUtils.GetSqlRecords("SELECT * FROM qryDoksInkAkten WHERE CustInkAktID = " + akt.AktIntCustInkAktID, typeof(qryDoksInkAkten)), docsList);
@@ -169,7 +171,7 @@ namespace HTB.intranetx.aktenint
                     try
                     {
 //                        rpt.GenerateProtokol(akt, _protokol, action, ms, protocolVisits.Cast<tblProtokolBesuch>().ToList(), docsList.Cast<Record>().ToList());
-                        rpt.GenerateProtokol(akt, _protokol, action, ms, GlobalUtilArea.GetVisitedDates(akt.AktIntID), GlobalUtilArea.GetPosList(akt.AktIntID), docsList.Cast<Record>().ToList());
+                        rpt.GenerateProtokol(akt, _protokol, protokolUbername, action, ms, GlobalUtilArea.GetVisitedDates(akt.AktIntID), GlobalUtilArea.GetPosList(akt.AktIntID), docsList.Cast<Record>().ToList());
                     }
                     catch (Exception ex)
                     {

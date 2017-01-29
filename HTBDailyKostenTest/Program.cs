@@ -918,10 +918,18 @@ namespace HTBDailyKosten
 
         private static void TestProtokol()
         {
+            // ProtocolId Reposession (mercedes): 2237 
+            // ProtocolId Reposession: 2212
+            // ProtocolId Collection: 2238 
+
             var protocol = (tblProtokol) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblProtokol where protokolid = 2238 order by ProtokolID DESC", typeof (tblProtokol));
             //protocol.ProtokolAkt = 221504; // test
             var akt = (qryAktenInt) HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenInt WHERE AktIntID = " + protocol.ProtokolAkt, typeof (qryAktenInt));
-            var action = (qryAktenIntActionWithType) HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionAkt = " + protocol.ProtokolAkt + " and AktIntActionIsInternal = 0 ORDER BY AktIntActionTime DESC", typeof (qryAktenIntActionWithType));
+            var action = (qryAktenIntActionWithType) HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionAkt = " + akt.AktIntID + " and AktIntActionIsInternal = 0 ORDER BY AktIntActionTime DESC", typeof (qryAktenIntActionWithType));
+            var protokolUbername = (tblProtokolUbername)HTBUtils.GetSqlSingleRecord($"SELECT * FROM tblProtokolUbername WHERE UbernameAktIntID = { protocol.ProtokolAkt } ORDER BY UbernameDatum DESC", typeof(tblProtokolUbername));
+
+            ArrayList docsList = HTBUtils.GetSqlRecords("SELECT * FROM qryDoksIntAkten WHERE AktIntID = " + akt.AktIntID, typeof(qryDoksIntAkten));
+
             var fileName = "Protocol_" + protocol.ProtokolAkt + ".pdf";
             string filepath = HTBUtils.GetConfigValue("DocumentsFolder") + fileName;
             FileStream ms = null;
@@ -933,8 +941,16 @@ namespace HTBDailyKosten
             emailAddresses.AddRange(akt.AuftraggeberEMail.Split(' '));
             emailAddresses.AddRange(protocol.HandlerEMail.Split(' '));
             
-            rpt.GenerateProtokol(akt, protocol, action, ms, 
-                GlobalUtilArea.GetVisitedDates(akt.AktIntID), GlobalUtilArea.GetPosList(akt.AktIntID), null, emailAddresses);
+            rpt.GenerateProtokol(akt, 
+                protocol, 
+                protokolUbername,
+                action, ms, 
+                GlobalUtilArea.GetVisitedDates(akt.AktIntID), 
+                GlobalUtilArea.GetPosList(akt.AktIntID), 
+                docsList.Cast<Record>().ToList(), 
+                emailAddresses);
+
+
             ms.Close();
             ms.Dispose();
             Thread.Sleep(100);

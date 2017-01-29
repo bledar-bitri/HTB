@@ -26,7 +26,8 @@ namespace HTB.Database
 		public string UbernahmeOrt{get; set; }
 		public bool UbernommentMitZulassung{get; set; }
 		public string KZ{get; set; }
-		public int ProtokolServiceheftID{get; set; }
+		public bool KzVonEcpAnAg  { get; set; }
+        public int ProtokolServiceheftID{get; set; }
 		public int AnzahlSchlussel{get; set; }
 	    public int Tachometer { get; set; }
 	    [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
@@ -45,9 +46,22 @@ namespace HTB.Database
         public double DirektzahlungVersicherung { get; set; }
         public DateTime DirektzahlungVersicherungAm { get; set; }
         
-        [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
 		public bool Abschleppdienst{get; set; }
 		public string AbschleppdienstName{get; set; }
+		public string AbschleppdienstGrund{get; set; }
+        
+        [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
+        public double ZusatzkostenAbschleppdienst { get; set; }
+
+        [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
+        public double ZusatzkostenPannendienst { get; set; }
+
+        [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
+        public double ZusatzkostenStandgebuhren { get; set; }
+        [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
+        public double ZusatzkostenReparaturen { get; set; }
+        [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
+        public double ZusatzkostenMaut { get; set; }
         [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
         public double ZusatzkostenTreibstoff { get; set; }
         [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
@@ -69,7 +83,9 @@ namespace HTB.Database
         public string SignaturePath { get; set; }
         public string Serviceheft { get; set; }
         public bool PolizieInformiert { get; set; }
+        public string PolizeiDienststelle { get; set; }
         public string RechnungNr { get; set; }
+        public string ReparaturRechnungNr { get; set; }
         public string HandlerEMail { get; set; }
 
         public bool MasterKey { get; set; }

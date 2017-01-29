@@ -43,6 +43,7 @@ namespace HTBReports
         private readonly string _logoPath = HTBUtils.GetConfigValue("LogoPath_Mahnung");
 
         private tblProtokol _protokol;
+        private tblProtokolUbername _ubernameProtokol;
         private qryAktenInt _akt;
         private qryAktenIntActionWithType _action;
         private List<tblProtokolBesuch> _visits;
@@ -64,10 +65,11 @@ namespace HTBReports
             }
         }
         
-        public void GenerateProtokol(qryAktenInt akt, tblProtokol protokol, qryAktenIntActionWithType action, Stream os, List<VisitRecord> visits, List<tblAktenIntPos> invoices, List<Record> documents = null, List<string> emailAddresses = null)
+        public void GenerateProtokol(qryAktenInt akt, tblProtokol protokol, tblProtokolUbername ubernameProtokol, qryAktenIntActionWithType action, Stream os, List<VisitRecord> visits, List<tblAktenIntPos> invoices, List<Record> documents = null, List<string> emailAddresses = null)
         {
             _akt = akt;
             _protokol = protokol;
+            _ubernameProtokol = ubernameProtokol;
             _action = action;
             _visitRecordList = visits;
             _invoices = invoices;
@@ -169,11 +171,16 @@ namespace HTBReports
             else
                 formattedSicherstellungsZeit = dte.ToString(TimeFormat);
 
+            dte = _ubernameProtokol?.UbernameAusloesenDatum ?? DateTime.MinValue;
+            string formattedAusloseDatum = HTBUtils.IsDateValid(dte) ? dte.ToString(DateFormat) : "";
+            string formattedAusloseZeit = HTBUtils.IsDateValid(dte) && dte.ToShortTimeString() != "00:00" ? dte.ToString(TimeFormat) : "";
 
+            var ubernameTachometer = _ubernameProtokol?.UbernameTachometer.ToString() ?? "";
+            
+            var kfzDurchBehordeAbgemeldet = _ubernameProtokol != null && _ubernameProtokol.UbernameKzDurchBehoerdeEingezogen ? ja : nein;
+            var typenschein = _ubernameProtokol != null && _ubernameProtokol.UbernameTypenschein ? ja : nein;
 
             #endregion
-            // start reporting
-            
 
             SetHeadingFont();
             _lin += _gap*2;
@@ -188,7 +195,7 @@ namespace HTBReports
 
             PrintHeaderAndInfo("Object: ", _akt.AktIntAutoName, _col1);
             PrintHeaderAndInfo("Kennzeichen: ", _akt.AktIntAutoKZ, col2);
-            _lin += _gap * 3;
+            _lin += _gap * 2;
 
             WriteUnderlinedSubheader("Vollbrachte Dienstleistung durch ECP:", _col1);
             _lin += _gap + 20;
@@ -203,13 +210,16 @@ namespace HTBReports
             newCol += GetHeaderAndInfoWidth(hdr, info);
             WriteInfo(newCol, " Uhr");
             _lin += _gap;
+            int distance = 0;
+            if (_protokol.Uberstellungsdistanz > 0)
+                distance = (int) _protokol.Uberstellungsdistanz;
             PrintHeaderAndInfo("Ort der Übernahme: ", _protokol.UbernahmeOrt, _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Überstellungsdistanz in KM: ", "TODO", col2, BaseColor.RED);
+            PrintHeaderAndInfo("Überstellungsdistanz in KM: ", distance > 0 ? distance.ToString() : "", col2, BaseColor.RED);
             _lin += _gap;
             PrintHeaderAndInfo("Sichersteller: ", _akt.UserVorname + " " + _akt.UserNachname, _col1, BaseColor.RED);
             PrintHeaderAndInfo("Beifahrer: ", _protokol.Beifahrer, col2, BaseColor.RED);
             _lin += _gap;
-            PrintHeaderAndInfo("KM-Stand bei Übernahme: ", "TODO", _col1, BaseColor.RED);
+            PrintHeaderAndInfo("KM-Stand bei Übernahme: ", ubernameTachometer, _col1, BaseColor.RED);
             PrintHeaderAndInfo("KM-Stand nach Überstellung: ", _protokol.Tachometer.ToString(), col2, BaseColor.RED);
             _lin += _gap;
             var picCount = GetPicCount();
@@ -228,17 +238,17 @@ namespace HTBReports
             _lin += _gap;
 
             hdr = "Kunde möchte das KFZ bis zum ";
-            info = "TODO";
+            info = formattedAusloseDatum;
             PrintHeaderAndInfo(hdr, info, _col1, BaseColor.RED);
             newCol = _col1 + GetHeaderAndInfoWidth(hdr, info);
-            PrintHeaderAndInfo(" wider auslösen: ", "TODO", newCol, BaseColor.RED);
+            PrintHeaderAndInfo(" wider auslösen: ", formattedAusloseZeit, newCol, BaseColor.RED);
             _lin += _gap*2;
             PrintHeaderAndInfo("Abschleppdienst: ", _protokol.Abschleppdienst ? ja : nein, _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Warum wurde dieser benötigt: ", "TODO:", col2, BaseColor.RED);
+            PrintHeaderAndInfo("Warum wurde dieser benötigt: ", _protokol.AbschleppdienstGrund, col2, BaseColor.RED);
             _lin += _gap;
             PrintHeaderAndInfo("Polizei wurde informiert: ", _protokol.PolizieInformiert ? ja : nein, _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Polizei Dienststelle: ", "TODO", col2, BaseColor.RED);
-            _lin += _gap * 3;
+            PrintHeaderAndInfo("Polizei Dienststelle: ", _protokol.PolizeiDienststelle, col2, BaseColor.RED);
+            _lin += _gap * 2;
 
             WriteUnderlinedSubheader("Mit dem KFZ wurden sichergestellt/ zurückgegeben:", _col1);
             _lin += _gap + 20;
@@ -249,26 +259,26 @@ namespace HTBReports
             PrintHeaderAndInfo("Anzahl der Schlüssel: ", _protokol.AnzahlSchlussel.ToString(), col2, BaseColor.RED);
             _lin += _gap;
             PrintHeaderAndInfo("Kennzeichen am KFZ: ", _protokol.KZ.ToLower() != "abgemeldet" ? ja : nein, _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Kennzeichen durch Behörde eingezogen: ", "TODO", col2, BaseColor.RED);
+            PrintHeaderAndInfo("Kennzeichen durch Behörde eingezogen: ", kfzDurchBehordeAbgemeldet, col2, BaseColor.RED);
             _lin += _gap;
-            PrintHeaderAndInfo("Typenschein: ",  "TODO", _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Kennzeichen von ECP abgenommen und dem AG übergeben: ", "TODO", col2-300, BaseColor.RED);
-            _lin += _gap * 3;
+            PrintHeaderAndInfo("Typenschein: ",  typenschein, _col1, BaseColor.RED);
+            PrintHeaderAndInfo("Kennzeichen von ECP abgenommen und dem AG übergeben: ", _protokol.KzVonEcpAnAg ? ja : nein, col2-300, BaseColor.RED);
+            _lin += _gap * 2;
 
             WriteUnderlinedSubheader("Kosten im Rahmen der Sicherstellung:", _col1);
             _lin += _gap + 20;
-            PrintHeaderAndInfo("Kosten Abschleppdienst: ", "TODO", _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Pannendienst: ", "TODO", col2, BaseColor.RED);
+            PrintHeaderAndInfo("Kosten Abschleppdienst: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenAbschleppdienst), _col1, BaseColor.RED);
+            PrintHeaderAndInfo("Pannendienst: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenPannendienst), col2, BaseColor.RED);
             _lin += _gap;
             PrintHeaderAndInfo("Vignette: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenVignette), _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Mautgebühren: ", "TODO", col2, BaseColor.RED);
+            PrintHeaderAndInfo("Mautgebühren: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenMaut), col2, BaseColor.RED);
             _lin += _gap;
             PrintHeaderAndInfo("Treibstoff: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenTreibstoff), _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Reparaturrechnung von ECP ausgelegt: ", "TODO", col2, BaseColor.RED);
+            PrintHeaderAndInfo("Reparaturrechnung von ECP ausgelegt: ", _protokol.ReparaturRechnungNr, col2, BaseColor.RED);
             _lin += _gap;
-            PrintHeaderAndInfo("Standgebühren: ", "TODO", _col1, BaseColor.RED);
+            PrintHeaderAndInfo("Standgebühren: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenStandgebuhren), _col1, BaseColor.RED);
             PrintHeaderAndInfo("Rechnungsnr. E.C.P: ", _protokol.RechnungNr, col2, BaseColor.RED);
-            _lin += _gap * 3;
+            _lin += _gap * 2;
 
             WriteUnderlinedSubheader("Übernahmebestätigung durch:", _col1);
             _lin += _gap + 20;
@@ -278,7 +288,7 @@ namespace HTBReports
             WriteInfo(_col1, _protokol.HandlerStrasse);
             _lin += _gap;
             WriteInfo(_col1, "A -" +_protokol.HandlerPLZ + " " + _protokol.UbernahmeOrt);
-            _lin += _gap * 3;
+            _lin += _gap * 2;
 
             var signatureLine = _lin;
 
@@ -307,6 +317,12 @@ namespace HTBReports
 
             
             Writer.drawBitmapFromPath(signatureLine+_gap*4, signatureCol, _protokol.SignaturePath, 40);
+
+            _lin += _gap*2;
+            var multilineText =
+               $"Sollten wir eigene Forderungen gegen den Kunden/Leasingnehmer haben, bestätigen wir hiermit gegenüber {_akt.AuftraggeberName1} weder ein allfälliges Retentionsrecht geltend zu machen, noch Standgebühren für die Lagerung zu verrechnen.";
+            WriteMultilineInfo(multilineText, _col1, BaseColor.BLACK, 100);
+
         }
         
         private void PrintRepossessionForMerzedes()
@@ -488,28 +504,37 @@ namespace HTBReports
 
             _lin += _gap;
             PrintHeaderAndInfo("Anzahl der Betreibungsversuche: ", _visitRecordList?.Count.ToString(), _col1, BaseColor.RED);
-            PrintHeaderAndInfo("ZMR durch E.C.P.: ", "TODO", col2, BaseColor.RED);
+            PrintHeaderAndInfo("ZMR durch E.C.P.: ", HasZmrAction() ? ja : nein, col2, BaseColor.RED);
 
             _lin += _gap;
-            PrintHeaderAndInfo("Sachbearbeiter E.C.P. ", _akt.UserVorname + " " + _akt.UserNachname, _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Anschrift Erhebung durch E.C.P.: ", "TODO", col2, BaseColor.RED);
+            PrintHeaderAndInfo("Sachbearbeiter E.C.P.: ", _akt.UserVorname + " " + _akt.UserNachname, _col1, BaseColor.RED);
+            PrintHeaderAndInfo("Anschrift Erhebung durch E.C.P.: ", HasAnschriftErhebungAction() ? ja : nein, col2, BaseColor.RED);
 
             _lin += _gap * 2;
 
             WriteUnderlinedSubheader("Zahlungsaufstellung durch E.C.P.:", _col1);
             _lin += _gap + 40;
             
-
-
             PrintPaymantTable();
             
             _lin += _gap;
 
             WriteUnderlinedSubheader("Erbrachte Dienstleistungen der E.C.P. European Car Protect KG:", _col1);
             _lin += _gap + 40;
+            var multiLineWidth = 0;
+            var orgLin = 0;
             var visitNbr = 1;
             _visitRecordList.ForEach(visit =>
             {
+                multiLineWidth = ReportUtils.GetMultipleLinesHeight(_gap, visit.VisitMemo, 110);
+
+                if (CheckOverflow(_lin + (_gap * 3) + multiLineWidth))
+                {
+                    Writer.newPage();
+                    PrintPageHeader();
+                    _lin += _gap;
+                }
+
                 hdr = visitNbr+". Betreibungsversuch am: ";
                 info = visit.VisitTime.ToString(DateFormat);
                 PrintHeaderAndInfo(hdr, info, _col1, BaseColor.RED);
@@ -528,18 +553,36 @@ namespace HTBReports
                 _lin += _gap;
                 PrintHeaderAndInfo("Aktion: ", visit.VisitAction, _col1, BaseColor.RED);
                 _lin += _gap;
-                PrintHeaderAndInfo("Memo: ", "", _col1, BaseColor.RED);
-                _lin += _gap;
-                var orgLin = _lin;
+                if (visit.VisitMemo.Trim() != "")
+                {
+                    PrintHeaderAndInfo("Memo: ", "", _col1, BaseColor.RED);
+                    _lin += _gap;
+                    orgLin = _lin;
 
-                visit.VisitMemo =
-                    " bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla";
-                WriteMultilineInfo(visit.VisitMemo, _col1 + 50, BaseColor.BLACK, 110);
+                    WriteMultilineInfo(visit.VisitMemo, _col1 + 50, BaseColor.BLACK, 110);
 
-                Writer.drawRect(orgLin, _col1, _lin, 1850);
+                    Writer.drawRect(orgLin, _col1, _lin, 1850);
+                }
                 _lin += _gap;
                 visitNbr++;
             });
+
+            multiLineWidth = ReportUtils.GetMultipleLinesHeight(_gap, _akt.AKTIntMemo, 110);
+            if (CheckOverflow(_lin + (_gap * 3) + multiLineWidth))
+            {
+                Writer.newPage();
+                PrintPageHeader();
+                _lin += _gap;
+            }
+            if (_akt.AKTIntMemo.Trim() != "")
+            {
+                _lin += _gap * 2;
+                WriteUnderlinedSubheader("Erweiterter Bericht:", _col1);
+                _lin += _gap + 40;
+                orgLin = _lin;
+                WriteMultilineInfo(_akt.AKTIntMemo, _col1 + 50, BaseColor.BLACK, 110);
+                Writer.drawRect(orgLin, _col1, _lin, 1850);
+            }
         }
 
         private void PrintMoneyCollectedLine(string header, double amount, string headerDate, DateTime date, bool isKosten = false)
@@ -616,8 +659,12 @@ namespace HTBReports
         private void PrintDocuments(IEnumerable<Record> documents)
         {
 
-           
+            if(documents == null || !documents.Any())
+                return;
+            
             bool addedNewPage = false;
+            Writer.StartPdfTable(2);
+            bool isLeftSide = true;
 
             if (documents != null)
             {
@@ -643,16 +690,20 @@ namespace HTBReports
                         if (!addedNewPage)
                         {
                             Writer.newPage();
-                            PrintDocumentsPageHeader();
-                            Writer.Document.Add(new Paragraph("\n"));
+                            //PrintDocumentsPageHeader();
                             addedNewPage = true;
                         }
-                        description += "\n ";
-                        Writer.AddImageToDocument(fileName, description);
+                        //description += "\n ";
+                        //SetLineFont();
+                        //_lin += _gap * 2 + Writer.AddImageToDocument(_lin, _col1, fileName, description);
+                       //break;
+                       Writer.AddImageToPdfTable(fileName, description);
                     }
                 }
+                Writer.FinishPdfTable();
             }
         }
+
         private int GetPicCount()
         {
             int cnt = 0;
@@ -759,7 +810,7 @@ namespace HTBReports
         {
             return plin >= MaxLines;
         }
-
+        
         private void PrintDocumentsPageHeader()
         {
             _lin = StartLine;
@@ -773,13 +824,8 @@ namespace HTBReports
             Writer.setFont("Calibri", 11, true, false, false);
             Writer.print(_lin, MiddleCol, "Inh. Thomas Jaky & Helmut Ammer", 'C');
             _lin += _gap * 2;
-            var multilineText =
-                $"Sollten wir eigene Forderungen gegen den Kunden/Leasingnehmer haben, bestätigen wir hiermit gegenüber {_akt.AuftraggeberName1} weder ein allfälliges Retentionsrecht geltend zu machen, noch Standgebühren für die Lagerung zu verrechnen.";
-            WriteMultilineInfo(multilineText, _col1, BaseColor.BLACK, 100);
-            _lin += _gap * 2;
-            Writer.setFont("Calibri", 20, true, false, false);
-            Writer.print(_lin, MiddleCol, "Bilder Fahrzeugsicherstellung", 'C');
-            _lin += _gap * 2;
+            WriteUnderlinedSubheader("Bilder:", _col1);
+            _lin += _gap * 4;
         }
 
         public int PrintPageHeader()
@@ -989,10 +1035,7 @@ namespace HTBReports
         private void WriteMercedesMultilineInfo(string str, int gap = 0)
         {
             SetMercedesLineFont();
-            //const int maxLines = 20;
             const int maxCharsPerLine = 120;
-            //if (str.Length > maxLines * maxCharsPerLine)
-            //    str = str.Substring(0, (maxLines * maxCharsPerLine) - 3)+"...";
             ReportUtils.PrintTextInMultipleLines(this, _lin += gap, _col1, _gap, str, maxCharsPerLine);
         }
 
@@ -1023,6 +1066,23 @@ namespace HTBReports
         {
             Writer.setFont("Calibri", 13, true, italics, underline);
         }
+
+        private bool HasZmrAction()
+        {
+            return HasActionType("zmr");
+        }
+
+        private bool HasAnschriftErhebungAction()
+        {
+            return HasActionType("anschrift");
+        }
+
+        private bool HasActionType(string actionType)
+        {
+            var sql = $"SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionAkt = {_akt.AktIntID} AND AktIntActionTypeCaption LIKE '%{actionType}%'";
+            return HTBUtils.GetSqlSingleRecord(sql, typeof(qryAktenIntActionWithType)) != null;
+        }
+
 
         #region Old Methods
 

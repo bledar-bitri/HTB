@@ -305,7 +305,8 @@ namespace HTB.v2.intranetx.upload
                                             if (inkAkt != null)
                                             {
                                                 tblControl control = HTBUtils.GetControlRecord();
-                                                SaveInstallmentList(inkAkt.CustInkAktID, akt, GetInstallmentDetail(records), rec.PaymentType);
+                                                SaveInstallmentList(inkAkt.CustInkAktID, akt,
+                                                    GetInstallmentDetail(records), rec.PaymentType);
                                                 akt.AktIntProcessCode = control.ProcessCodeInstallment;
                                                 akt.AKTIntRVInkassoType = rec.PaymentType;
                                             }
@@ -322,6 +323,26 @@ namespace HTB.v2.intranetx.upload
                                         }
 
                                         #endregion
+                                    }
+                                    else
+                                    {
+                                        var protocolUbername = record as tblProtokolUbername;
+                                        if (protocolUbername != null)
+                                        {
+                                            var existingRecord =
+                                                (tblProtokolUbername)
+                                                HTBUtils.GetSqlSingleRecord(
+                                                    "Select * FROM tblProtokolUbername WHERE UbernameAktIntID = " +
+                                                    protocolUbername.UbernameAktIntID, typeof(tblProtokolUbername));
+                                            if (existingRecord == null)
+                                            {
+                                                RecordSet.Insert(protocolUbername);
+                                            }
+                                            else if (existingRecord.RecordVersion <= protocolUbername.RecordVersion)
+                                            {
+                                                RecordSet.Update(protocolUbername);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -426,6 +447,9 @@ namespace HTB.v2.intranetx.upload
 
             if (nodeName.Equals("CustInkAktRate", StringComparison.InvariantCultureIgnoreCase))
                 return new tblCustInkAktRate();
+
+            if (nodeName.Equals("ProtokolUbername", StringComparison.InvariantCultureIgnoreCase))
+                return new tblProtokolUbername();
 
             return null;
         }
@@ -588,6 +612,7 @@ namespace HTB.v2.intranetx.upload
                 #region Load Data
 
                 var action = (qryAktenIntActionWithType)HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionIsInternal = 0 AND AktIntActionAkt = " + aktId + " ORDER BY AktIntActionTime DESC", typeof(qryAktenIntActionWithType));
+                var protokolUbername = (tblProtokolUbername)HTBUtils.GetSqlSingleRecord($"SELECT * FROM tblProtokolUbername WHERE UbernameAktIntID = { aktId } ORDER BY UbernameDatum DESC", typeof(tblProtokolUbername));
 
                 ArrayList docsList = HTBUtils.GetSqlRecords("SELECT * FROM qryDoksIntAkten WHERE AktIntID = " + aktId, typeof (qryDoksIntAkten));
                 if (qryAktInt.IsInkasso())
@@ -618,7 +643,8 @@ namespace HTB.v2.intranetx.upload
 
                     rpt.GenerateProtokol(
                         qryAktInt, 
-                        protocol, 
+                        protocol,
+                        protokolUbername,
                         action, 
                         ms,
                         visitedDates,

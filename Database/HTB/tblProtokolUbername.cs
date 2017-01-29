@@ -41,6 +41,7 @@ namespace HTB.Database
         public bool UbernameMoechteAusloesen { get; set; }
         public DateTime UbernameAusloesenDatum { get; set; }
         public int UbernameTachometer { get; set; }
+        public int RecordVersion { get; set; }
 
 
         #endregion
