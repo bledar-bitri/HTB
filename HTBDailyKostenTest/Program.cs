@@ -919,10 +919,10 @@ namespace HTBDailyKosten
         private static void TestProtokol()
         {
             // ProtocolId Reposession (mercedes): 2237 
-            // ProtocolId Reposession: 2212
-            // ProtocolId Collection: 2238 
+            // ProtocolId Reposession: 2244
+            // ProtocolId Collection: 2245 
 
-            var protocol = (tblProtokol) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblProtokol where protokolid = 2238 order by ProtokolID DESC", typeof (tblProtokol));
+            var protocol = (tblProtokol) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblProtokol where protokolid = 2244 order by ProtokolID DESC", typeof (tblProtokol));
             //protocol.ProtokolAkt = 221504; // test
             var akt = (qryAktenInt) HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenInt WHERE AktIntID = " + protocol.ProtokolAkt, typeof (qryAktenInt));
             var action = (qryAktenIntActionWithType) HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionAkt = " + akt.AktIntID + " and AktIntActionIsInternal = 0 ORDER BY AktIntActionTime DESC", typeof (qryAktenIntActionWithType));
@@ -940,7 +940,7 @@ namespace HTBDailyKosten
             emailAddresses.AddRange(HTBUtils.GetConfigValue("Office_Email").Split(' '));
             emailAddresses.AddRange(akt.AuftraggeberEMail.Split(' '));
             emailAddresses.AddRange(protocol.HandlerEMail.Split(' '));
-            
+            /*
             rpt.GenerateProtokol(akt, 
                 protocol, 
                 protokolUbername,
@@ -949,6 +949,9 @@ namespace HTBDailyKosten
                 GlobalUtilArea.GetPosList(akt.AktIntID), 
                 docsList.Cast<Record>().ToList(), 
                 emailAddresses);
+                //*/
+
+            rpt.GenerateDealerProtokol(akt, protocol, ms, emailAddresses);
 
 
             ms.Close();

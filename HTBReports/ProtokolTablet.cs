@@ -102,43 +102,29 @@ namespace HTBReports
             Open(os);
             PrintPageHeader();
             PrintProtokol();
-            PrintOfficeCharges();
+            //PrintOfficeCharges();
             Close();
         }
 
-        public void GenerateDealerProtokol(qryAktenInt akt, tblProtokol protokol, Stream os)
+        public void GenerateDealerProtokol(qryAktenInt akt, tblProtokol protokol, Stream os, List<string> emailAddresses = null)
         {
             _akt = akt;
             _protokol = protokol;
 
             _action = new qryAktenIntActionWithType {AktIntActionTime = DateTime.Now};
+            _emailAddresses = emailAddresses;
 
             Init();
             Open(os);
-            PrintPageHeader();
-
-            SetHeadingFont();
-            WriteHeader("Rechnungs Nr. E.C.P.:");
-            WriteInfo(_protokol.RechnungNr);
-            WriteHeader("Vertragsnummer:");
-            WriteInfo(_akt.AktIntAZ);
-            _lin += _gap;
-            WriteHeader("Verrechnungsart:");
-            WriteInfo(_action.AktIntActionTypeCaption);
-            WriteHeader("Auftraggeber:");
-//            WriteInfo(_akt.AuftraggeberName1 + " " + _akt.AuftraggeberName2);
-            WriteInfo(_akt.AuftraggeberName1);
-            WriteHeader("Vertragsart:");
-            WriteInfo(_akt.AktIntAutoVertragArt);
-            WriteHeader("Kunde:");
-            WriteInfo(_akt.GegnerLastName1 + " " + _akt.GegnerLastName2);
-            WriteHeader("Objekt:");
-            WriteInfo(_akt.AktIntAutoName);
-            WriteHeader("KZ:");
-            WriteInfo(_akt.AktIntAutoKZ);
-            _lin += _gap;
-            PrintRepossession();
-
+            if (_akt.AuftraggeberUseMerzedesProtocol)
+            {
+                PrintRepossessionForMerzedes();
+            }
+            else
+            {
+                PrintPageHeader();
+                PrintRepossession(true);
+            }
             Writer.print(2900, 1800, DateTime.Now.ToShortDateString(), 'R');
 
             Close();
@@ -147,14 +133,14 @@ namespace HTBReports
         private void PrintProtokol()
         {
             if (_action.AktIntActionIsAutoRepossessed)
-                PrintRepossession();
+                PrintRepossession(false);
             else if (_action.AktIntActionIsAutoMoneyCollected)
                 PrintMoneyCollected();
             else //if (_action.AktIntActionIsAutoNegative)
                 PrintBericht();
         }
 
-        private void PrintRepossession()
+        private void PrintRepossession(bool isDealerProtocol)
         {
             #region declare and set variables
             var col2 = _col2 + 350;
@@ -179,6 +165,7 @@ namespace HTBReports
             
             var kfzDurchBehordeAbgemeldet = _ubernameProtokol != null && _ubernameProtokol.UbernameKzDurchBehoerdeEingezogen ? ja : nein;
             var typenschein = _ubernameProtokol != null && _ubernameProtokol.UbernameTypenschein ? ja : nein;
+            var mochteAuslosen = _ubernameProtokol != null && _ubernameProtokol.UbernameMoechteAusloesen ? ja : nein;
 
             #endregion
 
@@ -199,7 +186,8 @@ namespace HTBReports
 
             WriteUnderlinedSubheader("Vollbrachte Dienstleistung durch ECP:", _col1);
             _lin += _gap + 20;
-            PrintHeaderAndInfo("Dienstleistung: ", _action.AktIntActionTypeCaption.Replace("Auto - ", ""), _col1, BaseColor.RED);
+            if(!isDealerProtocol)
+                PrintHeaderAndInfo("Dienstleistung: ", _action.AktIntActionTypeCaption.Replace("Auto - ", ""), _col1, BaseColor.RED);
             var hdr = "Sicherstellung am: ";
             var info = formattedSicherstellungsDatum;
             PrintHeaderAndInfo(hdr, info, col2, BaseColor.RED);
@@ -224,7 +212,8 @@ namespace HTBReports
             _lin += _gap;
             var picCount = GetPicCount();
             PrintHeaderAndInfo("Bilder vom KFZ: ", picCount > 0 ? ja : nein, _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Anzahl der Bilder: ", picCount.ToString(), col2, BaseColor.RED);
+            if(picCount > 0)
+                PrintHeaderAndInfo("Anzahl der Bilder: ", picCount.ToString(), col2, BaseColor.RED);
             _lin += _gap;
 
             hdr = "Sichtbare Schaden: ";
@@ -235,19 +224,29 @@ namespace HTBReports
 
                 WriteMultilineInfo(info, _col1 + GetHeaderWidth(hdr), BaseColor.RED);
             }
-            _lin += _gap;
+            if (!string.IsNullOrEmpty(formattedAusloseDatum))
+            {
+                _lin += _gap;
 
-            hdr = "Kunde möchte das KFZ bis zum ";
-            info = formattedAusloseDatum;
-            PrintHeaderAndInfo(hdr, info, _col1, BaseColor.RED);
-            newCol = _col1 + GetHeaderAndInfoWidth(hdr, info);
-            PrintHeaderAndInfo(" wider auslösen: ", formattedAusloseZeit, newCol, BaseColor.RED);
+                hdr = "Kunde möchte das KFZ bis zum ";
+                info = formattedAusloseDatum;
+                PrintHeaderAndInfo(hdr, info, _col1, BaseColor.RED);
+                newCol = _col1 + GetHeaderAndInfoWidth(hdr, info);
+                hdr = " wider auslösen: ";
+                info = formattedAusloseZeit;
+                PrintHeaderAndInfo(hdr, info, newCol, BaseColor.RED);
+                newCol += GetHeaderAndInfoWidth(hdr, info);
+                PrintHeaderAndInfo("", mochteAuslosen, newCol, BaseColor.RED);
+            }
             _lin += _gap*2;
             PrintHeaderAndInfo("Abschleppdienst: ", _protokol.Abschleppdienst ? ja : nein, _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Warum wurde dieser benötigt: ", _protokol.AbschleppdienstGrund, col2, BaseColor.RED);
+            if(_protokol.Abschleppdienst)
+                PrintHeaderAndInfo("Warum wurde dieser benötigt: ", _protokol.AbschleppdienstGrund, col2, BaseColor.RED);
             _lin += _gap;
+
             PrintHeaderAndInfo("Polizei wurde informiert: ", _protokol.PolizieInformiert ? ja : nein, _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Polizei Dienststelle: ", _protokol.PolizeiDienststelle, col2, BaseColor.RED);
+            if(_protokol.PolizieInformiert)
+                PrintHeaderAndInfo("Polizei Dienststelle: ", _protokol.PolizeiDienststelle, col2, BaseColor.RED);
             _lin += _gap * 2;
 
             WriteUnderlinedSubheader("Mit dem KFZ wurden sichergestellt/ zurückgegeben:", _col1);
@@ -264,22 +263,30 @@ namespace HTBReports
             PrintHeaderAndInfo("Typenschein: ",  typenschein, _col1, BaseColor.RED);
             PrintHeaderAndInfo("Kennzeichen von ECP abgenommen und dem AG übergeben: ", _protokol.KzVonEcpAnAg ? ja : nein, col2-300, BaseColor.RED);
             _lin += _gap * 2;
-
-            WriteUnderlinedSubheader("Kosten im Rahmen der Sicherstellung:", _col1);
-            _lin += _gap + 20;
-            PrintHeaderAndInfo("Kosten Abschleppdienst: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenAbschleppdienst), _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Pannendienst: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenPannendienst), col2, BaseColor.RED);
-            _lin += _gap;
-            PrintHeaderAndInfo("Vignette: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenVignette), _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Mautgebühren: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenMaut), col2, BaseColor.RED);
-            _lin += _gap;
-            PrintHeaderAndInfo("Treibstoff: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenTreibstoff), _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Reparaturrechnung von ECP ausgelegt: ", _protokol.ReparaturRechnungNr, col2, BaseColor.RED);
-            _lin += _gap;
-            PrintHeaderAndInfo("Standgebühren: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenStandgebuhren), _col1, BaseColor.RED);
-            PrintHeaderAndInfo("Rechnungsnr. E.C.P: ", _protokol.RechnungNr, col2, BaseColor.RED);
-            _lin += _gap * 2;
-
+            if (!isDealerProtocol)
+            {
+                WriteUnderlinedSubheader("Kosten im Rahmen der Sicherstellung:", _col1);
+                _lin += _gap + 20;
+                PrintHeaderAndInfo("Kosten Abschleppdienst: ",
+                    HTBUtils.FormatCurrency(_protokol.ZusatzkostenAbschleppdienst), _col1, BaseColor.RED);
+                PrintHeaderAndInfo("Pannendienst: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenPannendienst), col2,
+                    BaseColor.RED);
+                _lin += _gap;
+                PrintHeaderAndInfo("Vignette: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenVignette), _col1,
+                    BaseColor.RED);
+                PrintHeaderAndInfo("Mautgebühren: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenMaut), col2,
+                    BaseColor.RED);
+                _lin += _gap;
+                PrintHeaderAndInfo("Treibstoff: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenTreibstoff), _col1,
+                    BaseColor.RED);
+                PrintHeaderAndInfo("Reparaturrechnung von ECP ausgelegt: ",
+                    HTBUtils.FormatCurrency(_protokol.ZusatzkostenEcp), col2, BaseColor.RED);
+                _lin += _gap;
+                PrintHeaderAndInfo("Standgebühren: ", HTBUtils.FormatCurrency(_protokol.ZusatzkostenStandgebuhren),
+                    _col1, BaseColor.RED);
+                PrintHeaderAndInfo("Rechnungsnr. E.C.P: ", _protokol.RechnungNr, col2, BaseColor.RED);
+                _lin += _gap * 2;
+            }
             WriteUnderlinedSubheader("Übernahmebestätigung durch:", _col1);
             _lin += _gap + 20;
 
@@ -289,9 +296,7 @@ namespace HTBReports
             _lin += _gap;
             WriteInfo(_col1, "A -" +_protokol.HandlerPLZ + " " + _protokol.UbernahmeOrt);
             _lin += _gap * 2;
-
-            var signatureLine = _lin;
-
+            
             if (_emailAddresses != null)
             {
                 WriteUnderlinedSubheader( "EMail gesendet an:", _col1);
@@ -302,7 +307,7 @@ namespace HTBReports
                 });
             }
 
-
+            var signatureLine = _lin - _gap * 4;
             var signatureCol = 1200;
             PrintHeaderAndInfo("Übernommen von: ", _protokol.UbernommenVon, signatureCol, BaseColor.RED);
             _lin += _gap;
@@ -317,12 +322,13 @@ namespace HTBReports
 
             
             Writer.drawBitmapFromPath(signatureLine+_gap*4, signatureCol, _protokol.SignaturePath, 40);
-
-            _lin += _gap*2;
-            var multilineText =
-               $"Sollten wir eigene Forderungen gegen den Kunden/Leasingnehmer haben, bestätigen wir hiermit gegenüber {_akt.AuftraggeberName1} weder ein allfälliges Retentionsrecht geltend zu machen, noch Standgebühren für die Lagerung zu verrechnen.";
-            WriteMultilineInfo(multilineText, _col1, BaseColor.BLACK, 100);
-
+            if (!isDealerProtocol)
+            {
+                _lin += _gap * 2;
+                var multilineText =
+                    $"Sollten wir eigene Forderungen gegen den Kunden/Leasingnehmer haben, bestätigen wir hiermit gegenüber {_akt.AuftraggeberName1} weder ein allfälliges Retentionsrecht geltend zu machen, noch Standgebühren für die Lagerung zu verrechnen.";
+                WriteMultilineInfo(multilineText, _col1, BaseColor.BLACK, 100);
+            }
         }
         
         private void PrintRepossessionForMerzedes()
@@ -519,6 +525,12 @@ namespace HTBReports
             
             _lin += _gap;
 
+            if (CheckOverflow(_lin + (_gap * 5)))
+            {
+                Writer.newPage();
+                PrintPageHeader();
+                _lin += _gap;
+            }
             WriteUnderlinedSubheader("Erbrachte Dienstleistungen der E.C.P. European Car Protect KG:", _col1);
             _lin += _gap + 40;
             var multiLineWidth = 0;
@@ -1134,7 +1146,7 @@ namespace HTBReports
             PrintVisitDates();
             _lin += _gap;
             if (_action.AktIntActionIsAutoRepossessed)
-                PrintRepossession();
+                PrintRepossessionOld();
             else if (_action.AktIntActionIsAutoMoneyCollected)
                 PrintMoneyCollected();
             else //if (_action.AktIntActionIsAutoNegative)

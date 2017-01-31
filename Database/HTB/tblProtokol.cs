@@ -69,6 +69,8 @@ namespace HTB.Database
         [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
         public double ZusatzkostenSostige { get; set; }
         [MappingAttribute(FieldFormat = MappingAttribute.FIELD_FORMAT_CURRENCY)]
+        public double ZusatzkostenEcp { get; set; }
+
         public double Uberstellungsdistanz { get; set; }
         public string HandlerName{get; set; }
 		public string HandlerStrasse{get; set; }
@@ -85,7 +87,6 @@ namespace HTB.Database
         public bool PolizieInformiert { get; set; }
         public string PolizeiDienststelle { get; set; }
         public string RechnungNr { get; set; }
-        public string ReparaturRechnungNr { get; set; }
         public string HandlerEMail { get; set; }
 
         public bool MasterKey { get; set; }
