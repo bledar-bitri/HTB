@@ -606,7 +606,7 @@ namespace HTB.v2.intranetx.util
         {
             var list = new List<VisitRecord>();
 
-            ArrayList actions = HTBUtils.GetSqlRecords("SELECT * FROM qryAktenIntActionWithType WITH (NOLOCK) WHERE AktIntActionAkt = " + intAktId + " AND AktIntActionIsExtensionRequest <> 1 AND AktIntActionIsThroughPhone <> 1 ORDER BY AktIntActionTime", typeof(qryAktenIntActionWithType));
+            ArrayList actions = HTBUtils.GetSqlRecords("SELECT * FROM qryAktenIntActionWithType WITH (NOLOCK) WHERE AktIntActionAkt = " + intAktId + " AND AktIntActionIsExtensionRequest <> 1 AND AktIntActionIsThroughPhone <> 1  AND AktIntActionIsInternal = 0 ORDER BY AktIntActionTime", typeof(qryAktenIntActionWithType));
 
             foreach (qryAktenIntActionWithType action in actions)
             {

@@ -120,6 +120,7 @@
                                             <asp:TextBox id="txtOrtDerUbernahme" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="25" maxlength="10"/>
                                         </td>
                                     </tr>
+
                                     <tr id="trKZ" runat="server">
                                         <td valign="middle" class="EditCaption">
                                             <div align="right">KZ:</div>
@@ -130,6 +131,26 @@
                                                 <asp:ListItem Text="am KFZ" Value="am KFZ"></asp:ListItem>
                                                 <asp:ListItem Text="abgenommen" Value="abgenommen"></asp:ListItem>
                                                 <asp:ListItem Text="abgemeldet" Value="abgemeldet"></asp:ListItem>
+                                            </asp:DropDownList>
+                                        </td>
+                                    </tr>
+                                    <tr id="trKzStuck" runat="server">
+                                        <td class="EditCaption">
+                                            <div align="right">Anzahl KZ (st&uuml;ck):</div>
+                                        </td>
+                                        <td class="EditData">
+                                            <asp:TextBox id="txtAnzahlKz" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="20" maxlength="10"/>
+                                        </td>
+                                    </tr>
+                                    <tr id="trKzFromEcpToAg" runat="server">
+                                        <td class="EditCaption">
+                                            <div align="right">KZ von ECP abgenommen und dem AG &uuml;bergeben:</div>
+                                        </td>
+                                        <td class="EditData">
+                                            <asp:DropDownList ID="ddlKzFromEcpToAg" runat="server" class="docText" >
+                                                <asp:ListItem Text="*** bitte auswählen ***" Value="-1"></asp:ListItem>
+                                                <asp:ListItem Text="Ja" Value="Ja"></asp:ListItem>
+                                                <asp:ListItem Text="Nein" Value="Nein"></asp:ListItem>
                                             </asp:DropDownList>
                                         </td>
                                     </tr>
@@ -159,6 +180,18 @@
                                         </td>
                                         <td class="EditData">
                                             <asp:TextBox id="txtAnzahlSchlussel" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="15" maxlength="10"/>
+                                        </td>
+                                    </tr>
+                                    <tr id="trMasterKey" runat="server">
+                                        <td class="EditCaption">
+                                            <div align="right">KZ von ECP abgenommen und dem AG &uuml;bergeben:</div>
+                                        </td>
+                                        <td class="EditData">
+                                            <asp:DropDownList ID="ddlMasterKey" runat="server" class="docText" >
+                                                <asp:ListItem Text="*** bitte auswählen ***" Value="-1"></asp:ListItem>
+                                                <asp:ListItem Text="Ja" Value="Ja"></asp:ListItem>
+                                                <asp:ListItem Text="Nein" Value="Nein"></asp:ListItem>
+                                            </asp:DropDownList>
                                         </td>
                                     </tr>
                                     <tr id="trKMStand" runat="server">
@@ -207,12 +240,29 @@
                                             <asp:TextBox id="txtAbschleppdienstName" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="35" maxlength="100"/>
                                         </td>
                                     </tr>
-                                    <tr id="trZusatzkostenTreibstoff" runat="server">
+                                    <tr id="trAbschleppdienstGrund" runat="server">
                                         <td class="EditCaption">
-                                            <div align="right">Zusatzkosten Treibstoff &euro;:</div>
+                                            <div align="right">Abschleppdienst Grund:</div>
                                         </td>
                                         <td class="EditData">
-                                            <asp:TextBox id="txtZusatzkostenTreibstoff" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="15" maxlength="10"/>
+                                            <asp:TextBox id="txtAbschleppdienstGrund" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="35" maxlength="100"/>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr id="trAbchleppdienstKosten" runat="server">
+                                        <td class="EditCaption">
+                                            <div align="right">Abschleppdienstkosten &euro;:</div>
+                                        </td>
+                                        <td class="EditData">
+                                            <asp:TextBox id="txtAbchleppdienstKosten" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="15" maxlength="10"/>
+                                        </td>
+                                    </tr>
+                                    <tr id="trPannendienstKosten" runat="server">
+                                        <td class="EditCaption">
+                                            <div align="right">Pannendienstkosten &euro;:</div>
+                                        </td>
+                                        <td class="EditData">
+                                            <asp:TextBox id="txtPannendienstKosten" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="15" maxlength="10"/>
                                         </td>
                                     </tr>
                                     <tr id="trZusatzkostenVignette" runat="server">
@@ -223,12 +273,36 @@
                                             <asp:TextBox id="txtZusatzkostenVignette" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="15" maxlength="10"/>
                                         </td>
                                     </tr>
-                                    <tr id="trZusatzkostenSonstige" runat="server">
+                                    <tr id="trMaut" runat="server">
                                         <td class="EditCaption">
-                                            <div align="right">Sonstige Zusatzkosten &euro;:</div>
+                                            <div align="right">Mautgeb&uuml;hren &euro;:</div>
                                         </td>
                                         <td class="EditData">
-                                            <asp:TextBox id="txtZusatzkostenSonstige" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="15" maxlength="10"/>
+                                            <asp:TextBox id="txtMaut" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="15" maxlength="10"/>
+                                        </td>
+                                    </tr>
+                                    <tr id="trStandGebuhr" runat="server">
+                                        <td class="EditCaption">
+                                            <div align="right">Standgeb&uuml;hren &euro;:</div>
+                                        </td>
+                                        <td class="EditData">
+                                            <asp:TextBox id="txtStandGebuhr" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="15" maxlength="10"/>
+                                        </td>
+                                    </tr>
+                                    <tr id="trZusatzkostenTreibstoff" runat="server">
+                                        <td class="EditCaption">
+                                            <div align="right">Zusatzkosten Treibstoff &euro;:</div>
+                                        </td>
+                                        <td class="EditData">
+                                            <asp:TextBox id="txtZusatzkostenTreibstoff" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="15" maxlength="10"/>
+                                        </td>
+                                    </tr>
+                                    <tr id="trKostenEcp" runat="server">
+                                        <td class="EditCaption">
+                                            <div align="right">Reparaturkosten ECP &euro;:</div>
+                                        </td>
+                                        <td class="EditData">
+                                            <asp:TextBox id="txtKostenEcp" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="15" maxlength="10"/>
                                         </td>
                                     </tr>
                                     <tr id="trUberstellungsdistanz" runat="server">
@@ -239,14 +313,7 @@
                                             <asp:TextBox id="txtUberstellungsdistanz" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="25" maxlength="10"/>
                                         </td>
                                     </tr>
-                                    <tr id="trHandler" runat="server">
-                                        <td class="EditCaption">
-                                            <div align="right">H&auml;ndler:</div>
-                                        </td>
-                                        <td class="EditData">
-                                            <asp:TextBox id="txtHandler" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="35" maxlength="100"/>
-                                        </td>
-                                    </tr>
+                                    
                                     <tr id="trPolizeiInformiert" runat="server">
                                         <td valign="middle" class="EditCaption">
                                             <div align="right">Polizei Informiert:</div>
@@ -259,6 +326,15 @@
                                             </asp:DropDownList>
                                         </td>
                                     </tr>
+                                    <tr id="trPolizeiDienststelle" runat="server">
+                                        <td class="EditCaption">
+                                            <div align="right">Name vom Beifahrer:</div>
+                                        </td>
+                                        <td class="EditData">
+                                            <asp:TextBox id="txtPolizeiDienststelle" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="35" maxlength="100"/>
+                                        </td>
+                                    </tr>
+                                    
                                     <tr id="trBeifahrer" runat="server">
                                         <td class="EditCaption">
                                             <div align="right">Name vom Beifahrer:</div>
@@ -267,6 +343,16 @@
                                             <asp:TextBox id="txtBeifahrer" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="35" maxlength="100"/>
                                         </td>
                                     </tr>
+                                    
+                                    <tr id="trHandler" runat="server">
+                                        <td class="EditCaption">
+                                            <div align="right">H&auml;ndler:</div>
+                                        </td>
+                                        <td class="EditData">
+                                            <asp:TextBox id="txtHandler" runat="server" type="text" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'" onblur="this.style.backgroundColor=''" size="35" maxlength="100"/>
+                                        </td>
+                                    </tr>
+                                    
                                     <tr id="trUbernommenVon" runat="server">
                                         <td class="EditCaption">
                                             <div align="right">&Uuml;bernommen von:</div>

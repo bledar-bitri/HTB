@@ -25,6 +25,12 @@ namespace HTBPdf
         }
 
         protected iTextSharp.text.Rectangle pageSize;
+
+        public Rectangle PdfPageSize
+        {
+            get { return pageSize; }
+        }
+
         public BaseFont font;
         private PdfWriter _writer;
 

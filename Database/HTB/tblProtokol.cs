@@ -95,7 +95,7 @@ namespace HTB.Database
 
         [MappingAttribute(FieldType = MappingAttribute.NO_DB_SAVE)]
         public String VisitsList { get; set; }
-
+        
 		#endregion
 	}
 }

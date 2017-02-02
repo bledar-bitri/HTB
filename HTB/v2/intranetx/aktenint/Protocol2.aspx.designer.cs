@@ -265,6 +265,42 @@ namespace HTB.intranetx.aktenint {
         protected global::System.Web.UI.WebControls.DropDownList ddlKZ;
         
         /// <summary>
+        /// trKzStuck control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow trKzStuck;
+        
+        /// <summary>
+        /// txtAnzahlKz control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtAnzahlKz;
+        
+        /// <summary>
+        /// trKzFromEcpToAg control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow trKzFromEcpToAg;
+        
+        /// <summary>
+        /// ddlKzFromEcpToAg control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlKzFromEcpToAg;
+        
+        /// <summary>
         /// trZulassung control.
         /// </summary>
         /// <remarks>
@@ -317,6 +353,24 @@ namespace HTB.intranetx.aktenint {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtAnzahlSchlussel;
+        
+        /// <summary>
+        /// trMasterKey control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow trMasterKey;
+        
+        /// <summary>
+        /// ddlMasterKey control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlMasterKey;
         
         /// <summary>
         /// trKMStand control.
@@ -409,22 +463,58 @@ namespace HTB.intranetx.aktenint {
         protected global::System.Web.UI.WebControls.TextBox txtAbschleppdienstName;
         
         /// <summary>
-        /// trZusatzkostenTreibstoff control.
+        /// trAbschleppdienstGrund control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow trZusatzkostenTreibstoff;
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow trAbschleppdienstGrund;
         
         /// <summary>
-        /// txtZusatzkostenTreibstoff control.
+        /// txtAbschleppdienstGrund control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtZusatzkostenTreibstoff;
+        protected global::System.Web.UI.WebControls.TextBox txtAbschleppdienstGrund;
+        
+        /// <summary>
+        /// trAbchleppdienstKosten control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow trAbchleppdienstKosten;
+        
+        /// <summary>
+        /// txtAbchleppdienstKosten control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtAbchleppdienstKosten;
+        
+        /// <summary>
+        /// trPannendienstKosten control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow trPannendienstKosten;
+        
+        /// <summary>
+        /// txtPannendienstKosten control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtPannendienstKosten;
         
         /// <summary>
         /// trZusatzkostenVignette control.
@@ -445,22 +535,76 @@ namespace HTB.intranetx.aktenint {
         protected global::System.Web.UI.WebControls.TextBox txtZusatzkostenVignette;
         
         /// <summary>
-        /// trZusatzkostenSonstige control.
+        /// trMaut control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow trZusatzkostenSonstige;
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow trMaut;
         
         /// <summary>
-        /// txtZusatzkostenSonstige control.
+        /// txtMaut control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtZusatzkostenSonstige;
+        protected global::System.Web.UI.WebControls.TextBox txtMaut;
+        
+        /// <summary>
+        /// trStandGebuhr control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow trStandGebuhr;
+        
+        /// <summary>
+        /// txtStandGebuhr control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtStandGebuhr;
+        
+        /// <summary>
+        /// trZusatzkostenTreibstoff control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow trZusatzkostenTreibstoff;
+        
+        /// <summary>
+        /// txtZusatzkostenTreibstoff control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtZusatzkostenTreibstoff;
+        
+        /// <summary>
+        /// trKostenEcp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow trKostenEcp;
+        
+        /// <summary>
+        /// txtKostenEcp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtKostenEcp;
         
         /// <summary>
         /// trUberstellungsdistanz control.
@@ -481,24 +625,6 @@ namespace HTB.intranetx.aktenint {
         protected global::System.Web.UI.WebControls.TextBox txtUberstellungsdistanz;
         
         /// <summary>
-        /// trHandler control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow trHandler;
-        
-        /// <summary>
-        /// txtHandler control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtHandler;
-        
-        /// <summary>
         /// trPolizeiInformiert control.
         /// </summary>
         /// <remarks>
@@ -517,6 +643,24 @@ namespace HTB.intranetx.aktenint {
         protected global::System.Web.UI.WebControls.DropDownList ddlPolizeiInformiert;
         
         /// <summary>
+        /// trPolizeiDienststelle control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow trPolizeiDienststelle;
+        
+        /// <summary>
+        /// txtPolizeiDienststelle control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtPolizeiDienststelle;
+        
+        /// <summary>
         /// trBeifahrer control.
         /// </summary>
         /// <remarks>
@@ -533,6 +677,24 @@ namespace HTB.intranetx.aktenint {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtBeifahrer;
+        
+        /// <summary>
+        /// trHandler control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow trHandler;
+        
+        /// <summary>
+        /// txtHandler control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtHandler;
         
         /// <summary>
         /// trUbernommenVon control.

@@ -20,6 +20,8 @@ namespace HTBReports
 
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private const string Calibri = "Calibri";
+
         private const int MiddleCol = 1050;
         private const int RightCol = 2000;
         private const int StartLine = 30;
@@ -473,11 +475,13 @@ namespace HTBReports
             else
                 formattedTime = dte.ToString(TimeFormat);
 
-
-
             #endregion
             // start reporting
 
+            _lin += _gap;
+
+            PrintHeaderAndInfo("Positiver Abschlussbericht: ", !_action.AktIntActionIsAutoNegative ? ja : nein, _col1, Calibri, 14, true, Calibri, 14, true, BaseColor.BLACK);
+            PrintHeaderAndInfo("Rechnungsnr. E.C.P: ", _protokol.RechnungNr, col2, Calibri, 14, true, Calibri, 14, true, BaseColor.BLACK);
 
             SetHeadingFont();
             _lin += _gap * 2;
@@ -671,7 +675,7 @@ namespace HTBReports
         private void PrintDocuments(IEnumerable<Record> documents)
         {
 
-            if(documents == null || !documents.Any())
+            if(!HasPictures())
                 return;
             
             bool addedNewPage = false;
@@ -697,7 +701,10 @@ namespace HTBReports
                         description = string.IsNullOrEmpty(doc.DokText) ? doc.DokCaption : doc.DokText;
                         fileName = doc.DokAttachment;
                     }
-                    if (fileName.ToLower().EndsWith(".jpg") || fileName.ToLower().EndsWith(".jpeg") || fileName.ToLower().EndsWith(".png") || fileName.ToLower().EndsWith(".gif"))
+                    if (fileName.ToLower().EndsWith(".jpg") 
+                        || fileName.ToLower().EndsWith(".jpeg") 
+                        || fileName.ToLower().EndsWith(".png") 
+                        || fileName.ToLower().EndsWith(".gif"))
                     {
                         if (!addedNewPage)
                         {
@@ -714,6 +721,35 @@ namespace HTBReports
                 }
                 Writer.FinishPdfTable();
             }
+        }
+
+        private bool HasPictures()
+        {
+            if (_documents == null) return false;
+
+            var fileName = "";
+            foreach (Record rec in _documents)
+            {
+                if (rec is qryDoksInkAkten)
+                {
+                    var doc = (qryDoksInkAkten) rec;
+                    fileName = doc.DokAttachment.ToLower();
+
+                }
+                else if (rec is qryDoksIntAkten)
+                {
+                    var doc = (qryDoksIntAkten) rec;
+                    fileName = doc.DokAttachment.ToLower();
+                }
+                if (fileName.EndsWith(".jpg")
+                    || fileName.EndsWith(".jpeg")
+                    || fileName.EndsWith(".png")
+                    || fileName.EndsWith(".gif"))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private int GetPicCount()
@@ -829,11 +865,11 @@ namespace HTBReports
             Writer.drawBitmap(230, _col1, iTextSharp.text.Image.GetInstance(_logoPath), 40);
             for (int i = 0; i < 3; i++)
             {
-                Writer.setFont("Calibri", 20, true, false, false);
+                Writer.setFont(Calibri, 20, true, false, false);
                 Writer.print(50, MiddleCol + i, "EUROPEAN CAR PROTECT", 'C', BaseColor.BLUE); // give it a bolder look
             }
             _lin += 100;
-            Writer.setFont("Calibri", 11, true, false, false);
+            Writer.setFont(Calibri, 11, true, false, false);
             Writer.print(_lin, MiddleCol, "Inh. Thomas Jaky & Helmut Ammer", 'C');
             _lin += _gap * 2;
             WriteUnderlinedSubheader("Bilder:", _col1);
@@ -849,28 +885,38 @@ namespace HTBReports
             Writer.drawBitmap(230, _col1, iTextSharp.text.Image.GetInstance(_logoPath), 40);
             for (int i = 0; i < 3; i++)
             {
-                Writer.setFont("Calibri", 20, true, false, false);
+                Writer.setFont(Calibri, 20, true, false, false);
                 Writer.print(50, MiddleCol + i, "EUROPEAN CAR PROTECT", 'C', BaseColor.BLUE); // give it a bolder look
             }
             _lin += 100;
-            Writer.setFont("Calibri", 11, true, false, false);
+            Writer.setFont(Calibri, 11, true, false, false);
             Writer.print(_lin, MiddleCol, "Inh. Thomas Jaky & Helmut Ammer", 'C');
             _lin += _gap*2;
-            Writer.setFont("Calibri", 20, true, false, false);
+            Writer.setFont(Calibri, 20, true, false, false);
+            
             Writer.print(_lin, MiddleCol,
                 _action.AktIntActionIsAutoRepossessed
                     ? "Protokoll Fahrzeugsicherstellung"
                     : "Protokoll zur Intervention", 'C');
+
+
             _lin += _gap*2+20;
-            Writer.setFont("Calibri", 14, true, false, false);
-            Writer.print(_lin, MiddleCol-320, "Auftraggeber: ");
-            Writer.setFont("Calibri", 14, false, false, false);
-            Writer.print(_lin, MiddleCol-20, _akt.AuftraggeberName1);
+            Writer.setFont(Calibri, 14, true, false, false);
+            var hdr = "Auftraggeber: ";
+            var info = _akt.AuftraggeberName1;
+            var width = GetHeaderAndInfoWidth(hdr, info, Calibri, 14, true, Calibri, 14, false);
+            var col = MiddleCol - (int)(width / 2);
+
+            PrintHeaderAndInfo(hdr, info, col, Calibri, 14, true, Calibri, 14, false, BaseColor.BLACK);
+
             _lin += _gap+15;
-            Writer.setFont("Calibri", 14, true, false, false);
-            Writer.print(_lin, MiddleCol-250, "Vertragsnummer: ");
-            Writer.setFont("Calibri", 14, false, false, false);
-            Writer.print(_lin, MiddleCol+125, _akt.AktIntAZ, BaseColor.RED);
+
+            hdr = "Vertragsnummer: ";
+            info = _akt.AktIntAZ;
+            width = GetHeaderAndInfoWidth(hdr, info, Calibri, 14, true, Calibri, 14, false);
+            col = MiddleCol - (int)(width / 2);
+
+            PrintHeaderAndInfo(hdr, info, col, Calibri, 14, true, Calibri, 14, false, BaseColor.RED);
             _lin += _gap;
             return _lin;
         }
@@ -884,6 +930,16 @@ namespace HTBReports
         {
             PrintHeaderAndInfo(hdr, info, col, BaseColor.BLACK);
         }
+
+        private void PrintHeaderAndInfo(string hdr, string info, int col, string hdrFontName, int hdrFontSize, bool isHdrFontBold, string linFontName, int linFontSize, bool isLinFontBold, BaseColor lineColor)
+        {
+            Writer.setFont(hdrFontName, hdrFontSize, isHdrFontBold, false, false);
+            Writer.print(_lin, col, hdr);
+            var width = Writer.GetTextWidth(hdr);
+            Writer.setFont(linFontName, linFontSize, isLinFontBold, false, false);
+            Writer.print(_lin, (int)(col + width), info, lineColor);
+        }
+
         private void PrintHeaderAndInfo(string hdr, string info, int col, BaseColor lineColor)
         {
             SetHeadingFont();
@@ -892,12 +948,22 @@ namespace HTBReports
             SetLineFont();
             Writer.print(_lin, (int)(col + width), info, lineColor);
         }
+
         private int GetHeaderAndInfoWidth(string hdr, string info)
         {
             SetHeadingFont();
             
             var width = Writer.GetTextWidth(hdr);
             SetLineFont();
+            width += Writer.GetTextWidth(info);
+            return (int)width;
+        }
+        
+        private int GetHeaderAndInfoWidth(string hdr, string info, string hdrFontName, int hdrFontSize, bool isHdrFontBold, string linFontName, int linFontSize, bool isLinFontBold)
+        {
+            Writer.setFont(hdrFontName, hdrFontSize, isHdrFontBold, false, false);
+            var width = Writer.GetTextWidth(hdr);
+            Writer.setFont(linFontName, linFontSize, isLinFontBold, false, false);
             width += Writer.GetTextWidth(info);
             return (int)width;
         }
@@ -917,7 +983,7 @@ namespace HTBReports
         }
         private void WriteUnderlinedSubheader(string text, int col)
         {
-            Writer.setFont("Calibri", 14, true, false, true);
+            Writer.setFont(Calibri, 14, true, false, true);
             var width = Writer.GetTextWidth(text);
             Writer.print(_lin, col, text);
             
@@ -962,12 +1028,12 @@ namespace HTBReports
 
         private void WriteMercedesPageHeader()
         {
-            _lin += _gap * 5;
-            Writer.setFont("Calibri", 13, false, false, false);
+            _lin += _gap * 2;
+            Writer.setFont(Calibri, 13, false, false, false);
             Writer.print(_lin, 1050, "Mercedes-Benz Financial Services Austria GmbH", 'C');
             _lin += _gap * 3;
 
-            Writer.setFont("Calibri", 13, true, false, false);
+            Writer.setFont(Calibri, 13, true, false, false);
 
             Writer.print(_lin, 1050, "Protokoll Fahrzeugsicherstellung", 'C');
             _lin += _gap * 3;
@@ -1054,29 +1120,29 @@ namespace HTBReports
         
         public void SetLineFont()
         {
-            Writer.setFont("Calibri", 11);
+            Writer.setFont(Calibri, 11);
         }
         public void SetMercedesLineFont()
         {
-            Writer.setFont("Calibri", 9);
+            Writer.setFont(Calibri, 9);
         }
         public void SetSmallHeaderFont()
         {
-            Writer.setFont("Calibri", 9, false, true, false);
+            Writer.setFont(Calibri, 9, false, true, false);
         }
         public void SetLineFont(bool bold, bool italics, bool underline)
         {
-            Writer.setFont("Calibri", 11, bold, italics, underline);
+            Writer.setFont(Calibri, 11, bold, italics, underline);
         }
 
         private void SetHeadingFont()
         {
-           Writer.setFont("Calibri", 11, true, false, true);
+           Writer.setFont(Calibri, 11, true, false, true);
         }
 
         private void SetHeadingFont(bool italics, bool underline)
         {
-            Writer.setFont("Calibri", 13, true, italics, underline);
+            Writer.setFont(Calibri, 13, true, italics, underline);
         }
 
         private bool HasZmrAction()
@@ -1113,7 +1179,7 @@ namespace HTBReports
                 Writer.print(50, MiddleCol + i, "EUROPEAN CAR PROTECT", 'C', BaseColor.BLUE); // give it a bolder look
             }
             _lin += 150;
-            Writer.setFont("Calibri", 19, true, false, false);
+            Writer.setFont(Calibri, 19, true, false, false);
             Writer.print(_lin, MiddleCol, "Protokoll Für KFZ Einzug", 'C');
             _lin += 200;
             return _lin;

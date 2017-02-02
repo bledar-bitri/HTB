@@ -12,6 +12,7 @@ using HTB.Database.Views;
 using HTB.v2.intranetx.util;
 using HTB.v2.intranetx.glocalcode;
 using System.Collections;
+using System.Globalization;
 using HTB.Database;
 using HTBReports;
 using HTBUtilities;
@@ -21,6 +22,9 @@ namespace HTB.intranetx.aktenint
 {
     public partial class Protocol2 : System.Web.UI.Page
     {
+
+        private const string Ja = "Ja";
+        private const string Nein = "Nein";
 
         public IncControls controls;
 
@@ -32,6 +36,7 @@ namespace HTB.intranetx.aktenint
         private qryAktenInt _akt;
         private qryAktenIntActionWithType _action;
         
+
         protected void Page_Load(object sender, EventArgs e)
         {
             int aktId = GlobalUtilArea.GetZeroIfConvertToIntError(Request[GlobalHtmlParams.ID]);
@@ -93,20 +98,35 @@ namespace HTB.intranetx.aktenint
             }
             txtOrtDerUbernahme.Text = _protokol.UbernahmeOrt;
             ddlKZ.SelectedValue = _protokol.KZ;
-            ddlZulassung.SelectedValue = _protokol.UbernommentMitZulassung ? "Ja" : "Nein";
+            txtAnzahlKz.Text = _protokol.AnzahlKZ.ToString();
+            ddlKzFromEcpToAg.SelectedValue = _protokol.KzVonEcpAnAg ? Ja : Nein;
+            ddlZulassung.SelectedValue = _protokol.UbernommentMitZulassung ? Ja : Nein;
             ddlServiceheft.SelectedValue = _protokol.Serviceheft;
             txtAnzahlSchlussel.Text = _protokol.AnzahlSchlussel.ToString();
+            ddlMasterKey.SelectedValue = _protokol.MasterKey ? Ja : Nein;
             txtKMStand.Text = _protokol.Tachometer.ToString();
             txtSchaden.Text = _protokol.SchadenComment;
             txtErweiterterBericht.Text = _protokol.Memo;
-            ddlAbschleppdienst.SelectedValue = _protokol.Abschleppdienst ? "Ja" : "Nein";
+            ddlAbschleppdienst.SelectedValue = _protokol.Abschleppdienst ? Ja : Nein;
             txtAbschleppdienstName.Text = _protokol.AbschleppdienstName;
-            txtZusatzkostenTreibstoff.Text = _protokol.ZusatzkostenTreibstoff > 0 ? HTBUtils.FormatCurrencyNumber(_protokol.ZusatzkostenTreibstoff) : "";
+            txtAbschleppdienstGrund.Text = _protokol.AbschleppdienstGrund;
+
+            txtAbchleppdienstKosten.Text = _protokol.ZusatzkostenAbschleppdienst > 0 ? HTBUtils.FormatCurrencyNumber(_protokol.ZusatzkostenAbschleppdienst) : "";
+            txtPannendienstKosten.Text = _protokol.ZusatzkostenPannendienst > 0 ? HTBUtils.FormatCurrencyNumber(_protokol.ZusatzkostenPannendienst) : "";
             txtZusatzkostenVignette.Text = _protokol.ZusatzkostenVignette > 0 ? HTBUtils.FormatCurrencyNumber(_protokol.ZusatzkostenVignette) : "";
-            txtZusatzkostenSonstige.Text = _protokol.ZusatzkostenSostige > 0 ? HTBUtils.FormatCurrencyNumber(_protokol.ZusatzkostenSostige) : "";
-            txtHandler.Text = _protokol.HandlerName;
-            ddlPolizeiInformiert.SelectedValue = _protokol.PolizieInformiert ? "Ja" : "Nein";
+            txtMaut.Text = _protokol.ZusatzkostenMaut > 0 ? HTBUtils.FormatCurrencyNumber(_protokol.ZusatzkostenMaut) : "";
+            txtStandGebuhr.Text = _protokol.ZusatzkostenStandgebuhren > 0 ? HTBUtils.FormatCurrencyNumber(_protokol.ZusatzkostenStandgebuhren) : "";
+            txtZusatzkostenTreibstoff.Text = _protokol.ZusatzkostenTreibstoff > 0 ? HTBUtils.FormatCurrencyNumber(_protokol.ZusatzkostenTreibstoff) : "";
+            txtKostenEcp.Text = _protokol.ZusatzkostenEcp > 0 ? HTBUtils.FormatCurrencyNumber(_protokol.ZusatzkostenEcp) : "";
+
+            txtUberstellungsdistanz.Text = _protokol.Uberstellungsdistanz > 0 ? ((int)_protokol.Uberstellungsdistanz).ToString() : "";
+
+
+            ddlPolizeiInformiert.SelectedValue = _protokol.PolizieInformiert ? Ja : Nein;
+            txtPolizeiDienststelle.Text = _protokol.PolizeiDienststelle;
             txtBeifahrer.Text = _protokol.Beifahrer;
+
+            txtHandler.Text = _protokol.HandlerName;
             txtUbernommenVon.Text = _protokol.UbernommenVon;
         }
 
@@ -120,20 +140,36 @@ namespace HTB.intranetx.aktenint
             _protokol.RechnungNr = txtRechnungsNr.Text;
             _protokol.UbernahmeOrt = txtOrtDerUbernahme.Text;
             _protokol.KZ = ddlKZ.SelectedValue;
-            _protokol.UbernommentMitZulassung = ddlZulassung.SelectedValue == "Ja";
+            _protokol.AnzahlKZ = GlobalUtilArea.GetZeroIfConvertToIntError(txtAnzahlKz.Text);
+            _protokol.KzVonEcpAnAg = ddlKzFromEcpToAg.SelectedValue == Ja;
+            _protokol.UbernommentMitZulassung = ddlZulassung.SelectedValue == Ja;
             _protokol.Serviceheft = ddlServiceheft.SelectedValue;
             _protokol.AnzahlSchlussel = GlobalUtilArea.GetZeroIfConvertToIntError(txtAnzahlSchlussel.Text);
+            _protokol.MasterKey = ddlMasterKey.SelectedValue == Ja;
             _protokol.Tachometer = GlobalUtilArea.GetZeroIfConvertToIntError(txtKMStand.Text);
             _protokol.SchadenComment = txtSchaden.Text;
             _protokol.Memo = txtErweiterterBericht.Text;
-            _protokol.Abschleppdienst = ddlAbschleppdienst.SelectedValue  == "Ja";
+            _protokol.Abschleppdienst = ddlAbschleppdienst.SelectedValue  == Ja;
             _protokol.AbschleppdienstName = txtAbschleppdienstName.Text;
-            _protokol.ZusatzkostenTreibstoff = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtZusatzkostenTreibstoff);
+            _protokol.AbschleppdienstGrund = txtAbschleppdienstGrund.Text;
+
+            _protokol.ZusatzkostenAbschleppdienst = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtAbchleppdienstKosten);
+            _protokol.ZusatzkostenPannendienst = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtPannendienstKosten);
             _protokol.ZusatzkostenVignette = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtZusatzkostenVignette);
-            _protokol.ZusatzkostenSostige = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtZusatzkostenSonstige);
-            _protokol.HandlerName = txtHandler.Text;
-            _protokol.PolizieInformiert = ddlPolizeiInformiert.SelectedValue == "Ja";
+            _protokol.ZusatzkostenMaut = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtMaut);
+            _protokol.ZusatzkostenStandgebuhren = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtStandGebuhr);
+            _protokol.ZusatzkostenTreibstoff = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtZusatzkostenTreibstoff);
+            _protokol.ZusatzkostenEcp = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtKostenEcp);
+
+            _protokol.Uberstellungsdistanz = GlobalUtilArea.GetZeroIfConvertToDoubleError(txtUberstellungsdistanz);
+
+
+            _protokol.PolizieInformiert = ddlPolizeiInformiert.SelectedValue == Ja;
+            _protokol.PolizeiDienststelle = txtPolizeiDienststelle.Text;
             _protokol.Beifahrer = txtBeifahrer.Text;
+            
+
+            _protokol.HandlerName = txtHandler.Text;
             _protokol.UbernommenVon = txtUbernommenVon.Text;
         }
 
@@ -155,9 +191,7 @@ namespace HTB.intranetx.aktenint
                     var akt = (qryAktenInt)HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenInt WHERE AktIntID = " + _protokol.ProtokolAkt, typeof(qryAktenInt));
                     var action = (qryAktenIntActionWithType)HTBUtils.GetSqlSingleRecord($"SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionIsInternal = 0 AND AktIntActionAkt = " + _protokol.ProtokolAkt + " ORDER BY AktIntActionTime DESC", typeof(qryAktenIntActionWithType));
                     var protokolUbername = (tblProtokolUbername)HTBUtils.GetSqlSingleRecord($"SELECT * FROM tblProtokolUbername WHERE UbernameAktIntID = { akt.AktIntID } ORDER BY UbernameDatum DESC", typeof(tblProtokolUbername));
-
-                    //                    var protocolVisits = HTBUtils.GetSqlRecords("SELECT * FROM tblProtokolBesuch WHERE ProtokolID = " + _protokol.ProtokolID, typeof(tblProtokolBesuch));
-
+                    
                     ArrayList docsList = HTBUtils.GetSqlRecords("SELECT * FROM qryDoksIntAkten WHERE AktIntID = " + _protokol.ProtokolAkt, typeof(qryDoksIntAkten));
                     if (akt.IsInkasso())
                         HTBUtils.AddListToList(HTBUtils.GetSqlRecords("SELECT * FROM qryDoksInkAkten WHERE CustInkAktID = " + akt.AktIntCustInkAktID, typeof(qryDoksInkAkten)), docsList);
@@ -170,7 +204,6 @@ namespace HTB.intranetx.aktenint
                     var rpt = new ProtokolTablet();
                     try
                     {
-//                        rpt.GenerateProtokol(akt, _protokol, action, ms, protocolVisits.Cast<tblProtokolBesuch>().ToList(), docsList.Cast<Record>().ToList());
                         rpt.GenerateProtokol(akt, _protokol, protokolUbername, action, ms, GlobalUtilArea.GetVisitedDates(akt.AktIntID), GlobalUtilArea.GetPosList(akt.AktIntID), docsList.Cast<Record>().ToList());
                     }
                     catch (Exception ex)
@@ -246,6 +279,8 @@ namespace HTB.intranetx.aktenint
             _sicherstellungRows.Add(trDatum);
             _sicherstellungRows.Add(trOrt);
             _sicherstellungRows.Add(trKZ);
+            _sicherstellungRows.Add(trKzStuck);
+            _sicherstellungRows.Add(trKzFromEcpToAg);
             _sicherstellungRows.Add(trZulassung);
             _sicherstellungRows.Add(trServiceheft);
             _sicherstellungRows.Add(trAnzahlSchlussel);
@@ -254,12 +289,18 @@ namespace HTB.intranetx.aktenint
             _sicherstellungRows.Add(trErweiterterBericht);
             _sicherstellungRows.Add(trAbschleppdienst);
             _sicherstellungRows.Add(trAbschleppdienstName);
-            _sicherstellungRows.Add(trZusatzkostenTreibstoff);
+            _sicherstellungRows.Add(trAbschleppdienstGrund);
+            _sicherstellungRows.Add(trAbchleppdienstKosten);
+            _sicherstellungRows.Add(trPannendienstKosten);
             _sicherstellungRows.Add(trZusatzkostenVignette);
-            _sicherstellungRows.Add(trZusatzkostenSonstige);
+            _sicherstellungRows.Add(trMaut);
+            _sicherstellungRows.Add(trStandGebuhr);
+            _sicherstellungRows.Add(trZusatzkostenTreibstoff);
+            _sicherstellungRows.Add(trKostenEcp);
             _sicherstellungRows.Add(trUberstellungsdistanz);
             _sicherstellungRows.Add(trHandler);
             _sicherstellungRows.Add(trPolizeiInformiert);
+            _sicherstellungRows.Add(trPolizeiDienststelle);
             _sicherstellungRows.Add(trBeifahrer);
             _sicherstellungRows.Add(trUbernommenVon);
 

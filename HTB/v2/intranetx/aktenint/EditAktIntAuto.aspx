@@ -337,7 +337,7 @@
                                         <tr id="trAktIntMissingInstallments" runat="server">
                                             <td nowrap class="EditCaption">
                                                 <div align="right">
-                                                    Anzahl derder offenen raten:</div>
+                                                    Anzahl der offenen raten:</div>
                                             </td>
                                             <td class="EditData">
                                                 <asp:TextBox runat="server" ID="txtAktIntMissingInstallments" class="docText" onfocus="this.style.backgroundColor='#DFF4FF'; this.select();" onblur="this.style.backgroundColor=''" size="10" maxlength="5"/>

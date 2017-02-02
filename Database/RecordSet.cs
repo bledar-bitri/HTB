@@ -367,7 +367,7 @@ namespace HTB.Database
             {
                 sb.Append("'");
                 if (value != null)
-                    sb.Append(value);
+                    sb.Append(value.ToString().Replace("'", "''"));
                 sb.Append("'");
             }
             else if (dataType.Equals("datetime"))
@@ -376,7 +376,7 @@ namespace HTB.Database
                 sb.Append(value != null ? GetDBDateTimeString((DateTime) value) : DefaultDateString);
                 sb.Append("'");
             }
-            else if (dataType.Equals("string") || dataType.StartsWith("date"))
+            else if (dataType.StartsWith("date"))
             {
                 sb.Append("'");
                 if (value != null)

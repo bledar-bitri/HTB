@@ -71,6 +71,7 @@ namespace HTB.v2.intranetx.aktenint.tablet
                     {
                     }
                     protocol = GetProtocol(xmlData);
+                    
                 }
                 else if (postedFile.FileName.ToLower().StartsWith("image"))
                 {
@@ -131,18 +132,18 @@ namespace HTB.v2.intranetx.aktenint.tablet
                     #endregion
 
                     #region Generate Protocol Document
-                    Log.Error(string.Format("Akt [{0}]  Checking if protocol is needed", protocol.ProtokolAkt));
+                    Log.Info($"Akt [{protocol.ProtokolAkt}]  Checking if protocol is needed");
                     //var action = (qryAktenIntActionWithType)HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionAkt = " + protocol.ProtokolAkt + " AND AktIntActionIsInternal = 0 ORDER BY AktIntActionTime DESC", typeof(qryAktenIntActionWithType));
                     //if (action.AktIntActionIsAutoRepossessed)
                     var akt = (qryAktenInt)HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenInt WHERE AktIntID = " + protocol.ProtokolAkt, typeof(qryAktenInt));
 
                     var validEmails = HTBUtils.GetValidEmailAddressesFromStrings(new[] { protocol.HandlerEMail, akt.UserEMailOffice });
-                    if (validEmails.Count > 0 && protocol.AnzahlSchlussel > 0)
+                    if (validEmails.Count > 0 && protocol.UbernommenVon.Trim() != "")
                     {
                         try
                         {
                             bool ok = true;
-                            Log.Error(string.Format("Akt [{0}]  Generating Protocol", protocol.ProtokolAkt));
+                            Log.Info($"Akt [{protocol.ProtokolAkt}]  Generating Protocol");
                     
 
                             ArrayList docsList = HTBUtils.GetSqlRecords("SELECT * FROM qryDoksIntAkten WHERE AktIntID = " + protocol.ProtokolAkt, typeof (qryDoksIntAkten));
@@ -155,8 +156,8 @@ namespace HTB.v2.intranetx.aktenint.tablet
 
                             try
                             {
-                                Log.Error(string.Format("Akt [{0}]  Generating Dealer Protocol", protocol.ProtokolAkt));
-                                new ProtokolTablet().GenerateDealerProtokol(akt, protocol, ms);
+                                Log.Info($"Akt [{protocol.ProtokolAkt}]  Generating Dealer Protocol");
+                                new ProtokolTablet().GenerateDealerProtokol(akt, protocol, ms, validEmails);
                                 SaveDocumentRecord(akt.AktIntID, fileName, akt.AktIntSB);
                             }
                             catch (Exception ex)
@@ -169,11 +170,11 @@ namespace HTB.v2.intranetx.aktenint.tablet
                                 ms.Close();
                                 ms.Dispose();
                             }
-                            Log.Error(string.Format("Akt [{0}]  OK: [{1}] Dealer EMail: [{2}] ", protocol.ProtokolAkt, ok, protocol.HandlerEMail));
+                            Log.Info($"Akt [{protocol.ProtokolAkt}]  OK: [{ok}] Dealer EMail: [{protocol.HandlerEMail}] ");
                             if (ok)
                             {
                                 
-                                Log.Error(string.Format("Akt [{0}] Sending email", protocol.ProtokolAkt));
+                                Log.Info($"Akt [{protocol.ProtokolAkt}] Sending email");
 
                                 #region Send confirmation EMail to Dealer
 
@@ -182,7 +183,7 @@ namespace HTB.v2.intranetx.aktenint.tablet
                                 {
                                     var attachment = new HTBEmailAttachment(fileStream, "Uebergabe_Protokoll_" + akt.AktIntAZ +".pdf", "application/pdf");
                                     new HTBEmail().SendGenericEmail(validEmails, "ECP Übergabe Protokoll", "Siehe Anhang", true, new List<HTBEmailAttachment> {attachment}, 0, akt.AktIntID);
-                                    Log.Error(string.Format("Akt [{0}]  Email Sent TO: [{1}]", protocol.ProtokolAkt, string.Join(" ", validEmails)));
+                                    Log.Info($"Akt [{protocol.ProtokolAkt}]  Email Sent TO: [{string.Join(" ", validEmails)}]");
 
                                 }
 
