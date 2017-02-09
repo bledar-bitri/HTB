@@ -16,6 +16,7 @@ namespace HTBExtras
         public long DocTimestamp { get; set; }
         [MappingAttribute(FieldType = MappingAttribute.NO_DB_SAVE)]
         public string DocEmail { get; set; }
+        public bool DocSourceIsIPad { get; set; }
 
         public AktDocument()
         {
@@ -49,6 +50,7 @@ namespace HTBExtras
                 DocURL = DocAttachment;
             DocChangeDate = rec.DokChangeDate;
             DocTimestamp = rec.DokTimestamp;
+            DocSourceIsIPad = rec.DokSourceIsIPad;
         }
 
         private void Assign(qryDoksInkAkten rec, string scheme, string host)
@@ -63,6 +65,7 @@ namespace HTBExtras
                 DocURL = DocAttachment;
             DocChangeDate = rec.DokChangeDate;
             DocTimestamp = rec.DokTimestamp;
+            DocSourceIsIPad = rec.DokSourceIsIPad;
         }
     }
 }

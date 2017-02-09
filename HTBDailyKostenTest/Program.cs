@@ -923,7 +923,8 @@ namespace HTBDailyKosten
             // ProtocolId Collection: 2245 
 
             //var protocol = (tblProtokol) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblProtokol where protokolid = 2244 order by ProtokolID DESC", typeof (tblProtokol));
-            var protocol = (tblProtokol) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblProtokol where aktintid = 221508 order by ProtokolID DESC", typeof (tblProtokol));
+            //var protocol = (tblProtokol) HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblProtokol where aktintid = 221508 order by ProtokolID DESC", typeof (tblProtokol));
+            var protocol = (tblProtokol)HTBUtils.GetSqlSingleRecord("SELECT TOP 1 * FROM tblProtokol order by ProtokolID DESC", typeof(tblProtokol));
             //protocol.ProtokolAkt = 221504; // test
             var akt = (qryAktenInt) HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenInt WHERE AktIntID = " + protocol.ProtokolAkt, typeof (qryAktenInt));
             var action = (qryAktenIntActionWithType) HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenIntActionWithType WHERE AktIntActionAkt = " + akt.AktIntID + " and AktIntActionIsInternal = 0 ORDER BY AktIntActionTime DESC", typeof (qryAktenIntActionWithType));

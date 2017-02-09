@@ -166,7 +166,7 @@ namespace HTB.v2.intranetx.upload
                                 caption = rec.DocCaption;
                             }
 
-                            SaveDocumentRecord(akt.AktIntID, akt.AktIntSB, caption, rec.DocURL);
+                            SaveDocumentRecord(akt.AktIntID, akt.AktIntSB, caption, rec.DocURL, rec.DocSourceIsIPad);
 
                             if (!string.IsNullOrEmpty(rec.DocEmail) && HTBUtils.GetValidEmailAddressesFromString(rec.DocEmail).Any())
                             {
@@ -388,7 +388,7 @@ namespace HTB.v2.intranetx.upload
             return records;
         }
 
-        private void SaveDocumentRecord(int aktNumber, int creator, string caption, string fileName)
+        private void SaveDocumentRecord(int aktNumber, int creator, string caption, string fileName, bool isSourceIpad = false)
         {
             var sb = new StringBuilder("SELECT * FROM tblDokument ");
             sb.Append(" WHERE ");
@@ -408,7 +408,8 @@ namespace HTB.v2.intranetx.upload
                                   DokCreator = creator,
                                   DokAttachment = fileName,
                                   DokCreationTimeStamp = DateTime.Now,
-                                  DokChangeDate = DateTime.Now
+                                  DokChangeDate = DateTime.Now,
+                                  DokSourceIsIPad = isSourceIpad
                               };
 
                 RecordSet.Insert(doc);
