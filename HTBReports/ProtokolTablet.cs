@@ -140,28 +140,13 @@ namespace HTBReports
                 Writer.newPage();
                 PrintPageHeader();
                 _lin += _gap * 2;
-                PrintEcpActions();
+                PrintEcpActions(_protokol.Memo);
             }
             else if (_action.AktIntActionIsAutoMoneyCollected)
                 PrintMoneyCollected();
             else //if (_action.AktIntActionIsAutoNegative)
             {
-                PrintPageHeader();
-                _lin += _gap;
-                PrintHeaderAndInfo("Positiver Abschlussbericht: ", !_action.AktIntActionIsAutoNegative ? ja : nein + " – WIR EMPFEHLEN DIE KLAGE AUF HERAUSGABE", _col1, Calibri, 14, true, Calibri, 14, true, BaseColor.RED);
-                _lin += _gap * 2;
-                if (HasPaymants())
-                {
-                    WriteUnderlinedSubheader("Zahlungsaufstellung durch E.C.P.:", _col1);
-                    _lin += _gap + 40;
-                    PrintPaymantTable();
-                }
-
-                PrintHeaderAndInfo("Akt wurde abgeschlossen durch: ", _action.AktIntActionTypeCaption.Replace("Auto - ", ""), _col1, BaseColor.RED);
-                _lin += _gap * 2;
-                PrintEcpActions();
-                //_lin += _gap * 2;
-                //PrintBericht();
+                PrintGeneralReport();
             }
         }
 
@@ -324,17 +309,9 @@ namespace HTBReports
             _lin += _gap;
             WriteInfo(_col1, "A -" +_protokol.HandlerPLZ + " " + _protokol.UbernahmeOrt);
             _lin += _gap * 2;
-            
-            if (_emailAddresses != null)
-            {
-                WriteUnderlinedSubheader( "EMail gesendet an:", _col1);
-                _lin += _gap;
-                _emailAddresses.ForEach(address =>
-                {
-                    WriteMercedesInfo(address);
-                });
-            }
 
+            PrintEmailAddresses();
+            
             var signatureLine = _lin - _gap * 4;
             var signatureCol = 1200;
             PrintHeaderAndInfo("Übernommen von: ", _protokol.UbernommenVon, signatureCol, BaseColor.RED);
@@ -347,9 +324,9 @@ namespace HTBReports
             PrintInfoAndInfo(" um ", formattedSicherstellungsZeit, newCol, BaseColor.RED);
             newCol += GetHeaderAndInfoWidth(hdr, info);
             WriteInfo(newCol, " Uhr ");
-
             
             Writer.drawBitmapFromPath(signatureLine+_gap*4, signatureCol, _protokol.SignaturePath, 40);
+            /*
             if (!isDealerProtocol)
             {
                 _lin += _gap * 2;
@@ -357,6 +334,7 @@ namespace HTBReports
                     $"Sollten wir eigene Forderungen gegen den Kunden/Leasingnehmer haben, bestätigen wir hiermit gegenüber {_akt.AuftraggeberName1} weder ein allfälliges Retentionsrecht geltend zu machen, noch Standgebühren für die Lagerung zu verrechnen.";
                 WriteMultilineInfo(multilineText, _col1, BaseColor.BLACK, 100);
             }
+            */
         }
         
         private void PrintRepossessionForMerzedes()
@@ -451,16 +429,9 @@ namespace HTBReports
             WriteMercedesInfo2(_protokol.HandlerStrasse);
             WriteMercedesInfo2(_protokol.HandlerPLZ + "," + _protokol.HandlerOrt);
             _lin -= _gap * 4;
-            if (_emailAddresses != null)
-            {
-                WriteMercedesInfo("EMail gesendet an:");
-                _emailAddresses.ForEach(address =>
-                {
-                    WriteMercedesInfo(address);
-                });
-            }
 
-
+            PrintEmailAddresses();
+            
             Writer.drawBitmapFromPath(signatureLine, _col2+100, _protokol.SignaturePath, 40);
         }
 
@@ -561,24 +532,9 @@ namespace HTBReports
                 PrintPageHeader();
                 _lin += _gap;
             }
-            PrintEcpActions();
+            PrintEcpActions(_protokol.Memo);
 
-            var multiLineWidth = ReportUtils.GetMultipleLinesHeight(_gap, _akt.AKTIntMemo, 100);
-            if (CheckOverflow(_lin + (_gap * 3) + multiLineWidth))
-            {
-                Writer.newPage();
-                PrintPageHeader();
-                _lin += _gap;
-            }
-            if (_akt.AKTIntMemo.Trim() != "")
-            {
-                _lin += _gap * 2;
-                WriteUnderlinedSubheader("Erweiterter Bericht:", _col1);
-                _lin += _gap + 40;
-                var orgLin = _lin;
-                WriteMultilineInfo(_akt.AKTIntMemo, _col1 + 50, BaseColor.BLACK, 100);
-                Writer.drawRect(orgLin, _col1, _lin, 1850);
-            }
+            PrintEmailAddresses();
         }
 
         private void PrintMoneyCollectedLine(string header, double amount, string headerDate, DateTime date, bool isKosten = false)
@@ -603,7 +559,7 @@ namespace HTBReports
             }
         }
 
-        private void PrintEcpActions()
+        private void PrintEcpActions(string additionalInfo)
         {
             WriteUnderlinedSubheader("Erbrachte Dienstleistungen der E.C.P. European Car Protect KG:", _col1);
             _lin += _gap + 40;
@@ -637,7 +593,7 @@ namespace HTBReports
                 info = visit.VisitPerson;
                 PrintHeaderAndInfo(hdr, info, newCol, BaseColor.RED);
                 _lin += _gap;
-                PrintHeaderAndInfo("Aktion: ", visit.VisitAction, _col1, BaseColor.RED);
+                PrintHeaderAndInfo("Aktion: ", visit.VisitAction.Replace("Auto - ", ""), _col1, BaseColor.RED);
                 _lin += _gap;
                 if (visit.VisitMemo.Trim() != "")
                 {
@@ -652,6 +608,23 @@ namespace HTBReports
                 _lin += _gap;
                 visitNbr++;
             });
+
+            if (additionalInfo == null || additionalInfo.Trim() == "") return;
+
+            multiLineWidth = ReportUtils.GetMultipleLinesHeight(_gap, additionalInfo, 100);
+            if (CheckOverflow(_lin + (_gap * 3) + multiLineWidth))
+            {
+                Writer.newPage();
+                PrintPageHeader();
+                _lin += _gap;
+            }
+            
+            _lin += _gap * 2;
+            WriteUnderlinedSubheader("Erweiterter Bericht:", _col1);
+            _lin += _gap + 40;
+            orgLin = _lin;
+            WriteMultilineInfo(additionalInfo, _col1 + 50, BaseColor.BLACK, 100);
+            Writer.drawRect(orgLin, _col1, _lin, 1850);
         }
 
         private void PrintOfficeCharges()
@@ -697,10 +670,44 @@ namespace HTBReports
             }
         }
 
-        private void PrintBericht()
+        private void PrintGeneralReport()
         {
-            WriteHeader("Erweiterter Bericht:");
-            WriteMultilineInfo(_protokol.Memo.Trim());
+            var col2 = _col2 + 350;
+            PrintPageHeader();
+            _lin += _gap;
+
+            PrintHeaderAndInfo("Positiver Abschlussbericht: ", !_action.AktIntActionIsAutoNegative ? ja : nein + " – WIR EMPFEHLEN DIE KLAGE AUF HERAUSGABE", _col1, Calibri, 14, true, Calibri, 14, true, BaseColor.RED);
+
+            SetHeadingFont();
+            _lin += _gap * 2;
+
+
+            WriteUnderlinedSubheader("Auftragsdaten:", _col1);
+            _lin += _gap + 20;
+
+            PrintHeaderAndInfo("Kunde: ", _akt.GegnerLastName1 + " " + _akt.Gegner2LastName2, _col1);
+            PrintHeaderAndInfo("Vertragsart: ", _akt.AktIntAutoVertragArt, col2);
+            _lin += _gap;
+            PrintHeaderAndInfo("Object: ", _akt.AktIntAutoName, _col1);
+            PrintHeaderAndInfo("Kennzeichen: ", _akt.AktIntAutoKZ, col2);
+            _lin += _gap;
+            PrintHeaderAndInfo("Offene Forderung AG: ", HTBUtils.FormatCurrency(GetOriginalOpenedAgAmount()), _col1);
+            PrintHeaderAndInfo("Offene Versicherung: ", HTBUtils.FormatCurrency(GetOriginalOpenedInsuranceAmount()), col2);
+
+            _lin += _gap * 2;
+            if (HasPaymants())
+            {
+                WriteUnderlinedSubheader("Zahlungsaufstellung durch E.C.P.:", _col1);
+                _lin += _gap + 40;
+                PrintPaymantTable();
+            }
+
+            PrintHeaderAndInfo("Akt wurde abgeschlossen durch: ", _action.AktIntActionTypeCaption.Replace("Auto - ", ""), _col1, BaseColor.RED);
+            _lin += _gap * 2;
+            PrintEcpActions(_protokol.Memo);
+            _lin += _gap * 2;
+
+            PrintEmailAddresses();
         }
 
         private void PrintDocuments(IEnumerable<Record> documents)
@@ -751,6 +758,19 @@ namespace HTBReports
                     }
                 }
                 Writer.FinishPdfTable();
+            }
+        }
+
+        private void PrintEmailAddresses()
+        {
+            if (_emailAddresses != null)
+            {
+                WriteUnderlinedSubheader("EMail gesendet an:", _col1);
+                _lin += _gap;
+                _emailAddresses.ForEach(address =>
+                {
+                    WriteMercedesInfo(address);
+                });
             }
         }
 
@@ -1300,7 +1320,7 @@ namespace HTBReports
             else if (_action.AktIntActionIsAutoMoneyCollected)
                 PrintMoneyCollected();
             else //if (_action.AktIntActionIsAutoNegative)
-                PrintBericht();
+                PrintGeneralReport();
 
             Writer.print(2900, 1800, DateTime.Now.ToShortDateString(), 'R');
         }
