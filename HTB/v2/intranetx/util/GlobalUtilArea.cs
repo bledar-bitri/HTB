@@ -604,10 +604,23 @@ namespace HTB.v2.intranetx.util
         }
         public static List<VisitRecord> GetVisitedDates(int intAktId)
         {
+            var actions = HTBUtils.GetSqlRecords(
+                $"SELECT * FROM qryAktenIntActionWithType WITH (NOLOCK) WHERE AktIntActionAkt = {intAktId} AND AktIntActionIsExtensionRequest <> 1 ORDER BY AktIntActionTime", typeof(qryAktenIntActionWithType));
+
+            return (from qryAktenIntActionWithType action in actions
+                select new VisitRecord
+                {
+                    VisitTime = action.AktIntActionTime,
+                    VisitMemo = action.AktIntActionMemo,
+                    VisitAction = action.AktIntActionTypeCaption,
+                    VisitPerson = action.UserVorname + " " + action.UserNachname
+                }).ToList();
+        }
+        public static List<VisitRecord> GetVisitedDates_OLD(int intAktId)
+        {
             var list = new List<VisitRecord>();
 
             ArrayList actions = HTBUtils.GetSqlRecords("SELECT * FROM qryAktenIntActionWithType WITH (NOLOCK) WHERE AktIntActionAkt = " + intAktId + " AND AktIntActionIsExtensionRequest <> 1 AND AktIntActionIsThroughPhone <> 1  AND AktIntActionIsInternal = 0 ORDER BY AktIntActionTime", typeof(qryAktenIntActionWithType));
-
             foreach (qryAktenIntActionWithType action in actions)
             {
                 bool ok = true;
@@ -616,9 +629,9 @@ namespace HTB.v2.intranetx.util
                     TimeSpan ts = visit.VisitTime.Subtract(action.AktIntActionTime);
                     if (Math.Abs(ts.TotalHours) < 1)
                     {
-                        if(!string.IsNullOrEmpty(action.AktIntActionMemo))
+                        if (!string.IsNullOrEmpty(action.AktIntActionMemo))
                         {
-                            if(!visit.VisitMemo.ToLower().Contains(action.AktIntActionMemo.Trim().ToLower()))
+                            if (!visit.VisitMemo.ToLower().Contains(action.AktIntActionMemo.Trim().ToLower()))
                             {
                                 visit.VisitMemo = visit.VisitMemo.Trim() + " " + action.AktIntActionMemo.Trim();
                             }
@@ -629,12 +642,12 @@ namespace HTB.v2.intranetx.util
                 if (ok)
                 {
                     list.Add(new VisitRecord
-                                  {
-                                      VisitTime = action.AktIntActionTime,
-                                      VisitMemo = action.AktIntActionMemo,
-                                      VisitAction = action.AktIntActionTypeCaption,
-                                      VisitPerson = action.UserVorname + " "+action.UserNachname
-                                  });
+                    {
+                        VisitTime = action.AktIntActionTime,
+                        VisitMemo = action.AktIntActionMemo,
+                        VisitAction = action.AktIntActionTypeCaption,
+                        VisitPerson = action.UserVorname + " " + action.UserNachname
+                    });
                 }
             }
             return list;

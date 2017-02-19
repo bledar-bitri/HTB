@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections;
+using System.Globalization;
 
 namespace HTB.Database
 {
@@ -95,7 +96,98 @@ namespace HTB.Database
 
         [MappingAttribute(FieldType = MappingAttribute.NO_DB_SAVE)]
         public String VisitsList { get; set; }
-        
-		#endregion
-	}
+
+        #endregion
+
+        public tblProtokol()
+        {
+        }
+        public tblProtokol(tblProtokolNoDb rec)
+	    {
+	        Assign(rec);
+	    }
+
+	    public void Assign(tblProtokolNoDb rec)
+	    {
+	        ProtokolID = rec.ProtokolID;
+	        ProtokolAkt = rec.ProtokolAkt;
+	        ProtokolActionTypeID = rec.ProtokolActionTypeID;
+	        SicherstellungDatum = rec.SicherstellungDatum;
+	        UbernahmeOrt = rec.UbernahmeOrt;
+	        UbernommentMitZulassung = rec.UbernommentMitZulassung;
+	        KZ = rec.KZ;
+	        KzVonEcpAnAg = rec.KzVonEcpAnAg;
+	        ProtokolServiceheftID = rec.ProtokolServiceheftID;
+	        AnzahlSchlussel = rec.AnzahlSchlussel;
+	        Tachometer = rec.Tachometer;
+	        VersicherungBarKassiert = fixIpadNumber(rec.VersicherungBarKassiert);
+	        VersicherungUberwiesen = rec.VersicherungUberwiesen;
+	        ForderungBarKassiert = fixIpadNumber(rec.ForderungBarKassiert);
+	        ForderungUberwiesen = rec.ForderungUberwiesen;
+	        KostenBarKassiert = fixIpadNumber(rec.KostenBarKassiert);
+	        KostenUberwiesen = rec.KostenUberwiesen;
+	        Direktzahlung = fixIpadNumber(rec.Direktzahlung);
+	        DirektzahlungAm = rec.DirektzahlungAm;
+	        DirektzahlungVersicherung = fixIpadNumber(rec.DirektzahlungVersicherung);
+	        DirektzahlungVersicherungAm = rec.DirektzahlungVersicherungAm;
+	        Abschleppdienst = rec.Abschleppdienst;
+	        AbschleppdienstName = rec.AbschleppdienstName;
+	        AbschleppdienstGrund = rec.AbschleppdienstGrund;
+	        ZusatzkostenAbschleppdienst = fixIpadNumber(rec.ZusatzkostenAbschleppdienst);
+	        ZusatzkostenPannendienst = fixIpadNumber(rec.ZusatzkostenPannendienst);
+	        ZusatzkostenStandgebuhren = fixIpadNumber(rec.ZusatzkostenStandgebuhren);
+	        ZusatzkostenReparaturen = fixIpadNumber(rec.ZusatzkostenReparaturen);
+	        ZusatzkostenMaut = fixIpadNumber(rec.ZusatzkostenMaut);
+	        ZusatzkostenTreibstoff = fixIpadNumber(rec.ZusatzkostenTreibstoff);
+	        ZusatzkostenVignette = fixIpadNumber(rec.ZusatzkostenVignette);
+	        ZusatzkostenSostige = fixIpadNumber(rec.ZusatzkostenSostige);
+	        ZusatzkostenEcp = fixIpadNumber(rec.ZusatzkostenEcp);
+	        Uberstellungsdistanz = fixIpadNumber(rec.Uberstellungsdistanz);
+	        HandlerName = rec.HandlerName;
+	        HandlerStrasse = rec.HandlerStrasse;
+	        HandlerLKZ = rec.HandlerLKZ;
+	        HandlerPLZ = rec.HandlerPLZ;
+	        HandlerOrt = rec.HandlerOrt;
+	        UpdateDate = rec.UpdateDate;
+	        Beifahrer = rec.Beifahrer;
+	        UbernommenVon = rec.UbernommenVon;
+	        SchadenComment = rec.SchadenComment;
+	        Memo = rec.Memo;
+	        SignaturePath = rec.SignaturePath;
+	        Serviceheft = rec.Serviceheft;
+	        PolizieInformiert = rec.PolizieInformiert;
+	        PolizeiDienststelle = rec.PolizeiDienststelle;
+	        RechnungNr = rec.RechnungNr;
+	        HandlerEMail = rec.HandlerEMail;
+	        MasterKey = rec.MasterKey;
+	        AnzahlKZ = rec.AnzahlKZ;
+	        VisitsList = rec.VisitsList;
+	    }
+
+	    private double fixIpadNumber(string number)
+	    {
+	        if (number == null) return 0;
+	        if (number.Trim() == "") return 0;
+	        number = ReplaceLastOccurrence(number, ",", ".").Replace(",", "");
+	        try
+	        {
+	            return double.Parse(number, CultureInfo.InvariantCulture.NumberFormat);
+	        }
+	        catch
+	        {
+	            return 0;
+	        }
+	    }
+
+        public static string ReplaceLastOccurrence(string Source, string Find, string Replace)
+        {
+            int place = Source.LastIndexOf(Find);
+
+            if (place == -1)
+                return Source;
+
+            string result = Source.Remove(place, Find.Length).Insert(place, Replace);
+            return result;
+        }
+    }
 }

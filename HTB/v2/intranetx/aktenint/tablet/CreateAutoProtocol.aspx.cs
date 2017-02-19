@@ -228,7 +228,7 @@ namespace HTB.v2.intranetx.aktenint.tablet
         {
             var ds = new DataSet();
             ds.ReadXml(new StringReader(xmlData));
-            var rec = new tblProtokol();
+            var rec = new tblProtokolNoDb();
             foreach (DataTable tbl in ds.Tables)
             {
                 if (tbl.TableName.ToUpper().Trim() == "TBLPROTOKOL")
@@ -239,7 +239,7 @@ namespace HTB.v2.intranetx.aktenint.tablet
                     }
                 }
             }
-            return rec;
+            return new tblProtokol(rec);
         }
 
         private void UpdatePosRecords(tblProtokol protocol)

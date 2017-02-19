@@ -677,6 +677,12 @@ namespace HTBReports
             _lin += _gap;
 
             PrintHeaderAndInfo("Positiver Abschlussbericht: ", !_action.AktIntActionIsAutoNegative ? ja : nein + " – WIR EMPFEHLEN DIE KLAGE AUF HERAUSGABE", _col1, Calibri, 14, true, Calibri, 14, true, BaseColor.RED);
+            if (_protokol.RechnungNr != null && _protokol.RechnungNr.Trim() != "")
+            {
+                _lin += _gap * 2;
+                PrintHeaderAndInfo("Rechnungsnr. E.C.P: ", _protokol.RechnungNr, _col1, Calibri, 14, true, Calibri, 14,
+                    true, BaseColor.BLACK);
+            }
 
             SetHeadingFont();
             _lin += _gap * 2;

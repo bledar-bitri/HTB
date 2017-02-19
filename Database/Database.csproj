@@ -127,6 +127,7 @@
     <Compile Include="HTB\tblKlientCommunication.cs" />
     <Compile Include="HTB\tblLawyerLetter.cs" />
     <Compile Include="HTB\tblLawyerCost.cs" />
+    <Compile Include="HTB\tblProtokolNoDb.cs" />
     <Compile Include="HTB\tblProtokolPayment.cs" />
     <Compile Include="HTB\tblProtokolPaymentType.cs" />
     <Compile Include="HTB\tblRoad.cs" />
