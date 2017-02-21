@@ -120,29 +120,29 @@ namespace HTB.Database
 	        ProtokolServiceheftID = rec.ProtokolServiceheftID;
 	        AnzahlSchlussel = rec.AnzahlSchlussel;
 	        Tachometer = rec.Tachometer;
-	        VersicherungBarKassiert = fixIpadNumber(rec.VersicherungBarKassiert);
+	        VersicherungBarKassiert = FixIpadNumber(rec.VersicherungBarKassiert);
 	        VersicherungUberwiesen = rec.VersicherungUberwiesen;
-	        ForderungBarKassiert = fixIpadNumber(rec.ForderungBarKassiert);
+	        ForderungBarKassiert = FixIpadNumber(rec.ForderungBarKassiert);
 	        ForderungUberwiesen = rec.ForderungUberwiesen;
-	        KostenBarKassiert = fixIpadNumber(rec.KostenBarKassiert);
+	        KostenBarKassiert = FixIpadNumber(rec.KostenBarKassiert);
 	        KostenUberwiesen = rec.KostenUberwiesen;
-	        Direktzahlung = fixIpadNumber(rec.Direktzahlung);
+	        Direktzahlung = FixIpadNumber(rec.Direktzahlung);
 	        DirektzahlungAm = rec.DirektzahlungAm;
-	        DirektzahlungVersicherung = fixIpadNumber(rec.DirektzahlungVersicherung);
+	        DirektzahlungVersicherung = FixIpadNumber(rec.DirektzahlungVersicherung);
 	        DirektzahlungVersicherungAm = rec.DirektzahlungVersicherungAm;
 	        Abschleppdienst = rec.Abschleppdienst;
 	        AbschleppdienstName = rec.AbschleppdienstName;
 	        AbschleppdienstGrund = rec.AbschleppdienstGrund;
-	        ZusatzkostenAbschleppdienst = fixIpadNumber(rec.ZusatzkostenAbschleppdienst);
-	        ZusatzkostenPannendienst = fixIpadNumber(rec.ZusatzkostenPannendienst);
-	        ZusatzkostenStandgebuhren = fixIpadNumber(rec.ZusatzkostenStandgebuhren);
-	        ZusatzkostenReparaturen = fixIpadNumber(rec.ZusatzkostenReparaturen);
-	        ZusatzkostenMaut = fixIpadNumber(rec.ZusatzkostenMaut);
-	        ZusatzkostenTreibstoff = fixIpadNumber(rec.ZusatzkostenTreibstoff);
-	        ZusatzkostenVignette = fixIpadNumber(rec.ZusatzkostenVignette);
-	        ZusatzkostenSostige = fixIpadNumber(rec.ZusatzkostenSostige);
-	        ZusatzkostenEcp = fixIpadNumber(rec.ZusatzkostenEcp);
-	        Uberstellungsdistanz = fixIpadNumber(rec.Uberstellungsdistanz);
+	        ZusatzkostenAbschleppdienst = FixIpadNumber(rec.ZusatzkostenAbschleppdienst);
+	        ZusatzkostenPannendienst = FixIpadNumber(rec.ZusatzkostenPannendienst);
+	        ZusatzkostenStandgebuhren = FixIpadNumber(rec.ZusatzkostenStandgebuhren);
+	        ZusatzkostenReparaturen = FixIpadNumber(rec.ZusatzkostenReparaturen);
+	        ZusatzkostenMaut = FixIpadNumber(rec.ZusatzkostenMaut);
+	        ZusatzkostenTreibstoff = FixIpadNumber(rec.ZusatzkostenTreibstoff);
+	        ZusatzkostenVignette = FixIpadNumber(rec.ZusatzkostenVignette);
+	        ZusatzkostenSostige = FixIpadNumber(rec.ZusatzkostenSostige);
+	        ZusatzkostenEcp = FixIpadNumber(rec.ZusatzkostenEcp);
+	        Uberstellungsdistanz = FixIpadNumber(rec.Uberstellungsdistanz);
 	        HandlerName = rec.HandlerName;
 	        HandlerStrasse = rec.HandlerStrasse;
 	        HandlerLKZ = rec.HandlerLKZ;
@@ -164,11 +164,19 @@ namespace HTB.Database
 	        VisitsList = rec.VisitsList;
 	    }
 
-	    private double fixIpadNumber(string number)
+	    private double FixIpadNumber(string number)
 	    {
 	        if (number == null) return 0;
 	        if (number.Trim() == "") return 0;
-	        number = ReplaceLastOccurrence(number, ",", ".").Replace(",", "");
+
+            var decimalSeparator = ",";
+
+            var comaPosition = number.LastIndexOf(",", StringComparison.Ordinal);
+            var dotPosition = number.LastIndexOf(".", StringComparison.Ordinal);
+	        if (dotPosition > comaPosition)
+	            decimalSeparator = ".";
+
+            number = ReplaceLastOccurrence(number, decimalSeparator, ";").Replace(",", "").Replace(".", "").Replace(";", ".");
 	        try
 	        {
 	            return double.Parse(number, CultureInfo.InvariantCulture.NumberFormat);
@@ -179,14 +187,14 @@ namespace HTB.Database
 	        }
 	    }
 
-        public static string ReplaceLastOccurrence(string Source, string Find, string Replace)
+        public static string ReplaceLastOccurrence(string source, string find, string replace)
         {
-            int place = Source.LastIndexOf(Find);
+            var place = source.LastIndexOf(find, StringComparison.Ordinal);
 
             if (place == -1)
-                return Source;
+                return source;
 
-            string result = Source.Remove(place, Find.Length).Insert(place, Replace);
+            string result = source.Remove(place, find.Length).Insert(place, replace);
             return result;
         }
     }
