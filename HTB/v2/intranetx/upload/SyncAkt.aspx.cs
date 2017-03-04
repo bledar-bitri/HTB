@@ -32,6 +32,8 @@ namespace HTB.v2.intranetx.upload
         private readonly string _body = HTBUtils.GetFileText(HTBUtils.GetConfigValue("Klient_Signed_Installment_Text"));
         private readonly string _adminEmailAddress = HTBUtils.GetConfigValue("Admin_Email_Address");
 
+        private static readonly bool _saveXmlData = GlobalUtilArea.StringToBool(HTBUtils.GetConfigValue("SaveSyncActXmlData"));
+
         private readonly List<string> _emailAddresses = new List<string>();
 
         private int _oldAktStatus = -1;
@@ -86,6 +88,17 @@ namespace HTB.v2.intranetx.upload
                         inStream.Read(fileData, 0, postedFile.ContentLength);
 
                         String xmlData = Encoding.UTF8.GetString(fileData);
+                        if (_saveXmlData)
+                        {
+                            try
+                            {
+                                postedFile.SaveAs("c:\\temp\\xmlData_" + DateTime.Now.ToFileTime() + "_" +
+                                                  new Random().Next(1000) + ".xml");
+                            }
+                            catch
+                            {
+                            }
+                        }
                         recs = GetRecords(xmlData);
                         ProcessRecords(akt, recs);
                         i = uploadFiles.Count; // exit the loop;
@@ -367,8 +380,6 @@ namespace HTB.v2.intranetx.upload
             // xmlData = "<?xml version=\"1.0\" encoding=\"ISO8859-1\"?>"+Environment.NewLine+ xmlData;
             xmlData = xmlData.Replace("&", "&amp;");
             
-            HTBUtils.SaveTextFile(@"c:\temp\xmlData.xml", xmlData); // Debug purposes
-
             var ds = new DataSet();
             ds.ReadXml(new StringReader(xmlData));
             var records = new List<Record>();

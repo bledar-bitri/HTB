@@ -126,11 +126,7 @@ namespace HTBUtilities
         public static string GetConfigValue(string name)
         {
             var rec = (tblConfig)GetSqlSingleRecord("SELECT * FROM tblConfig WITH (NOLOCK) WHERE ConfigName = '" + name + "'", typeof(tblConfig));
-            if (rec != null)
-            {
-                return rec.ConfigValue;
-            }
-            return null;
+            return rec?.ConfigValue;
         }
 
         public static int GetIntConfigValue(string name)
