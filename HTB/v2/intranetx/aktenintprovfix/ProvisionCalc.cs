@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using HTB.Database;
 using HTBUtilities;
 using HTB.Database.Views;
@@ -9,6 +10,8 @@ namespace HTB.v2.intranetx.aktenintprovfix
 {
     public class ProvisionCalc
     {
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public const string ProvType_AG_AktType_ActionType_User = "AG_TYPE_ACTION_USER";
         public const string ProvType_AktType_ActionType_User = "USER_TYPE_ACTION";
         public const string ProvType_AG_AktType_ActionType = "AG_TYPE_ACTION";
@@ -26,6 +29,7 @@ namespace HTB.v2.intranetx.aktenintprovfix
 
         public double GetProvision(double collectedAmount, double balance, int agId, int aktIntTypeId, int userId, int actionTypeId)
         {
+            Log.Debug("1");
             _actionRecordList.Add(agId, aktIntTypeId, actionTypeId, userId, DateTime.Now);
 
             string sqlWhere = " WHERE AGAktTypeAktionUserProvAuftraggeberID = " + agId +
@@ -33,7 +37,7 @@ namespace HTB.v2.intranetx.aktenintprovfix
                        " AND AGAktTypeActionUserProvUserID = " + userId +
                        " AND AGAktTypeActionUserProvAktAktionTypeID = " + actionTypeId;
             string provType = ProvType_AG_AktType_ActionType_User;
-            Record prov = (tblAuftraggeberAktTypeActionUserProv)HTBUtils.GetSqlSingleRecord("*+54qSDGH00" + sqlWhere, typeof(tblAuftraggeberAktTypeActionUserProv));
+            Record prov = (tblAuftraggeberAktTypeActionUserProv)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAuftraggeberAktTypeActionUserProv " + sqlWhere, typeof(tblAuftraggeberAktTypeActionUserProv));
             if (prov == null)
             {
                 sqlWhere = " WHERE UserAktTypeAktionProvUserID = " + userId +
@@ -189,6 +193,7 @@ namespace HTB.v2.intranetx.aktenintprovfix
 
         public double GetPrice(double collectedAmount, double balance, int agId, int aktIntTypeId, int userId, int actionTypeId)
         {
+            Log.Debug("1");
             double price = 0;
             if (IsActionVoid(actionTypeId))
                 return 0;

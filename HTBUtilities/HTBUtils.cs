@@ -39,6 +39,7 @@ namespace HTBUtilities
 
         public static object GetSqlSingleRecord(string sql, Type recordClass, int connType = DbConnection.ConnectionType_SqlServer, bool debugMode = false)
         {
+            Log.DebugFormat("{0}", sql);
             var set = new GenericRecordset(connType);
             set.LoadFromSqlQuery(sql, recordClass, debugMode);
             if (set.RecordsList.Count > 0)
