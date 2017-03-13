@@ -307,7 +307,7 @@ namespace HTBReports
             _lin += _gap;
             WriteInfo(_col1, _protokol.HandlerStrasse);
             _lin += _gap;
-            WriteInfo(_col1, "A -" +_protokol.HandlerPLZ + " " + _protokol.UbernahmeOrt);
+            WriteInfo(_col1, "A -" +_protokol.HandlerPLZ + " " + _protokol.HandlerOrt);
             _lin += _gap * 2;
 
             PrintEmailAddresses();

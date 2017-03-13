@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -14,6 +15,15 @@ namespace HTB.v2.intranetx.routeplanter
     [Serializable]
     public class Map : ISerializable
     {
+        private static readonly string[] m_PushPinColors = new string[]
+        {
+            "red",
+            "green",
+            "blue",
+        };
+
+        private readonly Random random = new Random();
+
         public const string BingJsStart = "directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ location: new Microsoft.Maps.Location(";
         public const string BingJsEnd = "), exactLocation: true })); ";
 
@@ -21,7 +31,8 @@ namespace HTB.v2.intranetx.routeplanter
         private List<Road> m_Roads = new List<Road>();
         private Dictionary<TspCity, City> m_CityMap = new Dictionary<TspCity, City>();
         private Dictionary<HTBAntColonyTSP.Road, Road> m_RoadMap;
-        
+
+
         public Map()
         {
         }
@@ -150,6 +161,37 @@ namespace HTB.v2.intranetx.routeplanter
             
             if (idx >= startPoint && idx <= startPoint + totalPoints)
             {
+                sb.Append(GetAddressLocationOnTheMap(c1, idx, "green"));
+            }
+            
+            while (i.MoveNext())
+            {
+                idx++;
+                if (idx >= startPoint && idx <= startPoint + totalPoints)
+                {
+                    c1 = m_CityMap[i.Current];
+                    sb.Append(idx == startPoint + totalPoints
+                        ? GetAddressLocationOnTheMap(c1, idx, "red")
+                        : GetAddressLocationOnTheMap(c1, idx));
+                }
+            }
+            return sb.ToString();
+        }
+
+        public String GetJsWaypoints_OLD(IEnumerable<TspCity> tour, int startPoint, int totalPoints)
+        {
+            var sb = new StringBuilder();
+            var i = tour.GetEnumerator();
+            int idx = 1;
+            i.MoveNext();
+
+            //            DebugTourAndCity(tour, "GetJsWaypoints");
+
+            var first = m_CityMap[i.Current];
+            var c1 = first;
+
+            if (idx >= startPoint && idx <= startPoint + totalPoints)
+            {
                 sb.Append(BingJsStart);
                 sb.Append(c1.Location.Locations[0].Latitude.ToString().Replace(",", "."));
                 sb.Append(", ");
@@ -159,7 +201,7 @@ namespace HTB.v2.intranetx.routeplanter
                 sb.Append(c1.Address.Address);
                 sb.Append(Environment.NewLine);
             }
-            
+
             while (i.MoveNext())
             {
                 idx++;
@@ -180,6 +222,41 @@ namespace HTB.v2.intranetx.routeplanter
         }
 
         public String GetJsOverwiewWaypoints(IEnumerable<TspCity> tour, int totalPoints)
+        {
+            var sb = new StringBuilder();
+            var totalCount = tour.Count();
+            var count = 0;
+            var i = tour.GetEnumerator();
+
+            int idx = 1;
+            i.MoveNext();
+
+            var first = m_CityMap[i.Current];
+            var c1 = first;
+
+            sb.Append(GetAddressLocationOnTheMap(c1, idx, "green"));
+
+            count = 1;
+
+            while (i.MoveNext())
+            {
+                idx++;
+                if (idx % (totalCount / totalPoints) == 0 || idx == totalCount)
+                {
+                    if (count == totalCount - 1 && idx < totalCount)
+                    {
+                        continue;
+                    }
+                    count++;
+                    sb.Append(idx == totalCount 
+                        ? GetAddressLocationOnTheMap(c1, idx, "red")
+                        : GetAddressLocationOnTheMap(c1, idx));
+                }
+            }
+            return sb.ToString();
+        }
+        
+        public String GetJsOverwiewWaypoints_OLD(IEnumerable<TspCity> tour, int totalPoints)
         {
             var sb = new StringBuilder();
             var totalCount = tour.Count();
@@ -298,7 +375,27 @@ namespace HTB.v2.intranetx.routeplanter
 
             return list;
         }
+        
+        private string GetAddressLocationOnTheMap(City city, int idx, string pinColor = "blue")
+        {
+            var sb = new StringBuilder();
 
+            //lock (lockObj)
+            {
+                
+                sb.Append($"var location{idx} = new Microsoft.Maps.Location({city.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", ".")}, {city.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", ".")});");
+                sb.Append(Environment.NewLine);
+                //sb.Append("var pin" + idx + " = new Microsoft.Maps.Pushpin(location" + idx + ", { text: '" + idx + "', color: '" + $"#{random.Next(0x1000000):X6}" + "'});");
+                sb.Append("var pin" + idx + " = new Microsoft.Maps.Pushpin(location" + idx + ", { text: '" + idx + "', color: '" + pinColor + "'});");
+                sb.Append(Environment.NewLine);
+                //sb.Append("var wayPoint" + idx + " = new Microsoft.Maps.Directions.Waypoint({ address: '" + city.Address.Address + "' });");
+                sb.Append("var wayPoint" + idx + " = new Microsoft.Maps.Directions.Waypoint({ location: location" + idx + ",  address: '" + city.Address.Address + "' });");
+                sb.Append(Environment.NewLine);
+                sb.Append($"map.entities.push(pin{idx});");
+                sb.Append($"directionsManager.addWaypoint (wayPoint{idx});");
+            }
+            return sb.ToString();
+        }
         #region ISerializable
         //note: this is private to control access;
         //the serializer can still access this constructor

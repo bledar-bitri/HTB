@@ -30,6 +30,7 @@ namespace HTB.v2.intranetx.routeplanter
     [Serializable]
     public class RoutePlanerManager : Task, ISerializable, ITspProgressListener
     {
+
         public static int TimeToSleepBetweenRefreshes = 1000;
         public static int MaximumRoadsPerThread = 5000;
 
@@ -1201,8 +1202,16 @@ namespace HTB.v2.intranetx.routeplanter
                                         , road.From.Location.Locations[0].Latitude.ToString().Replace(",", "")
                                         , road.From.Location.Locations[0].Longitude.ToString().Replace(",", "")
                                         );
-            var roadDistance = (tblRoad)HTBUtils.GetSqlSingleRecord(query, typeof(tblRoad), DbConnection.ConnectionType_DB2);
-            
+            tblRoad roadDistance = null;
+            try
+            {
+                roadDistance =
+                    (tblRoad) HTBUtils.GetSqlSingleRecord(query, typeof(tblRoad), DbConnection.ConnectionType_DB2);
+            }
+            catch
+            {
+            }
+
             if (roadDistance == null)
             {
                 if (!Stop)

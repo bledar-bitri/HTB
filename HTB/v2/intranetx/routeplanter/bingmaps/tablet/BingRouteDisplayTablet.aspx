@@ -16,7 +16,7 @@
             background-image: url(../images/osxback.gif);
         }
     </style>
-    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0&&mkt=de-DE"></script>
+    <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?branch=experimental&callback=loadMapScenario' async defer></script>
     <script type="text/javascript">
           var map = null;
 

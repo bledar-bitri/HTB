@@ -21,7 +21,7 @@ namespace HTB.v2.intranetx.routeplanter.bingmaps.tabletApp
             
                 RoutePlanerManager rpManager = FileSerializer<RoutePlanerManager>.DeSerialize(RoutePlanerManager.GetRouteFilePath(routeUser, routeName));
                 rpManager.IsReverse = reverseRoute;
-                ShowMap(rpManager, 0);
+                //ShowMap(rpManager, 0);
                 Session[GlobalHtmlParams.SessionRoutePlannerManager] = rpManager;
 
 //                var rpManager = (RoutePlanerManager) Session[GlobalHtmlParams.SessionRoutePlannerManager];
