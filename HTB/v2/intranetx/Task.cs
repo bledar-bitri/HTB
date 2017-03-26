@@ -4,8 +4,6 @@ using System.Web;
 
 namespace HTB.v2.intranetx
 {
-
-
     public abstract class Task
     {
         protected object _results;
