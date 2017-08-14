@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
@@ -19,6 +20,8 @@ namespace HTB.v2.intranetx.routeplanter.bingmaps.tablet
 {
     public partial class BingRoutePlanerTablet : Page, ICallbackEventHandler
     {
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private const string TxtPLZFromPrefix = "txtPlzFrom_";
         private const string TxtPLZToPrefix = "txtPlzTo_";
         private static string _startAddress = "";
@@ -225,6 +228,7 @@ namespace HTB.v2.intranetx.routeplanter.bingmaps.tablet
 
 
             ArrayList aktenList = HTBUtils.GetSqlRecords(GetSqlQueryBasedOnInput(), typeof (qryAktenInt));
+            Log.Info($"Calling RoutePlanerManager to calcultae the route with {aktenList.Count} cases (akten).");
             LoadAddresses(rpManager, aktenList);
             rpManager.Run();
             return rpManager;
@@ -305,6 +309,7 @@ namespace HTB.v2.intranetx.routeplanter.bingmaps.tablet
             {
                 sb.Append(GlobalUtilArea.GetUserId(Session));
             }
+            Log.Info(sb.ToString());
             return sb.ToString();
         }
 

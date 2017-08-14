@@ -14,15 +14,18 @@ using Google.Api.Maps.Service.Geocoding;
 using HTB.Database;
 using HTB.Database.StoredProcs;
 using HTB.GeocodeService;
-using HTB.v2.intranetx.progress;
 using HTB.v2.intranetx.util;
 using HTBAntColonyTSP;
 using HTBUtilities;
 using System.Collections;
+using System.Net;
 using HTB.RouteService;
 using System.Reflection;
 using GeocodeLocation = HTB.GeocodeService.GeocodeLocation;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization.Json;
+using System.Threading.Tasks;
+using TaskStatus = HTB.v2.intranetx.progress.TaskStatus;
 
 namespace HTB.v2.intranetx.routeplanter
 {
@@ -324,9 +327,10 @@ namespace HTB.v2.intranetx.routeplanter
             // Queue the work items.
             var threads = new List<AddressLookupThread>();
             int id = 0;
-            foreach (AddressWithID addressWithID in Addresses)
+            foreach (AddressWithID addressWithId in Addresses)
             {
-                var adrLookupStateInfo = new AddressLookupState(addressWithID, manualEvent, UserId);
+                Log.Info(addressWithId.DebuggerDisplay);
+                var adrLookupStateInfo = new AddressLookupState(addressWithId, manualEvent, UserId);
                 var adrLookupThread = new AddressLookupThread(id++);
                 var thread = new Thread(() => AddressLookupThreadMonitor.LoadGeocodeAddress(adrLookupStateInfo, adrLookupThread));
                 threads.Add(adrLookupThread);
@@ -940,28 +944,27 @@ namespace HTB.v2.intranetx.routeplanter
                                new StoredProcedureParameter("aktID", SqlDbType.Int, stateInfo.Address.ID),  
                            };
                     var latLgn = (spGetGegnerAddressLatAndLgnByAktID)HTBUtils.GetStoredProcedureSingleRecord(spName, list, typeof(spGetGegnerAddressLatAndLgnByAktID));
+
                     if (latLgn != null && !HTBUtils.IsZero(latLgn.GegnerLatitude) && !HTBUtils.IsZero(latLgn.GegnerLongitude))
                     {
-                        Log.Info(string.Format("Akt: {0}   Lat: {1}   Lgn: {2}", latLgn.AktIntID, latLgn.GegnerLatitude, latLgn.GegnerLongitude));
+                        Log.Info($"Akt: {latLgn.AktIntID}   Lat: {latLgn.GegnerLatitude}   Lgn: {latLgn.GegnerLongitude}");
                         var location = new GeocodeLocation
                                            {
                                                Latitude = latLgn.GegnerLatitude,
                                                Longitude = latLgn.GegnerLongitude
                                            };
-//                        lock (typeof(AddressLookup))
-//                        {
-//                            AddressLookupState.Addresses.Add(new City(new AddressLocation(addressLookupStateInfo.address, new GeocodeLocation[] {location}), null));
-//                        }
                         AddressLookupStateStaticsAccess.GetAddressStateStatic(stateInfo.UserId).AddCityToAddresses(new City(new AddressLocation(stateInfo.Address, new GeocodeLocation[] { location }), null));
                     }
                     else
                     {
+                        Log.Info("Loading GeocodeAddressFromWeb 1");
                         if(!Stop)
                             LoadGeocodeAddressFromWeb(state);
                     }
                 }
                 else
                 {
+                    Log.Info("Loading GeocodeAddressFromWeb 2");
                     if (!Stop)
                         LoadGeocodeAddressFromWeb(state);
                 }
@@ -992,8 +995,9 @@ namespace HTB.v2.intranetx.routeplanter
             // Add the filters to the options
             geocodeRequest.Options = new GeocodeOptions { Filters = filters };
             // Make the geocode request
-            var geocodeService = new GeocodeServiceClient("BasicHttpBinding_IGeocodeService");
+            /*var geocodeService = new GeocodeServiceClient("BasicHttpBinding_IGeocodeService");
             GeocodeResponse geocodeResponse = geocodeService.Geocode(geocodeRequest);
+            
             if (geocodeResponse.Results.Length == 1)
             {
                 AddressLookupStateStaticsAccess.GetAddressStateStatic(stateInfo.UserId).Addresses.Add(new City(new AddressLocation(stateInfo.Address, geocodeResponse.Results[0].Locations), null));
@@ -1006,9 +1010,9 @@ namespace HTB.v2.intranetx.routeplanter
                 AddressLookupStateStaticsAccess.GetAddressStateStatic(stateInfo.UserId).MultipleAddresses.Add(stateInfo.Address);
             }
             else
-            {
-                LoadGeocodeAddressFromGoogleMaps(state);
-            }
+            {*/
+            LoadGeocodeAddressFromGoogleMaps(state);
+            //}
         }
 
         private void LoadGeocodeAddressFromGoogleMaps(object state)
@@ -1144,6 +1148,7 @@ namespace HTB.v2.intranetx.routeplanter
         }
         public void LoadDistances(object state)
         {
+            Log.Error("Loading distances...");
             IsRunning = true;
             Stop = false;
             var stateInfo = (RoadDistanceState)state;
@@ -1203,37 +1208,40 @@ namespace HTB.v2.intranetx.routeplanter
                                         , road.From.Location.Locations[0].Longitude.ToString().Replace(",", "")
                                         );
             tblRoad roadDistance = null;
+            Log.Error("Setting Distances");
             try
             {
-                roadDistance =
-                    (tblRoad) HTBUtils.GetSqlSingleRecord(query, typeof(tblRoad), DbConnection.ConnectionType_DB2);
+                roadDistance = (tblRoad) HTBUtils.GetSqlSingleRecord(query, typeof(tblRoad), DbConnection.ConnectionType_DB2);
             }
-            catch
+            catch(Exception e)
             {
+                Log.Error(e);
             }
 
-            if (roadDistance == null)
+            Log.Error("1");
+            if (roadDistance == null || GlobalUtilArea.IsZero(roadDistance.Distance))
             {
+                Log.Error("2");
                 if (!Stop)
                     SetGeocodeDistance(road, tries);
             }
             // Lookup distance online if older than 6 months (maybe roads changed...)
             else if (DateTime.Now.Subtract(roadDistance.LookupDate).TotalDays > 180)
             {
+                Log.Error("3");
                 if (!Stop)
                     SetGeocodeDistance(road, tries, true);
             }
             else
             {
-                if (!Stop)
-                {
-                    road.Distance = roadDistance.Distance;
-                    road.TravelTimeInSeconds = roadDistance.TimeInSeconds;
-                }
+                if (Stop) return;
+                Log.Error($"Query [{query}] Distance: [{roadDistance.Distance}]");
+                road.Distance = roadDistance.Distance;
+                road.TravelTimeInSeconds = roadDistance.TimeInSeconds;
             }
         }
 
-        private void SetGeocodeDistance(Road road, int tries, bool updateDistance = false)
+        private void SetGeocodeDistanceOld(Road road, int tries, bool updateDistance = false)
         {
             try
             {
@@ -1297,6 +1305,89 @@ namespace HTB.v2.intranetx.routeplanter
                         road.To.Location.Locations[0].Longitude.ToString().Replace(",", "."))
                         , e);
                 }
+            }
+        }
+
+        private void SetGeocodeDistance(Road road, int tries, bool updateDistance = false)
+        {
+            var fromLatitude = road.From.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture);
+            var fromLongitude = road.From.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture);
+            var toLatitude = road.To.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture);
+            var toLongitude = road.To.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture);
+
+            var query = $"wp.0={fromLatitude},{fromLongitude}&wp.1={toLatitude},{toLongitude}";
+            var geocodeRequest =
+                new Uri(
+                    $"http://dev.virtualearth.net/REST/v1/Routes/Driving?{query}&key={RoutePlanerManager.BingMapsKey}");
+
+            try
+            {
+                GetResponseAsync(geocodeRequest, road, updateDistance);
+            }
+            catch (Exception e)
+            {
+                //                Console.WriteLine("Trying to Recalculate Distance " + tries);
+                if (!Stop)
+                {
+                    if (tries > 0)
+                    {
+                        SetGeocodeDistance(road, tries - 1, updateDistance);
+                    }
+                    Log.Error(string.Format("Could Not Calculate Distance [FROM: {0}, {1}] TO [{2}, {3}] [URL: {4}] " +
+                        e.Message,
+                        road.From.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "."),
+                        road.From.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "."),
+                        road.To.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "."),
+                        road.To.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "."),
+                        geocodeRequest.AbsoluteUri)
+                        , e);
+                }
+            }
+        }
+        
+        private void GetResponseAsync(Uri uri, Road road, bool updateDistance = false)
+        {
+            Log.Info(uri);
+            var wc = new WebClient();
+            wc.OpenReadCompleted += (o, a) =>
+            {
+                try
+                {
+                    var ser = new DataContractJsonSerializer(typeof(Response));
+                    var result = ser.ReadObject(a.Result) as Response;
+                    SetGeocodeDistanceFromResponse(result, road, updateDistance);
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Could not set geocode distance.", e);
+                }
+
+            };
+            wc.OpenReadAsync(uri);
+
+        }
+
+
+        private void SetGeocodeDistanceFromResponse(Response response, Road road, bool updateDistance)
+        {
+            try
+            {
+                if (response.ResourceSets[0].Resources.Length <= 0) return;
+                foreach (var resource in response.ResourceSets[0].Resources)
+                {
+                    var res = resource as Route;
+                    if (res == null) continue;
+                    Log.Error($"Found road: {road.DebuggerDisplay}  {road.From} - {road.To}  [Distance: {res.TravelDistance}]");
+                    road.Distance = res.TravelDistance;
+                    road.TravelTimeInSeconds = (long) res.TravelDuration;
+                    if (!updateDistance) continue;
+                    if (!Stop)
+                        UpdateDistance(road);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Could not save geocode distance.", e);
             }
         }
 

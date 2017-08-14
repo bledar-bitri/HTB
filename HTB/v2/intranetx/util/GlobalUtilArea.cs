@@ -16,6 +16,7 @@ using HTB.v2.intranetx.routeplanter;
 using HTBAktLayer;
 using HTBExtras;
 using HTBUtilities;
+using Location = HTB.GeocodeService.Location;
 
 namespace HTB.v2.intranetx.util
 {

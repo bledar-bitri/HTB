@@ -22,8 +22,8 @@
   </MetadataSources>
   <Metadata>
     <MetadataFile FileName="routeservice3.xsd" MetadataType="Schema" ID="8b4585ac-110c-49af-90bd-e4389862b90a" SourceId="1" SourceUrl="http://dev.virtualearth.net/webservices/v1/metadata/routeservice/routeservice3.xsd" />
-    <MetadataFile FileName="routeservice1.wsdl" MetadataType="Wsdl" ID="34f6db66-416b-4008-a77b-0956bfb01fb4" SourceId="1" SourceUrl="http://dev.virtualearth.net/webservices/v1/metadata/routeservice/routeservice1.wsdl" />
     <MetadataFile FileName="routeservice.xsd" MetadataType="Schema" ID="c03409dd-2fbb-407b-984a-c6320db59061" SourceId="1" SourceUrl="http://dev.virtualearth.net/webservices/v1/metadata/routeservice/routeservice.xsd" />
+    <MetadataFile FileName="routeservice1.wsdl" MetadataType="Wsdl" ID="34f6db66-416b-4008-a77b-0956bfb01fb4" SourceId="1" SourceUrl="http://dev.virtualearth.net/webservices/v1/metadata/routeservice/routeservice1.wsdl" />
     <MetadataFile FileName="RouteService.wsdl" MetadataType="Wsdl" ID="3938c997-8aa0-404c-89ae-eecabd0e2462" SourceId="1" SourceUrl="http://dev.virtualearth.net/webservices/v1/metadata/routeservice/routeservice.wsdl" />
     <MetadataFile FileName="routeservice2.xsd" MetadataType="Schema" ID="fbe8bdcf-456b-4283-990c-e4b6fff818ce" SourceId="1" SourceUrl="http://dev.virtualearth.net/webservices/v1/metadata/routeservice/routeservice2.xsd" />
     <MetadataFile FileName="routeservice1.xsd" MetadataType="Schema" ID="ace6a6b2-cb91-4f73-8cb7-a51f36b994a9" SourceId="1" SourceUrl="http://dev.virtualearth.net/webservices/v1/metadata/routeservice/routeservice1.xsd" />

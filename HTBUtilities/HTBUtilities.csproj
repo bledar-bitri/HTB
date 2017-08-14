@@ -65,6 +65,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -76,6 +77,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BingMapsRESTServiceDataContracts.cs" />
+    <Compile Include="GeoCodeConverter.cs" />
     <Compile Include="HTBConstants.cs" />
     <Compile Include="HTBEmail.cs" />
     <Compile Include="HTBEmailAttachment.cs" />
