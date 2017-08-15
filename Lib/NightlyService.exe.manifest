@@ -66,110 +66,110 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBAktLayer.dll" size="42496">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBAktLayer.dll" size="44544">
       <assemblyIdentity name="HTBAktLayer" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>QNBWbdP951gP6EhBRU6RIkAzB7w=</dsig:DigestValue>
+        <dsig:DigestValue>krU28+KuLtgobZ49TT83M3dQNCg=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBDailyKosten.dll" size="32768">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBDailyKosten.dll" size="34304">
       <assemblyIdentity name="HTBDailyKosten" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>xpP9yTfmYA3Fhae7n7Ef/oBtgSw=</dsig:DigestValue>
+        <dsig:DigestValue>0wvw8Hcjpm+xujcI1MMjeL4V6cI=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBDatabase.dll" size="419328">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBDatabase.dll" size="453120">
       <assemblyIdentity name="HTBDatabase" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>+CoJyPpeBg710FrK+jdQoTCNKHY=</dsig:DigestValue>
+        <dsig:DigestValue>Sj/t7jTskmlULSYYySjckoLNDzs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBExcel.dll" size="17408">
-      <assemblyIdentity name="HTBExcel" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+      <assemblyIdentity name="HTBExcel" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>V8XJC7lWn1g9stem0W2z/Ythds8=</dsig:DigestValue>
+        <dsig:DigestValue>jbJIqNCGs8uRKLagAdS4M2ChR88=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBExtras.dll" size="70144">
-      <assemblyIdentity name="HTBExtras" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBExtras.dll" size="73216">
+      <assemblyIdentity name="HTBExtras" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>Xw4JbhCNOmKAIe24nqgpz4DFzsg=</dsig:DigestValue>
+        <dsig:DigestValue>78ZBidaEr3v1P7Wrctte6bJ1kg0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBPdf.dll" size="19456">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBPdf.dll" size="20992">
       <assemblyIdentity name="HTBPdf" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>+j6fQA+7ZVbGTM4vAZbhBVC0aMQ=</dsig:DigestValue>
+        <dsig:DigestValue>mEzzH1HAEpQxhO/Ye35hiX9pPXs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBReports.dll" size="123904">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBReports.dll" size="129024">
       <assemblyIdentity name="HTBReports" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>waqZ74ShbdYmz13w789CTuIPSH0=</dsig:DigestValue>
+        <dsig:DigestValue>/o2okcu+8RQscTBE2K/zW7CHPm4=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBUtilities.dll" size="49152">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTBUtilities.dll" size="84480">
       <assemblyIdentity name="HTBUtilities" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>t8g+SfKe5y+7qfizMA2Y4Z237kk=</dsig:DigestValue>
+        <dsig:DigestValue>4uZy0i+ZN+JdUM/haFKf9aCfjoE=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTMXmlToPdf.dll" size="16896">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HTMXmlToPdf.dll" size="17920">
       <assemblyIdentity name="HTMXmlToPdf" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>t46bZm550hifkHwFHy54i5iYWmY=</dsig:DigestValue>
+        <dsig:DigestValue>03pPIif8EwPdYHIFeeoX/bQnmbg=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -186,14 +186,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="InvoiceManager.dll" size="22016">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="InvoiceManager.dll" size="23552">
       <assemblyIdentity name="InvoiceManager" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>Wtd2LISxGa/c5vazf6TuD/i4DBs=</dsig:DigestValue>
+        <dsig:DigestValue>pO4vr5yIVPCPu798+IVolo5iUeY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -246,14 +246,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="NightlyService.exe" size="16896">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="NightlyService.exe" size="17408">
       <assemblyIdentity name="NightlyService" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>k7J+RO/UjmERSmDPLVCW+aE0S4w=</dsig:DigestValue>
+        <dsig:DigestValue>9eIfOL/8JyjkK6XnkXXLNHzWKcA=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

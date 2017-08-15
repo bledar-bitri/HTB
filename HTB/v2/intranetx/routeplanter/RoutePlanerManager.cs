@@ -25,6 +25,7 @@ using GeocodeLocation = HTB.GeocodeService.GeocodeLocation;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
+using Location = HTBUtilities.Location;
 using TaskStatus = HTB.v2.intranetx.progress.TaskStatus;
 
 namespace HTB.v2.intranetx.routeplanter
@@ -978,7 +979,7 @@ namespace HTB.v2.intranetx.routeplanter
         /*
          * Try Bing First and then GoogleMaps
          */
-        private void LoadGeocodeAddressFromWeb(object state)
+        private void LoadGeocodeAddressFromWebOld(object state)
         {
             var stateInfo = (AddressLookupState)state;
             var geocodeRequest = new GeocodeRequest
@@ -1014,6 +1015,58 @@ namespace HTB.v2.intranetx.routeplanter
             LoadGeocodeAddressFromGoogleMaps(state);
             //}
         }
+
+        private void LoadGeocodeAddressFromWeb(object state)
+        {
+            try
+            {
+                LoadGeocodeCoordinatesFromBing(state);
+            }
+            catch
+            {
+                LoadGeocodeAddressFromGoogleMaps(state);
+            }
+        }
+
+        private void LoadGeocodeCoordinatesFromBing(object state)
+        {
+            var stateInfo = (AddressLookupState)state;
+            var query = stateInfo.Address.Address;
+            var geocodeRequest = new Uri($"http://dev.virtualearth.net/REST/v1/Locations?q={query}&key={RoutePlanerManager.BingMapsKey}");
+            Log.Info($"Loading Address from bing: {geocodeRequest.AbsolutePath}");
+
+            GetResponse(geocodeRequest, stateInfo, GetGeocodeLocationFromResponse);
+        }
+
+        private void GetGeocodeLocationFromResponse(Response response, AddressLookupState stateInfo)
+        {
+            if (response.ResourceSets[0].Resources.Length > 0)
+            {
+                foreach (var resource in response.ResourceSets[0].Resources)
+                {
+                    var fromResponse = resource as Location;
+                    if (fromResponse == null) continue;
+
+                    var locationFromResponse = fromResponse;
+
+                    SaveGegnerLocation(stateInfo.Address.ID, locationFromResponse.Point.Coordinates[0], locationFromResponse.Point.Coordinates[1]);                    
+                }
+            }
+        }
+
+        private void GetResponse(Uri uri, AddressLookupState stateInfo, Action<Response, AddressLookupState> callback)
+        {
+            var wc = new WebClient();
+            wc.OpenReadCompleted += (o, a) =>
+            {
+                Log.Info($"Parsing Bing Response: {a.Result}");
+                if (callback == null) return;
+                var ser = new DataContractJsonSerializer(typeof(Response));
+                callback(ser.ReadObject(a.Result) as Response, stateInfo);
+            };
+            wc.OpenReadAsync(uri);
+        }
+
 
         private void LoadGeocodeAddressFromGoogleMaps(object state)
         {
