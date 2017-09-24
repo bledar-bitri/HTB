@@ -122,22 +122,25 @@ namespace HTB.v2.intranetx.routeplanter.bingmaps.tabletApp
                 RouteUser = _userId
             };
 
-            DateTime firstAppt = GlobalUtilArea.GetTodayAtTime(_appointmentTimeStart);
-            DateTime backTime = GlobalUtilArea.GetTodayAtTime(_appointmentTimeEnd);
-            long tripDuration = GetTripDuration(firstAppt, backTime);
+            var firstAppt = GlobalUtilArea.GetTodayAtTime(_appointmentTimeStart);
+            var backTime = GlobalUtilArea.GetTodayAtTime(_appointmentTimeEnd);
+            var tripDuration = GetTripDuration(firstAppt, backTime);
             
             if (!HTBUtils.IsZero(_latitude) && !HTBUtils.IsZero(_longitude))
             {
+                Log.Info($"start point [{_latitude} {_longitude}]");
                 var location = new GeocodeLocation
                 {
                     Latitude = _latitude,
                     Longitude = _longitude
                 };
                 _startAddress = "Standort";
+                
                 rpManager.currentLocation = new City(new AddressLocation(new AddressWithID(-1, _startAddress), new[] { location }), null);
+                Log.Info($"Setting current location to {rpManager.currentLocation.Address.DebuggerDisplay} Location: [{rpManager.currentLocation.Location.Locations[0].Latitude} {rpManager.currentLocation.Location.Locations[0].Longitude }]");
             }
 
-            ArrayList aktenList = HTBUtils.GetSqlRecords(GetSqlQueryBasedOnInput(), typeof(qryAktenInt));
+            var aktenList = HTBUtils.GetSqlRecords(GetSqlQueryBasedOnInput(), typeof(qryAktenInt));
             if (aktenList.Count == 0)
             {
                 // Send error to ipad (errorcode -1)
@@ -145,7 +148,7 @@ namespace HTB.v2.intranetx.routeplanter.bingmaps.tabletApp
             }
             else
             {
-                      LoadAddresses(rpManager, aktenList);
+                LoadAddresses(rpManager, aktenList);
                 if (HTBUtils.IsDateValid(firstAppt) && HTBUtils.IsDateValid(backTime))
                 {
                     rpManager.RunAutomatic(_userId, firstAppt, tripDuration, _routeName);
@@ -167,14 +170,16 @@ namespace HTB.v2.intranetx.routeplanter.bingmaps.tabletApp
             rpManager.RouteName = _routeName;
             rpManager.RouteUser = _userId;
             ReplaceAddresses(rpManager);
-            rpManager    .Run();
+            rpManager.Run();
             return rpManager;
         }
 
         private void LoadAddresses(RoutePlanerManagerAutomatic rpManager, ArrayList akten)
         {
             if (!string.IsNullOrEmpty(_startAddress))
+            {
                 rpManager.AddAddress(new AddressWithID(-1, _startAddress), false);
+            }
 
             foreach (qryAktenInt akt in akten)
             {

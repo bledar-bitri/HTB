@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 
 namespace HTB.v2.intranetx.routeplanter
 {
-    [DebuggerDisplay("AddressWithID {DebuggerDisplay}")]
+    [DebuggerDisplay("AddressWithID {" + nameof(DebuggerDisplay) + "}")]
     [XmlRoot(ElementName = "AddressWithID", IsNullable = false)]
     [Serializable]
     public class AddressWithID : ISerializable
@@ -35,11 +35,8 @@ namespace HTB.v2.intranetx.routeplanter
             return Address == address.Address;
         }
 
-        public string DebuggerDisplay
-        {
-            get { return string.Format("[ADDR: {0}] [ID: {1}]", Address, ID); }
-        }
-        
+        public string DebuggerDisplay => $"[ADDR: {Address}] [ID: {ID}]";
+
         #region ISerializable
         //note: this is private to control access;
         //the serializer can still access this constructor

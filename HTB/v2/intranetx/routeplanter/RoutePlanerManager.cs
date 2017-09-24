@@ -215,7 +215,7 @@ namespace HTB.v2.intranetx.routeplanter
 
         public string GetJsWaypoints(int startPoint, int totalPoints)
         {
-            Log.Error("BestTourCount " + BestTour.Count);
+            Log.Info("BestTourCount " + BestTour.Count);
             return IsReverse ? map.GetJsReversedWaypoints(BestTour, startPoint, totalPoints) : map.GetJsWaypoints(BestTour, startPoint, totalPoints);
         }
 
@@ -327,8 +327,8 @@ namespace HTB.v2.intranetx.routeplanter
             AddressLookupStateStaticsAccess.GetAddressStateStatic(UserId).Clear();
             // Queue the work items.
             var threads = new List<AddressLookupThread>();
-            int id = 0;
-            foreach (AddressWithID addressWithId in Addresses)
+            var id = 0;
+            foreach (var addressWithId in Addresses)
             {
                 Log.Info(addressWithId.DebuggerDisplay);
                 var adrLookupStateInfo = new AddressLookupState(addressWithId, manualEvent, UserId);
@@ -338,58 +338,15 @@ namespace HTB.v2.intranetx.routeplanter
                 thread.Start();
             }
 
-            var dot = "";
-//            var tmp = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-//            var tmpIdx = 0;
-            Console.WriteLine("AddressLookup: [" + programToRestart + "] " + AddressLookupThreadMonitor.GetRunningThreadsCount(threads) + " Running Threads");
+            var dot = string.Empty;
             Log.Info("AddressLookup: [" + programToRestart + "] " + AddressLookupThreadMonitor.GetRunningThreadsCount(threads) + " Running Threads");
             while (AddressLookupThreadMonitor.GetRunningThreadsCount(threads) > 0)
             {
-
-//                if (IsDebugMode)
-//                {
-                    // Turn On debuger if number of running threads does not change in three (tmp.length) iterations
-//                    tmp[tmpIdx] = AddressLookupThreadMonitor.GetRunningThreadsCount(threads);
-//                    if (tmp[0] > 0 &&
-//                        (tmp[0] == tmp[1] &&
-//                         tmp[0] == tmp[2] &&
-//                         tmp[0] == tmp[3] &&
-//                         tmp[0] == tmp[4] &&
-//                         tmp[0] == tmp[5] &&
-//                         tmp[0] == tmp[6] &&
-//                         tmp[0] == tmp[7] &&
-//                         tmp[0] == tmp[8] &&
-//                         tmp[0] == tmp[8] &&
-//                         tmp[0] == tmp[9]))
-//                    {
-//                        Console.WriteLine("AddressLookup: DEBUG TRUE");
-//                        if (!string.IsNullOrEmpty(programToRestart))
-//                        {
-//                            try
-//                            {
-                                /** restart the program if there are still running threads **/
-                                //run the program again and close this one
-//                                if (IsDebugMode)
-//                                    Console.WriteLine("***Restarting Program!!!***");
-//                                Process.Start(programToRestart);
-
-                                //close this one
-//                                Process.GetCurrentProcess().Kill();
-//                            }
-//                            catch
-//                            {
-//                            }
-//                        }
-//                    }
-//                    tmpIdx++;
-//                    if (tmpIdx >= tmp.Length)
-//                        tmpIdx = 0;
-//                }
                 if (isTask)
                 {
                     UpdateProgressStatus(10, "Loading Addresses: " + AddressLookupThreadMonitor.GetRunningThreadsCount(threads) + " of " + Addresses.Count + dot);
                     dot += ".";
-                    if (dot == ".....") dot = "";
+                    if (dot == ".....") dot = string.Empty;
 
                 }
                 // wait for the work items to signal before exiting.
@@ -398,51 +355,50 @@ namespace HTB.v2.intranetx.routeplanter
             Cities = AddressLookupStateStaticsAccess.GetAddressStateStatic(UserId).Addresses;
             BadAddresses = AddressLookupStateStaticsAccess.GetAddressStateStatic(UserId).BadAddresses;
             MultipleLocationsAddresses = AddressLookupStateStaticsAccess.GetAddressStateStatic(UserId).MultipleAddresses;
-            //Console.WriteLine(string.Format("cities: {0}  bad: {1}  multi: {2}", Cities.Count, BadAddresses.Count, MultipleLocationsAddresses.Count));
+
             foreach (var addressWithId in Cities)
             {
-                Log.Info(string.Format("Address:{0} ", addressWithId.DebuggerDisplay));
+                Log.Info($"Address:{addressWithId.DebuggerDisplay} ");
             }
             foreach (var addressWithId in BadAddresses)
             {
                 Log.Warn("Bad address:" + addressWithId.DebuggerDisplay);
             }
             
+            
+            if (currentLocation == null) return;
             /*
              * Add the location from tablet as the first city on the road
              */
-            if (currentLocation != null)
+            var found = false;
+            foreach (var c in Cities)
             {
-                bool found = false;
-                foreach (City c in Cities)
-                {
-                    if(c.Address.Address.Equals(currentLocation.Address.Address))
-                    {
-                        c.Location = currentLocation.Location;
-                        found = true;
-                        Log.Info(string.Format("Current Location:{0} ", c.Location.DebuggerDisplay));
-                        break;
-                    }
-                }
-                if (!found && currentLocation.Location.Locations.Any() &&
-                    !HTBUtils.IsZero(currentLocation.Location.Locations[0].Latitude) &&
-                    !HTBUtils.IsZero(currentLocation.Location.Locations[0].Longitude)
-                    )
-                {
-                    foreach (AddressWithID address in BadAddresses)
-                    {
-                        if (address.Address.Equals(currentLocation.Address.Address))
-                        {
-                            Cities.Add(currentLocation);
-                            BadAddresses.Remove(address);
-                            break;
-                        }
-                    }
-                }
+                if (!c.Address.Address.Equals(currentLocation.Address.Address)) continue;
+                c.Location = currentLocation.Location;
+                found = true;
+                Log.Info($"Current Location:{c.Location.DebuggerDisplay} ");
+                break;
             }
+            if (found || !currentLocation.Location.Locations.Any() ||
+                HTBUtils.IsZero(currentLocation.Location.Locations[0].Latitude) ||
+                HTBUtils.IsZero(currentLocation.Location.Locations[0].Longitude)) return;
+            foreach (var address in BadAddresses)
+            {
+                if (!address.Address.Equals(currentLocation.Address.Address)) continue;
+                Cities.Add(currentLocation);
+                BadAddresses.Remove(address);
+                found = true;
+                break;
+            }
+            if (found || !currentLocation.Location.Locations.Any() ||
+                HTBUtils.IsZero(currentLocation.Location.Locations[0].Latitude) ||
+                HTBUtils.IsZero(currentLocation.Location.Locations[0].Longitude)) return;
+
+            Cities.Add(currentLocation);
+            
         }
 
-        public void LoadDistances(List<Road> roads = null, bool isTask = false)
+        protected void LoadDistances(List<Road> roads = null, bool isTask = false)
         {
             if (roads == null)
                 roads = GetRoads();
@@ -457,21 +413,22 @@ namespace HTB.v2.intranetx.routeplanter
                 roadsToProcess.Add(r);
                 if (++roadCount % MaximumRoadsPerThread == 0)
                 {
-                    msg = string.Format("Loading Distances: {0} of {1}", roadCount, roads.Count);
+                    msg = $"Loading Distances: {roadCount} of {roads.Count}";
                     UpdateProgressStatus(20, msg+" ["+HTBUtils.FormatTimeSpan(stopwatch.Elapsed)+"]");
                     LoadRoadDistances(roadsToProcess, msg, stopwatch, isTask);
                     SaveDistances();
                     roadsToProcess.Clear();
                 }
             }
-            msg = string.Format("Loading Distances : {0} of {1}", roads.Count, roads.Count);
+            msg = $"Loading Distances : {roads.Count} of {roads.Count}";
             UpdateProgressStatus(20, msg + " [" + HTBUtils.FormatTimeSpan(stopwatch.Elapsed) + "]");
             LoadRoadDistances(roadsToProcess, msg, stopwatch, isTask);
             stopwatch.Stop();
             SaveDistances();
             Roads = roads;
         }
-        public void LoadRoadDistances(List<Road> roads, string msg, Stopwatch stopwatch, bool isTask = false)
+
+        private void LoadRoadDistances(List<Road> roads, string msg, Stopwatch stopwatch, bool isTask = false)
         {
             if (roads == null)
                 return;
@@ -1020,10 +977,12 @@ namespace HTB.v2.intranetx.routeplanter
         {
             try
             {
+                Log.Info("Trying bing");
                 LoadGeocodeCoordinatesFromBing(state);
             }
             catch
             {
+                Log.Info("Bing did not work... trying google");
                 LoadGeocodeAddressFromGoogleMaps(state);
             }
         }
@@ -1033,7 +992,7 @@ namespace HTB.v2.intranetx.routeplanter
             var stateInfo = (AddressLookupState)state;
             var query = stateInfo.Address.Address;
             var geocodeRequest = new Uri($"http://dev.virtualearth.net/REST/v1/Locations?q={query}&key={RoutePlanerManager.BingMapsKey}");
-            Log.Info($"Loading Address from bing: {geocodeRequest.AbsolutePath}");
+            Log.Info($"Loading Address from bing: {geocodeRequest}");
 
             GetResponse(geocodeRequest, stateInfo, GetGeocodeLocationFromResponse);
         }
@@ -1201,31 +1160,24 @@ namespace HTB.v2.intranetx.routeplanter
         }
         public void LoadDistances(object state)
         {
-            Log.Error("Loading distances...");
+            Log.Info("Loading distances...");
             IsRunning = true;
             Stop = false;
             var stateInfo = (RoadDistanceState)state;
             try
             {
-                if (stateInfo.road.From != null &&
-                    stateInfo.road.From != null &&
-                    stateInfo.road.From.Location != null &&
-                    stateInfo.road.From.Location.Locations != null &&
-                    stateInfo.road.From.Location.Locations.Length > 0 &&
-
-                    stateInfo.road.To != null &&
-                    stateInfo.road.To.Location != null &&
-                    stateInfo.road.To.Location.Locations != null &&
-                    stateInfo.road.To.Location.Locations.Length > 0)
-                    
-                    if(!Stop)
-                        SetDistance(stateInfo.road, 3);
+                if (stateInfo.road.From?.Location?.Locations == null || 
+                    stateInfo.road.From.Location.Locations.Length <= 0 || 
+                    stateInfo.road.To?.Location?.Locations == null || 
+                    stateInfo.road.To.Location.Locations.Length <= 0)
+                    return;
+                if(!Stop)
+                    SetDistance(stateInfo.road, 3);
             }
             catch(ThreadAbortException)
             {
                 Log.Info("Cought ThreadAbortException [LoadDistances]");
                 IsRunning = false;
-                return;
             }
             catch(Exception ex)
             {
@@ -1240,28 +1192,28 @@ namespace HTB.v2.intranetx.routeplanter
 
         private void SetDistance(Road road, int tries)
         {
-            string qry = "SELECT * FROM {0}tblRoad WHERE (FromLatitude = {1} AND FromLongitude = {2} AND ToLatitude = {3} AND ToLongitude = {4})";
-            var query = "";
+            const string qry = "SELECT * FROM {0}tblRoad WHERE (FromLatitude = {1} AND FromLongitude = {2} AND ToLatitude = {3} AND ToLongitude = {4})";
+            string query;
             if (road.From.Location.Locations[0].Latitude >= road.To.Location.Locations[0].Latitude)
 
-                query = String.Format(qry, 
+                query = string.Format(qry, 
                                         RecordSet.GetDB2SchemaName()
-                                        ,road.From.Location.Locations[0].Latitude.ToString().Replace(",", "")
-                                        ,road.From.Location.Locations[0].Longitude.ToString().Replace(",", "")
-                                        ,road.To.Location.Locations[0].Latitude.ToString().Replace(",", "")
-                                        ,road.To.Location.Locations[0].Longitude.ToString().Replace(",", "")
+                                        ,road.From.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
+                                        ,road.From.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
+                                        ,road.To.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
+                                        ,road.To.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
                                         );
             else
 
-                query = String.Format(qry,
+                query = string.Format(qry,
                                         RecordSet.GetDB2SchemaName()
-                                        , road.To.Location.Locations[0].Latitude.ToString().Replace(",", "")
-                                        , road.To.Location.Locations[0].Longitude.ToString().Replace(",", "")
-                                        , road.From.Location.Locations[0].Latitude.ToString().Replace(",", "")
-                                        , road.From.Location.Locations[0].Longitude.ToString().Replace(",", "")
+                                        , road.To.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
+                                        , road.To.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
+                                        , road.From.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
+                                        , road.From.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
                                         );
             tblRoad roadDistance = null;
-            Log.Error("Setting Distances");
+            Log.Info($"Setting Distances {road.From.Address.ID} - {road.To.Address.ID}");
             try
             {
                 roadDistance = (tblRoad) HTBUtils.GetSqlSingleRecord(query, typeof(tblRoad), DbConnection.ConnectionType_DB2);
@@ -1271,24 +1223,21 @@ namespace HTB.v2.intranetx.routeplanter
                 Log.Error(e);
             }
 
-            Log.Error("1");
             if (roadDistance == null || GlobalUtilArea.IsZero(roadDistance.Distance))
             {
-                Log.Error("2");
                 if (!Stop)
                     SetGeocodeDistance(road, tries);
             }
             // Lookup distance online if older than 6 months (maybe roads changed...)
             else if (DateTime.Now.Subtract(roadDistance.LookupDate).TotalDays > 180)
             {
-                Log.Error("3");
                 if (!Stop)
                     SetGeocodeDistance(road, tries, true);
             }
             else
             {
                 if (Stop) return;
-                Log.Error($"Query [{query}] Distance: [{roadDistance.Distance}]");
+                Log.Info($"Query [{query}] Distance: [{roadDistance.Distance}]");
                 road.Distance = roadDistance.Distance;
                 road.TravelTimeInSeconds = roadDistance.TimeInSeconds;
             }
@@ -1430,7 +1379,7 @@ namespace HTB.v2.intranetx.routeplanter
                 {
                     var res = resource as Route;
                     if (res == null) continue;
-                    Log.Error($"Found road: {road.DebuggerDisplay}  {road.From} - {road.To}  [Distance: {res.TravelDistance}]");
+                    Log.Info($"Found road: {road.DebuggerDisplay}  {road.From} - {road.To}  [Distance: {res.TravelDistance}]");
                     road.Distance = res.TravelDistance;
                     road.TravelTimeInSeconds = (long) res.TravelDuration;
                     if (!updateDistance) continue;
