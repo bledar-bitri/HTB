@@ -163,7 +163,7 @@ namespace HTBReports
                 _writer.setFont("Calibri", 8);
                 _writer.print((_lin += _gap), _col1, _reportCompanyName);
                 _writer.print((_lin += _gap), _col1, _reportCompanyAddress);
-                _writer.drawLine(_lin + 30, _col1, _lin + 30, _col1 + 465);
+                _writer.drawLine(_lin + 30, _col1, _lin + 30, _col1 + (int)Math.Round(_writer.GetTextWidth(_reportCompanyAddress), 0));
                 _lin += _gap;
                 _writer.setFont("Calibri", 11);
                 _writer.print((_lin += _gap), _col1, klient.KlientName1);
@@ -355,7 +355,7 @@ namespace HTBReports
                 _writer.setFont("Calibri", 8);
                 _writer.print((_lin += _gap), _col1, _reportCompanyName);
                 _writer.print((_lin += _gap), _col1, _reportCompanyAddress);
-                _writer.drawLine(_lin + 30, _col1, _lin + 30, _col1 + 465);
+                _writer.drawLine(_lin + 30, _col1, _lin + 30, _col1 + (int)Math.Round(_writer.GetTextWidth(_reportCompanyAddress), 0));
                 _lin += _gap;
                 _writer.setFont("Calibri", 11);
                 _writer.print((_lin += _gap), _col1, ag.AuftraggeberName1);

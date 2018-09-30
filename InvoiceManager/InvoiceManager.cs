@@ -158,8 +158,8 @@ namespace HTBInvoiceManager
             inv.InvoiceLastUpdated = DateTime.Now;
             set.InsertRecord(inv);
             set.LoadRecords("SELECT * FROM tblCustInkAktInvoice WHERE InvoiceCustInkAktId = " + inv.InvoiceCustInkAktId + 
-                " AND InvoiceAmount = " + inv.InvoiceAmount.ToString().Replace(",", ".") + 
-                " AND InvoiceLastUpdated = '" + inv.InvoiceLastUpdated +"'"+
+                " AND InvoiceAmount = " + inv.InvoiceAmount.ToString().Replace(",", ".") +
+                " AND InvoiceLastUpdated = convert (DATETIME, '" + inv.InvoiceLastUpdated.ToString("yyyy-MM-dd HH:mm:ss") +"', 121)"+
                 " AND InvoiceType = " + inv.InvoiceType, 
                 typeof(tblCustInkAktInvoice));
 

@@ -101,7 +101,7 @@ namespace HTBReports
                 var contact = (tblAnsprechpartner)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblAnsprechpartner WHERE AnsprechKlient = " + _klient.KlientID, typeof(tblAnsprechpartner));
                 _writer.setFont("Calibri", 8);
                 _writer.print((_lin += _gap), _col1, "E.C.P. European Car Protect KG");
-                _writer.print((_lin += _gap), _col1, "Schwarzparkstrasse 15   A 5020 Salzburg");
+                _writer.print((_lin += _gap), _col1, "Loigerstr. 89   A 5071 Wals");
                 _writer.drawLine(_lin + 30, _col1, _lin + 30, _col1 + 465);
                 _lin += _gap;
                 SetLineFont();

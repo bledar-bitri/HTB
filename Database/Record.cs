@@ -98,8 +98,12 @@ namespace HTB.Database
             sb.Append("<");
             sb.Append(name);
             sb.Append(">");
-            if(val == null) sb.Append("");
-            else sb.Append(encodeXML ? System.Web.HttpUtility.HtmlEncode(val.ToString().Trim()) : val.ToString().Trim());
+            if(val == null)
+                sb.Append("");
+            else if(val is DateTime)
+                sb.Append(encodeXML ? System.Web.HttpUtility.HtmlEncode(((DateTime)val).ToString("yyyy-MM-dd").Trim()) : ((DateTime)val).ToString("yyyy-MM-dd").Trim());
+            else
+                sb.Append(encodeXML ? System.Web.HttpUtility.HtmlEncode(val.ToString().Trim()) : val.ToString().Trim());
             sb.Append("</");
             sb.Append(name);
             sb.Append(">\r\n");

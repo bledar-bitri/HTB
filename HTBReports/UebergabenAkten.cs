@@ -45,7 +45,7 @@ namespace HTBReports
             lin += gap + 20;
             writer.setFont("Calibri", 8);
             writer.print((lin += gap), col1, "E.C.P. European Car Protect KG");
-            writer.print((lin += gap), col1, "Schwarzparkstrasse 15   A 5020 Salzburg");
+            writer.print((lin += gap), col1, "Loigerstr. 89   A 5071 Wals");
             writer.drawLine(lin + 30, col1, lin + 30, col1 + 465);
             lin += gap;
             SetLineFont();

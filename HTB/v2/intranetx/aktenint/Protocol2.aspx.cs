@@ -197,7 +197,7 @@ namespace HTB.intranetx.aktenint
                         HTBUtils.AddListToList(HTBUtils.GetSqlRecords("SELECT * FROM qryDoksInkAkten WHERE CustInkAktID = " + akt.AktIntCustInkAktID, typeof(qryDoksInkAkten)), docsList);
 
 
-                    var fileName = "Protokoll_" + akt.AktIntAZ + ".pdf";
+                    var fileName = HTBUtils.SanitizeFileName("Protokoll_" + akt.AktIntAZ + ".pdf");
                     string filepath = HTBUtils.GetConfigValue("DocumentsFolder") + fileName;
                     FileStream ms = File.Exists(filepath) ? new FileStream(filepath, FileMode.Truncate) : new FileStream(filepath, FileMode.Create);
 

@@ -56,8 +56,8 @@ namespace HTBDailyKosten
             //            ProcessDir2("C:\\NintendoDS\\Unzip");
 //                        TestFtp();
             //            FixAllAE();
-            TestProtokol();
-//                        TestWebServiceNewAkt_Debug();
+//            TestProtokol();
+                        TestWebServiceNewAkt_Debug();
 //                        TestWebServiceNewAkt();
 //                        TestWebServiceNewAktProduction();
             //            TestWebServiceAktStatus();
@@ -1029,8 +1029,8 @@ namespace HTBDailyKosten
                                       DokumentBeschreibung = "Rechnung",
                                       DokumentURL = "http://localhost/v2/intranet/documents/files/22228_Kosten.xls"
                                   });
-//                        string newAktResponse = newAktService.CreateNewAkt(akt.ToXmlString());
-            string newAktResponse = newAktService.CreateNewAkt(HTBUtils.GetFileText("C:\\temp\\TestAktData.txt"));
+                        string newAktResponse = newAktService.CreateNewAkt(akt.ToXmlString());
+            //string newAktResponse = newAktService.CreateNewAkt(HTBUtils.GetFileText("C:\\temp\\TestAktData.txt"));
 
             Console.WriteLine(newAktResponse);
         }

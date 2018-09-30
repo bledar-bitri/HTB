@@ -633,7 +633,7 @@ namespace HTB.v2.intranetx.upload
                 #endregion
 
                 #region Create and Save AG Protocol
-                var fileName = "Abschlus_Protokoll_" + qryAktInt.AktIntAZ + ".pdf";
+                var fileName = HTBUtils.SanitizeFileName("Abschlus_Protokoll_" + qryAktInt.AktIntAZ + ".pdf");
                 string filepath = HTBUtils.GetConfigValue("DocumentsFolder") + fileName;
                 FileStream ms = File.Exists(filepath) ? new FileStream(filepath, FileMode.Truncate) : new FileStream(filepath, FileMode.Create);
 

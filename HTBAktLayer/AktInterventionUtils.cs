@@ -80,7 +80,7 @@ namespace HTBAktLayer
             intAkt.AKTIntZinsen = 0;
             intAkt.AKTIntZinsenBetrag = interest;
             intAkt.AKTIntRVStartDate = new DateTime(1900, 1, 1);
-            intAkt.AKTIntAGSB = "Nadine Auer";
+            intAkt.AKTIntAGSB = "Thomas Jaky";
             intAkt.AKTIntKSVEMail = "office@ecp.or.at";
             //intAkt.AKTIntRVAmmount;
             //intAkt.AKTIntRVNoMonth;

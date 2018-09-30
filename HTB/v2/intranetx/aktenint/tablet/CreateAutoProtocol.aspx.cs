@@ -150,7 +150,7 @@ namespace HTB.v2.intranetx.aktenint.tablet
                             if (akt.IsInkasso())
                                 HTBUtils.AddListToList(HTBUtils.GetSqlRecords("SELECT * FROM qryDoksInkAkten WHERE CustInkAktID = " + akt.AktIntCustInkAktID, typeof (qryDoksInkAkten)), docsList);
 
-                            var fileName = "Uebergabe_Protokoll_" + akt.AktIntAZ + ".pdf";
+                            var fileName = HTBUtils.SanitizeFileName("Uebergabe_Protokoll_" + akt.AktIntAZ + ".pdf");
                             var filepath = HTBUtils.GetConfigValue("DocumentsFolder") + fileName;
                             var ms = File.Exists(filepath) ? new FileStream(filepath, FileMode.Truncate) : new FileStream(filepath, FileMode.Create);
 

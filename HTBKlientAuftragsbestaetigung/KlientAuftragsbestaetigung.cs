@@ -137,7 +137,7 @@ namespace HTBKlientAuftragsbestaetigung
                         String body = GetAgReceiptBody();
                         if (body != null)
                         {
-                            email.SendAgReceipt(ag, body, HTBUtils.ReopenMemoryStream(stream));
+                            email.SendAgReceipt(ag, body, HTBUtils.ReopenMemoryStream(stream), false);
                             //SaveAndShowFile(stream, "c:/temp/Auftragsbestetigung2.pdf");
                             SaveAgAuftragReceipt(receipt.RecordsList, HTBUtils.ReopenMemoryStream(stream), agId.IntValue);
                             UpdateAgAkt(receipt.RecordsList);
@@ -202,8 +202,10 @@ namespace HTBKlientAuftragsbestaetigung
 
         private static void SaveKlientAuftragReceipt(ArrayList recordsList, MemoryStream stream, int klientId, int userId = -1)
         {
-            string documentsFolder = HTBUtils.GetConfigValue("DocumentsFolder");
-            string filename = string.Format("{0}_{1}_AB_{2}.pdf", klientId, (userId >= 0 ? userId.ToString(CultureInfo.InvariantCulture) : ""), HTBUtils.GetPathTimestamp());
+            var documentsFolder = HTBUtils.GetConfigValue("DocumentsFolder");
+            var filename =
+                $"{klientId}_{(userId >= 0 ? userId.ToString(CultureInfo.InvariantCulture) : "")}_AB_{HTBUtils.GetPathTimestamp()}.pdf";
+            filename = HTBUtils.SanitizeFileName(filename);
             HTBUtils.SaveMemoryStream(stream, documentsFolder + filename);
             foreach (spAGReceipt rec in recordsList)
             {

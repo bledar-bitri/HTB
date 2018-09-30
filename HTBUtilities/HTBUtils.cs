@@ -1189,6 +1189,11 @@ namespace HTBUtilities
             }
         }
 
+        public static string SanitizeFileName(string filename)
+        {
+            string regex = $@"[{Regex.Escape(new string(Path.GetInvalidFileNameChars()))}]+";
+            return Regex.Replace(filename, regex, "_");
+        }
         #endregion
 
         #region Base64 Encode / Decode

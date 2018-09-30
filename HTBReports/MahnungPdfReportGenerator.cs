@@ -79,7 +79,7 @@ namespace HTBReports
 
             writer.setFont("Calibri", 8);
             writer.print((lin += gap), _col1, "E.C.P. European Car Protect KG");
-            writer.print((lin += gap), _col1, "Schwarzparkstrasse 15   A 5020 Salzburg");
+            writer.print((lin += gap), _col1, "Loigerstr. 89   A 5071 Wals");
             writer.drawLine(lin + 30, _col1, lin + 30, _col1 + 465);
             lin += gap;
             writer.setFont("Calibri", 11);
@@ -258,7 +258,7 @@ namespace HTBReports
 
             writer.setFont("Calibri", 8);
             writer.print((lin += gap), _col1, "E.C.P. European Car Protect KG");
-            writer.print((lin += gap), _col1, "Schwarzparkstrasse 15   A 5020 Salzburg");
+            writer.print((lin += gap), _col1, "Loigerstr. 89   A 5071 Wals");
             writer.drawLine(lin + 30, _col1, lin + 30, _col1 + 465);
             lin += gap;
             writer.setFont("Calibri", 11);
@@ -475,7 +475,7 @@ namespace HTBReports
 
             writer.setFont("Calibri", 8);
             writer.print((lin += gap), _col1, "E.C.P. European Car Protect KG");
-            writer.print((lin += gap), _col1, "Schwarzparkstrasse 15   A 5020 Salzburg");
+            writer.print((lin += gap), _col1, "Loigerstr. 89   A 5071 Wals");
             writer.drawLine(lin + 30, _col1, lin + 30, _col1 + 465);
             lin += gap;
             writer.setFont("Calibri", 11);

@@ -249,7 +249,7 @@
                             <strong>Bearb. durch:</strong>
                         </td>
                         <td colspan="3">
-                            Partner der E.C.P. European Car Protect KG, Schwarzparkstr. 15, A-5020&nbsp;Salzburg
+                            Partner der E.C.P. European Car Protect KG, Loigerstr. 89, A-5071&nbsp;Wals
                         </td>
                     </tr>
                     <tr>

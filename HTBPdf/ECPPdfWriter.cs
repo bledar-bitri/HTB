@@ -1077,7 +1077,7 @@ namespace HTBPdf
             print((lin += gap), col, "ADRESSE", 'R', bc);
             print((lin += gap), col, "Loigerstr. 89", 'R', bc);
             print((lin += gap), col, "5071  Wals", 'R', bc);
-            print((lin += gap), col, "Austria, Europe", 'R', bc);
+            print((lin += gap), col, "Austria", 'R', bc);
             lin += gap;
             print((lin += gap), col, "TELEFON", 'R', bc);
             print((lin += gap), col, "+43 662 20 34 10 - 10", 'R', bc);
@@ -1103,11 +1103,10 @@ namespace HTBPdf
             print((lin += gap), col, "FN 305953g", 'R', bc);
             lin += gap;
             print((lin += gap), col, "BANKVERBINDUNG", 'R', bc);
-            print((lin += gap), col, "Raiffeisenbank Schallmoos", 'R', bc);
-            print((lin += gap), col, "BLZ 35000", 'R', bc);
-            print((lin += gap), col, "Konto Nr. 02.149110", 'R', bc);
-            print((lin += gap), col, "BIC: SLHYAT2S", 'R', bc);
-            print((lin += gap), col, "IBAN: AT915500011500010415", 'R', bc);
+            print((lin += gap), col, "Raiffeisenbank Geretsberg", 'R', bc);
+            print((lin += gap), col, "IBAN: AT35 3411 8000 0002 9215", 'R', bc);
+            print((lin += gap), col, "BIC: RZOOAT2L118", 'R', bc);
+
             lin += gap;
             print((lin += gap), col, "GESCHÄFTSFÜHRUNG", 'R', bc);
             print((lin += gap), col, "Thomas Jaky", 'R', bc);
