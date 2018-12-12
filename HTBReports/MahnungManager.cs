@@ -184,7 +184,7 @@ namespace HTBReports
             }
 
             // send to inCentro (SFTP)
-            HTBSftp.SendFile(fileName);
+            // HTBSftp.SendFile(fileName);
 
 //             send email to inCentro to let them know they can send this thing away
 //            new HTBEmail().SendGenericEmail(

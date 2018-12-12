@@ -32,32 +32,32 @@ namespace NightlyService
             var sb = new StringBuilder();
             try
             {
-                sb.Append(string.Format("setting current directory to {0}\n\r", AppDomain.CurrentDomain.BaseDirectory));
+                sb.Append($"setting current directory to {AppDomain.CurrentDomain.BaseDirectory}\n\r");
                 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-                sb.Append(string.Format("current directory SET\n\r"));
-                sb.Append(string.Format("Log4Net Path: {0} \n\r", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log4Net.config")));
+                sb.Append("current directory SET\n\r");
+                sb.Append($"Log4Net Path: {Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log4Net.config")} \n\r");
                 if (File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log4Net.config")))
-                    sb.Append(string.Format("Log4Net File Exists\n\r"));
+                    sb.Append("Log4Net File Exists\n\r");
                 else
-                    sb.Append(string.Format("Log4Net File Does NOT Exist\n\r"));
+                    sb.Append("Log4Net File Does NOT Exist\n\r");
 
             }
             catch (Exception ex)
             {
-                sb.Append(string.Format("Could not set current directory: {0}\n\r", ex.Message));
+                sb.Append($"Could not set current directory: {ex.Message}\n\r");
             }
-            sb.Append(string.Format("Initializing Component\n\r"));
+            sb.Append("Initializing Component\n\r");
             InitializeComponent();
-            sb.Append(string.Format("Configuring XmlConfigurator\n\r"));
+            sb.Append("Configuring XmlConfigurator\n\r");
             XmlConfigurator.Configure(new FileInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log4Net.config")));
             try
             {
-                sb.Append(string.Format("Setting time to sleep\n\r"));
+                sb.Append("Setting time to sleep\n\r");
                 _timeToSleep = Convert.ToInt32(ConfigurationManager.AppSettings["TimeToSleep"]);
             }
             catch
             {
-                sb.Append(string.Format("Error While Setting Time To sleep (Defauld: 500)\n\r"));
+                sb.Append("Error While Setting Time To sleep (Defauld: 500)\n\r");
                 _timeToSleep = 500;
             }
             HTBUtils.SaveTextFile("c:/temp/HTBNightlyService_Start.txt", sb.ToString());

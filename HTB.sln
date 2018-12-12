@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTB", "HTB\HTB.csproj", "{41E6731E-FEBD-4CA9-8AD1-DEF7ACB267DE}"
 EndProject
@@ -52,6 +52,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTBTestsUtilities", "UnitTests\HTBTestsUtilities\HTBTestsUtilities.csproj", "{8527E1E9-42E0-40CE-A1DE-3F67FE149420}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTBTestDatabase", "UnitTests\HTBTestDatabase\HTBTestDatabase.csproj", "{25BD811C-9F3E-45C2-B216-B59F17EEC6A6}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "HTBNightlyServiceSetup", "HTBNightlyServiceSetup\HTBNightlyServiceSetup.vdproj", "{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -420,6 +422,26 @@ Global
 		{25BD811C-9F3E-45C2-B216-B59F17EEC6A6}.Release|Win32.ActiveCfg = Release|Any CPU
 		{25BD811C-9F3E-45C2-B216-B59F17EEC6A6}.Release|x64.ActiveCfg = Release|Any CPU
 		{25BD811C-9F3E-45C2-B216-B59F17EEC6A6}.Release|x86.ActiveCfg = Release|Any CPU
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Debug|Any CPU.ActiveCfg = Debug
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Debug|Any CPU.Build.0 = Debug
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Debug|Mixed Platforms.ActiveCfg = Debug
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Debug|Mixed Platforms.Build.0 = Debug
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Debug|Win32.ActiveCfg = Debug
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Debug|Win32.Build.0 = Debug
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Debug|x64.ActiveCfg = Debug
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Debug|x64.Build.0 = Debug
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Debug|x86.ActiveCfg = Debug
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Debug|x86.Build.0 = Debug
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Release|Any CPU.ActiveCfg = Release
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Release|Any CPU.Build.0 = Release
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Release|Mixed Platforms.ActiveCfg = Release
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Release|Mixed Platforms.Build.0 = Release
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Release|Win32.ActiveCfg = Release
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Release|Win32.Build.0 = Release
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Release|x64.ActiveCfg = Release
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Release|x64.Build.0 = Release
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Release|x86.ActiveCfg = Release
+		{D25D2A8A-16AA-4078-B8AF-72BE37F619CF}.Release|x86.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -427,5 +449,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8527E1E9-42E0-40CE-A1DE-3F67FE149420} = {F8F15FA7-9911-41E5-8D7A-155B61DFB323}
 		{25BD811C-9F3E-45C2-B216-B59F17EEC6A6} = {F8F15FA7-9911-41E5-8D7A-155B61DFB323}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {92C9EFCD-0CFD-4B0F-B839-3455B517F739}
 	EndGlobalSection
 EndGlobal

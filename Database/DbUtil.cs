@@ -254,7 +254,7 @@ namespace HTB.Database
                     var str = value.ToString().Replace(" ", "");
                     result = double.Parse(str, GetStringCulture(str));
 
-                    Log.DebugFormat("Parsed Double from: {0} to {1}", value, result);
+                    //Log.DebugFormat("Parsed Double from: {0} to {1}", value, result);
                 }
                 else
                 {
