@@ -11,14 +11,17 @@ using Tamir.SharpSsh.java.io;
 
 namespace HTBUtilities
 {
-    public class HTBEmail
+    public class HTBEmail : IHTBEmail
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        readonly tblServerSettings serverSettings = (tblServerSettings)HTBUtils.GetSqlSingleRecord("Select * from tblServerSettings", typeof(tblServerSettings));
-        readonly tblControl control = HTBUtils.GetControlRecord();
+        private static readonly tblServerSettings serverSettings = (tblServerSettings)HTBUtils.GetSqlSingleRecord("Select * from tblServerSettings", typeof(tblServerSettings));
+        private static readonly tblControl control = HTBUtils.GetControlRecord();
+
         private readonly int _intAktEmailSentActionTypeId = HTBUtils.GetIntConfigValue("AktInt_EMail_Sent_Action_Type");
         private readonly int _intAktEmailNotSentActionTypeId = HTBUtils.GetIntConfigValue("AktInt_EMail_NOT_Sent_Action_Type");
         private readonly string _fromOfficeName = HTBUtils.GetConfigValue("From_Office_Name");
+
+        private readonly IEmailSender _emailSender;
 
         private string _replyTo = string.Empty;
         public string ReplyTo
@@ -26,45 +29,30 @@ namespace HTBUtilities
             get { return _replyTo; }
             set { _replyTo = value; }
         }
+        public HTBEmail():this(
+            new EmailSenderExchange(serverSettings.ServerSystemMail, HTBUtils.GetConfigValue("From_Office_Name"), control.SMTPUser, control.SMTPPW)
+            ) { }
+        public HTBEmail(IEmailSender emailSender)
+        {
+            _emailSender = emailSender;
+        }
 
         #region Lawyer
         public bool SendLawyerPackage(IEnumerable<string> to, qryCustInkAkt akt, IEnumerable<HTBEmailAttachment> attachments, string body = "")
         {
             try
             {
-                // To
-                var mailMsg = new MailMessage();
-                foreach (string toAddr in to)
-                {
-                    mailMsg.To.Add(toAddr);
-                }
-                if (mailMsg.To.Count > 0)
-                {
-                    // From
-                    var mailAddress = new MailAddress(_fromOfficeName +" " + serverSettings.ServerSystemMail);
-                    mailMsg.From = mailAddress;
+                if (!to.Any()) return false;
 
-                    // Subject and Body
-                    mailMsg.Subject = control.LawyerEmailSubject.Replace("<akt>", akt.CustInkAktID.ToString()).Replace("<gegner>", akt.GegnerName1 + " " + akt.GegnerName2);
-                    mailMsg.IsBodyHtml = true;
-                    mailMsg.Body = body;
+                var subject = control.LawyerEmailSubject.Replace("<akt>", akt.CustInkAktID.ToString()).Replace("<gegner>", akt.GegnerName1 + " " + akt.GegnerName2);
+                if (attachments != null)
+                {
                     foreach (var attachment in attachments.Where(attachment => attachment != null))
                     {
-                        mailMsg.Attachments.Add(new Attachment(attachment.AttachmentStream, akt.GegnerName1 + " " + akt.GegnerName2 + "_" + attachment.AttachmentStreamName, attachment.AttachmentStreamMime));
+                        attachment.AttachmentStreamNamePrefix = akt.GegnerName1 + " " + akt.GegnerName2 + "_";
                     }
-
-                    // Init SmtpClient and send
-                    var smtpClient = new SmtpClient(control.SMTPServer);
-                    if(control.SMTPPort > 0)
-                    {
-                        smtpClient.Port = control.SMTPPort;
-                    }
-                    var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
-                    smtpClient.Credentials = credentials;
-                    smtpClient.Send(mailMsg);
-                    return true;
                 }
-                return false;
+                return  _emailSender.SendEmail(_fromOfficeName + " " + serverSettings.ServerSystemMail, to, ReplyTo, subject, body, true, attachments);
             }
             catch(Exception ex)
             {
@@ -78,44 +66,15 @@ namespace HTBUtilities
             {
                 var lawyer = (tblLawyer)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblLawyer WHERE LawyerId = " + akt.CustInkAktLawyerId, typeof(tblLawyer));
 
-                // To
-                var mailMsg = new MailMessage();
-
                 var to = HTBUtils.GetValidEmailAddressesFromStrings(new[]
-                    {
-                        lawyer.LawyerEmail,
-                        HTBUtils.GetConfigValue("Office_Email")
-                    }
-                    );
-
-                foreach (var toAdr in to)
                 {
-                    mailMsg.To.Add(toAdr);
-                }
-                if (mailMsg.To.Count > 0)
-                {
-                    // From
-                    var mailAddress = new MailAddress(_fromOfficeName + " " + serverSettings.ServerSystemMail);
-                    mailMsg.From = mailAddress;
-
-                    // Subject and Body
-                    mailMsg.Subject = control.LawyerEmailSubject.Replace("<akt>", akt.CustInkAktID.ToString()+" ERINERUNG").Replace("<gegner>", akt.GegnerName1 + " " + akt.GegnerName2);
-                    mailMsg.IsBodyHtml = true;
-                    mailMsg.Body = GetLawyerReminderEMailBody(akt, lawyer);
-
-
-                    // Init SmtpClient and send
-                    var smtpClient = new SmtpClient(control.SMTPServer);
-                    if (control.SMTPPort > 0)
-                    {
-                        smtpClient.Port = control.SMTPPort;
-                    }
-                    var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
-                    smtpClient.Credentials = credentials;
-                    smtpClient.Send(mailMsg);
-                    return true;
-                }
-                return false;
+                    lawyer.LawyerEmail,HTBUtils.GetConfigValue("Office_Email")
+                    
+                });
+                if (!to.Any()) return false;
+                var subject = control.LawyerEmailSubject.Replace("<akt>", akt.CustInkAktID.ToString() + " ERINERUNG").Replace("<gegner>", akt.GegnerName1 + " " + akt.GegnerName2);
+                
+                return _emailSender.SendEmail(_fromOfficeName + " " + serverSettings.ServerSystemMail, to, ReplyTo, subject, GetLawyerReminderEMailBody(akt, lawyer), true, null);
             }
             catch (Exception ex)
             {
@@ -152,32 +111,16 @@ namespace HTBUtilities
             log.Info("Sending Research Notice");
             try
             {
-                // To
-                MailMessage mailMsg = new MailMessage();
-                tblUser user = (tblUser)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblUser WHERE UserID = " + control.MeldeResearchSB, typeof(tblUser));
-                mailMsg.To.Add(user.UserEMailOffice);
-                log.Info("Generic Email TO: " + user.UserEMailOffice);
-
-                // From
-                MailAddress mailAddress = new MailAddress(_fromOfficeName + " " + serverSettings.ServerSystemMail);
-                mailMsg.From = mailAddress;
-
-                // Subject and Body
-                mailMsg.Subject = control.MeldeEmailSubject.Replace("<akt>", melde.AMNr);
-                mailMsg.IsBodyHtml = true;
-                mailMsg.Body = "More Research Needed for this Melde Akt: " + melde.AMNr;
-
-
-                // Init SmtpClient and send
-                var smtpClient = new SmtpClient(control.SMTPServer);
-                if (control.SMTPPort > 0)
+                var user = (tblUser)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblUser WHERE UserID = " + control.MeldeResearchSB, typeof(tblUser));
+                var to = new string[]
                 {
-                    smtpClient.Port = control.SMTPPort;
-                }
-                var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
-                smtpClient.Credentials = credentials;
-                smtpClient.Send(mailMsg);
-                return true;
+                    user.UserEMailOffice
+
+                };
+                if (!to.Any()) return false;
+                var subject = control.MeldeEmailSubject.Replace("<akt>", melde.AMNr);
+                var body = "More Research Needed for this Melde Akt: " + melde.AMNr;
+                return _emailSender.SendEmail(_fromOfficeName + " " + serverSettings.ServerSystemMail, to, ReplyTo, subject, body, true, null);
             }
             catch (Exception ex)
             {
@@ -195,36 +138,18 @@ namespace HTBUtilities
             log.Info("Sending Mahnung");
             try
             {
-                // To
-                var mailMsg = new MailMessage();
-                mailMsg.To.Add(control.MahnungEmail);
                 log.Info("Mahnung Email TO: " + control.MahnungEmail);
 
-                // From
-                var mailAddress = new MailAddress(_fromOfficeName +" " + serverSettings.ServerSystemMail);
-                mailMsg.From = mailAddress;
-
-                // Subject and Body
-                mailMsg.Subject = subject ?? control.MahnungEmailSubject;
-                mailMsg.Body = body;
+                var to = new List<string>{ control.MahnungEmail };
+                subject = subject ?? control.MahnungEmailSubject;
+                var attachments = new List<HTBEmailAttachment>();
                 if (attachment != null && attachment.Trim() != string.Empty)
                 {
-                    mailMsg.Attachments.Add(new Attachment(attachment)
-                                                {
-                                                    Name = attachmentName ?? "Mahnung.pdf"
-                                                });
-                }
+                    byte[] byteArray = Encoding.Default.GetBytes(attachment);
+                    attachments.Add(new HTBEmailAttachment(new MemoryStream(byteArray), (attachmentName ?? "Mahnung.pdf"), "text/xml"));
 
-                // Init SmtpClient and send
-                var smtpClient = new SmtpClient(control.SMTPServer);
-                if (control.SMTPPort > 0)
-                {
-                    smtpClient.Port = control.SMTPPort;
                 }
-                var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
-                smtpClient.Credentials = credentials;
-                smtpClient.Send(mailMsg);
-                return true;
+                return _emailSender.SendEmail(_fromOfficeName + " " + serverSettings.ServerSystemMail, to, ReplyTo, subject, body, true, attachments);
             }
             catch (Exception ex)
             {
@@ -245,56 +170,38 @@ namespace HTBUtilities
             log.Error("Sending Klient Receipt");
             try
             {
-                // To
-                var sb = new StringBuilder(body);
-                var receipients = toEmailAddresses;
-                if(receipients == null || receipients.Count == 0)
-                    receipients = HTBUtils.GetKlientEmailAddresses(klient.KlientID, klient.KlientEMail);
+                var to = toEmailAddresses;
+                if (to == null || to.Count == 0)
+                    to = HTBUtils.GetKlientEmailAddresses(klient.KlientID, klient.KlientEMail);
 
                 if (HTBUtils.IsTestEnvironment)
-                    receipients.Clear();
+                    to.Clear();
 
-                var subject =  control.KlientReceiptEmailSubject.Replace("<date>", DateTime.Now.ToShortDateString());
-                var subject2 = HTBUtils.GetKlientNotifiationEmailSubject(klient, sb, receipients);
+                var sb = new StringBuilder(body);
+
+                var subject = control.KlientReceiptEmailSubject.Replace("<date>", DateTime.Now.ToShortDateString());
+                var subject2 = HTBUtils.GetKlientNotifiationEmailSubject(klient, sb, to);
+
+                
+                
                 if (!string.IsNullOrEmpty(subject2))
                 {
                     subject += " " + subject2;
-                    receipients.Add(HTBUtils.GetConfigValue("Office_Email")); // send copy to office
+                    to.Add(HTBUtils.GetConfigValue("Office_Email")); // send copy to office
                 }
-                receipients.Add(HTBUtils.GetConfigValue("Default_EMail_Addr")); // send copy to default email for backup purposes
+                to.Add(HTBUtils.GetConfigValue("Default_EMail_Addr")); // send copy to default email for backup purposes
 
-                var mailMsg = new MailMessage();
-                foreach (string to in receipients)
-                {
-                    mailMsg.To.Add(to);
-                }
+                var attachFile = new HTBEmailAttachment(attachment, "Auftragsbestätigung_" + DateTime.Now.ToShortDateString() + ".pdf", "application/pdf");
+                var attachments = new List<HTBEmailAttachment>{attachFile};
+                if (includeAgb)
+                    attachments.Add(new HTBEmailAttachment(new FileInputStream(HTBUtils.GetConfigValue("AGB_File")), "ECP_AGB.pdf", "application/pdf"));
 
-                // From
-                var mailAddress = new MailAddress(_fromOfficeName + " " + serverSettings.ServerSystemMail);
-                mailMsg.From = mailAddress;
+                var ok = _emailSender.SendEmail(_fromOfficeName + " " + serverSettings.ServerSystemMail, to, ReplyTo, subject, sb.ToString(), true, attachments);
 
-                // Subject and Body
-                mailMsg.Subject = subject;
-                mailMsg.Body = sb.ToString();
-                mailMsg.IsBodyHtml = true;
-
-                var attachFile = new Attachment(attachment, "Auftragsbestätigung_" + DateTime.Now.ToShortDateString() + ".pdf", "application/pdf");
-
-                mailMsg.Attachments.Add(attachFile);
-                if(includeAgb)
-                    mailMsg.Attachments.Add(new Attachment(new FileInputStream(HTBUtils.GetConfigValue("AGB_File")), "ECP_AGB.pdf", "application/pdf"));
-
-                // Init SmtpClient and send
-                var smtpClient = new SmtpClient(control.SMTPServer);
-                if (control.SMTPPort > 0)
-                {
-                    smtpClient.Port = control.SMTPPort;
-                }
-                var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
-                smtpClient.Credentials = credentials;
-                smtpClient.Send(mailMsg);
-                log.Info(string.Format("Klient [ID: {0}] [Name: {1}] Receipt sent to: [{2}]", klient.KlientID, klient.KlientName1, string.Join("  ", receipients)));
-                return true;
+                log.Info(ok
+                    ? $"Klient [ID: {klient.KlientID}] [Name: {klient.KlientName1}] Receipt sent to: [{string.Join("  ", to)}]"
+                    : $"Could not send email to klient [ID: {klient.KlientID}] [Name: {klient.KlientName1}] Receipt sent to: [{string.Join("  ", to)}]");
+                return ok;
             }
             catch (Exception ex)
             {
@@ -318,41 +225,24 @@ namespace HTBUtilities
                 var receipients = HTBUtils.GetValidEmailAddressesFromString(ag.AuftraggeberEMail);
                 if (HTBUtils.IsTestEnvironment)
                     receipients.Clear();
+
                 var subject = control.KlientReceiptEmailSubject.Replace("<date>", DateTime.Now.ToShortDateString());
                 receipients.Add(HTBUtils.GetConfigValue("Default_EMail_Addr")); // send copy to default email for backup purposes
 
-                var mailMsg = new MailMessage();
+                var to = new List<string>();
                 foreach (string toAdr in receipients)
                 {
                     if(HTBUtils.IsValidEmail(toAdr))
-                        mailMsg.To.Add(toAdr);
+                        to.Add(toAdr);
                 }
 
-                // From
-                var mailAddress = new MailAddress(_fromOfficeName + " " + serverSettings.ServerSystemMail);
-                mailMsg.From = mailAddress;
-
-                // Subject and Body
-                mailMsg.Subject = subject;
-                mailMsg.Body = sb.ToString();
-                mailMsg.IsBodyHtml = true;
-
-                var attachFile = new Attachment(attachment, "Auftragsbestätigung_" + DateTime.Now.ToShortDateString() + ".pdf", "application/pdf");
-
-                mailMsg.Attachments.Add(attachFile);
+                var attachFile = new HTBEmailAttachment(attachment, "Auftragsbestätigung_" + DateTime.Now.ToShortDateString() + ".pdf", "application/pdf");
+                var attachments = new List<HTBEmailAttachment> { attachFile };
                 if (includeAgb)
-                    mailMsg.Attachments.Add(new Attachment(new FileInputStream(HTBUtils.GetConfigValue("AGB_File")), "ECP_AGB.pdf", "application/pdf"));
+                    attachments.Add(new HTBEmailAttachment(new FileInputStream(HTBUtils.GetConfigValue("AGB_File")), "ECP_AGB.pdf", "application/pdf"));
 
-                // Init SmtpClient and send
-                var smtpClient = new SmtpClient(control.SMTPServer);
-                if (control.SMTPPort > 0)
-                {
-                    smtpClient.Port = control.SMTPPort;
-                }
-                var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
-                smtpClient.Credentials = credentials;
-                smtpClient.Send(mailMsg);
-                return true;
+                return _emailSender.SendEmail(_fromOfficeName + " " + serverSettings.ServerSystemMail, to, ReplyTo, subject, sb.ToString(), true, attachments);
+                
             }
             catch (Exception ex)
             {
@@ -394,45 +284,13 @@ namespace HTBUtilities
         }
         public bool SendGenericEmail(string from, IEnumerable<string> to, string subject, string body, bool ishtml, int inkAktId, int intAktId)
         {
-            log.Info("Sending Generic Email");
             try
             {
-                var mailMsg = new MailMessage();
-                foreach (string toAddr in to)
-                {
-                    mailMsg.To.Add(toAddr);
-                    log.Info("Generic Email TO: "+toAddr);
-                }
-
-                // From
-                var mailAddress = new MailAddress(_fromOfficeName + " " + serverSettings.ServerSystemMail);
-                mailMsg.From = mailAddress;
-
-                // Subject and Body
-                mailMsg.Subject = subject;
-                mailMsg.IsBodyHtml = ishtml;
-                mailMsg.Body = body;
-                if (from != null && HTBUtils.IsValidEmail(from))
-                {
-                    mailMsg.From = new MailAddress(from);
-                }
-                if (ReplyTo != string.Empty && HTBUtils.IsValidEmail(ReplyTo))
-                {
-                    mailMsg.ReplyToList.Add(new MailAddress(ReplyTo));
-                }
-
-                // Init SmtpClient and send
-                var smtpClient = new SmtpClient(control.SMTPServer);
-                if (control.SMTPPort > 0)
-                {
-                    smtpClient.Port = control.SMTPPort;
-                }
-                var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
-                smtpClient.Credentials = credentials;
-                smtpClient.Send(mailMsg);
-                log.Info("EMail Sent!");
-                EmailSentSuccessfully(mailMsg.Subject, to, null, inkAktId, intAktId);
-                return true;
+                var ok = _emailSender.SendEmail(from, to, ReplyTo, subject, body, ishtml, null);
+                if (ok)
+                    EmailSentSuccessfully(subject, to, null, inkAktId, intAktId);
+                
+                return ok;
             }
             catch (Exception ex)
             {
@@ -464,68 +322,23 @@ namespace HTBUtilities
         {
             try
             {
-                log.Info("SendGenericEmail: ");
-            
-                var mailMsg = new MailMessage();
-                foreach (string toAddr in to)
-                {
-                    mailMsg.To.Add(toAddr);
-                    log.Info("Generic Email TO [with attachments]: " + toAddr);
-                }
-
-                if(cc != null)
-                {
-                    foreach (string ccAddr in cc)
-                    {
-                        mailMsg.CC.Add(ccAddr);
-                        log.Info("Generic Email CC [with attachments]: " + ccAddr);
-                    }
-                }
-                
-                if (bcc != null)
-                {
-                    foreach (string bccAddr in bcc)
-                    {
-                        mailMsg.Bcc.Add(bccAddr);
-                        log.Info("Generic Email CC [with attachments]: " + bccAddr);
-                    }
-                }
-                
-                // From
-                var mailAddress = new MailAddress(_fromOfficeName +" " + serverSettings.ServerSystemMail);
-                mailMsg.From = mailAddress;
-
-                // Subject and Body
-                mailMsg.Subject = subject;
-                mailMsg.IsBodyHtml = ishtml;
-                mailMsg.Body = body;
+                var sender = _fromOfficeName + " " + serverSettings.ServerSystemMail;
                 if (from != null && HTBUtils.IsValidEmail(from))
                 {
-                    mailMsg.From = new MailAddress(from);
+                    sender = from;
                 }
-                if (ReplyTo != string.Empty && HTBUtils.IsValidEmail(ReplyTo))
-                {
-                    mailMsg.ReplyToList.Add(new MailAddress(ReplyTo));
-                }
-                var attachmentsToDispose = new List<Stream>();
+                                var attachmentsToDispose = new List<Stream>();
                 if (attachments != null)
+                {
                     foreach (var attachment in attachments)
                     {
-                        mailMsg.Attachments.Add(new Attachment(attachment.AttachmentStream, attachment.AttachmentStreamName, attachment.AttachmentStreamMime));
                         attachmentsToDispose.Add(attachment.AttachmentStream);
                     }
-
-                // Init SmtpClient and send
-                var smtpClient = new SmtpClient(control.SMTPServer);
-                if (control.SMTPPort > 0)
-                {
-                    smtpClient.Port = control.SMTPPort;
                 }
-                var credentials = new System.Net.NetworkCredential(control.SMTPUser, control.SMTPPW);
-                smtpClient.Credentials = credentials;
-                smtpClient.Send(mailMsg);
-                log.Info("EMail Sent!");
-                EmailSentSuccessfully(mailMsg.Subject, to, null, inkAktId, intAktId);
+                var ok = _emailSender.SendEmail(sender, to, cc, bcc, ReplyTo, subject, body, ishtml, attachments);
+
+                if (ok)
+                    EmailSentSuccessfully(subject, to, null, inkAktId, intAktId);
                 foreach (var s in attachmentsToDispose)
                 {
                     try
@@ -537,7 +350,7 @@ namespace HTBUtilities
                     {
                     }
                 }
-                return true;
+                return ok;
             }
             catch (Exception ex)
             {
@@ -602,7 +415,12 @@ namespace HTBUtilities
             }
             HTBUtils.AddInterventionAction(aktId, actionTypeId, sb.ToString(), control.DefaultSB);
         }
-        
+
+        string IHTBEmail.GetLawyerReminderEMailBody(qryCustInkAkt akt, tblLawyer lawyer)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
     }
