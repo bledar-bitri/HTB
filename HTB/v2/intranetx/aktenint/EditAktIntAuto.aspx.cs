@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
 using HTB.Database;
 using HTB.Database.Views;
 using HTB.v2.intranetx.util;
+using HTBServices;
+using HTBServices.Mail;
 using HTBUtilities;
+using log4net;
+using log4net.Repository.Hierarchy;
 
 namespace HTB.v2.intranetx.aktenint
 {
@@ -21,6 +27,7 @@ namespace HTB.v2.intranetx.aktenint
         private bool _isNew = true;
         private double _totalAmountDue;
 
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
         protected void Page_Init(object sender, EventArgs e)
         {
             // Registering the buttons control with RegisterPostBackControl early in the page lifecycle 
@@ -525,12 +532,14 @@ namespace HTB.v2.intranetx.aktenint
         }
         private bool SaveAkt()
         {
+            Log.Info("Saving Akt");
             _akt.AktIntKlient = HTBUtils.GetConfigValue("AutoEinzug_Old_Klient");
             _akt.AktIntDatum = DateTime.Now;
             bool ok;
             var set = new RecordSet();
             if (_isNew)
             {
+                Log.Info("Akt Is New");
                 _akt.AktIntStatus = 1; // in bearbeitung (only for new casses)
                 ok = set.InsertRecord(_akt);
                 if (ok)
@@ -539,20 +548,37 @@ namespace HTB.v2.intranetx.aktenint
                     set = new RecordSet();
                     try
                     {
+                        Log.Info("Started transaction");
                         set.StartTransaction();
                         InsertPosRecord(set, _akt.AktIntID, "Buchung lt. " + _akt.AktIntAZ, "Offene Forderungen", GlobalUtilArea.GetZeroIfConvertToDoubleError(txtAmountOpened), tblAktenIntPosType.INVOICE_TYPE_ORIGINAL);
                         InsertPosRecord(set, _akt.AktIntID, "Buchung lt. " + _akt.AktIntAZ, "Auftraggeber Kosten", GlobalUtilArea.GetZeroIfConvertToDoubleError(txtAgKosten), tblAktenIntPosType.INVOICE_TYPE_CLIENT_COST);
                         InsertPosRecord(set, _akt.AktIntID, "Buchung lt. " + _akt.AktIntAZ, "Versicherung", GlobalUtilArea.GetZeroIfConvertToDoubleError(txtInsuranceAmount), tblAktenIntPosType.INVOICE_TYPE_INSURANCE);
+                        Log.Info("Commiting transaction");
                         set.CommitTransaction();
-                        UploadFiles();
-                        HTBUtils.NotifySBAboutNewAkt(_akt.AktIntID);
                     }
                     catch (Exception ex)
                     {
                         set.RollbackTransaction();
                         ctlMessage.ShowException(ex);
+                        Log.Error(ex);
                         ok = false;
                     }
+
+                    try
+                    {
+                        Log.Info("Uploading files");
+                        UploadFiles();
+                        Log.Info("Notify SB");
+                        NotifySBAboutNewAkt(_akt.AktIntID);
+                        Log.Info("End Try");
+                    }
+                    catch (Exception ex)
+                    {
+                        ctlMessage.ShowException(ex);
+                        ok = false;
+                        Log.Error(ex);
+                    }
+
                 }
             }
             else
@@ -800,6 +826,29 @@ namespace HTB.v2.intranetx.aktenint
                 return false;
             }
         }
-
+        private static void NotifySBAboutNewAkt(int aktId)
+        {
+            Log.Info("geting intervention akt query");
+            var akt = HTBUtils.GetInterventionAktQry(aktId);
+            if (akt != null)
+            {
+                var to = new List<string>();
+                Log.Info("checking if email is valid");
+                if (HTBUtils.IsValidEmail(akt.UserEMailOffice))
+                {
+                    to.Add(akt.UserEMailOffice);
+                }
+                if (HTBUtils.IsValidEmail(akt.UserEMailPrivate))
+                {
+                    to.Add(akt.UserEMailPrivate);
+                }
+                if (to.Count > 0)
+                {
+                    Log.Info("sending email");
+                    ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(to, "Neuer Akt: [" + aktId + "]", "Zur Info: Ein neuer Akt wurde Ihnen zugeteilt!<BR/>Bitte um Ihre Bearbeitung!<BR/><BR/>[PLZ: " + akt.GegnerLastZip + "]<BR/><BR/>Vielen Dank!<BR/>ECP");
+                }
+            }
+            Log.Info("done");
+        }
     }
 }

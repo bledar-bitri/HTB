@@ -13,6 +13,8 @@ using System.Text;
 using HTB.v2.intranetx.util;
 using System.IO;
 using System.Reflection;
+using HTBServices;
+using HTBServices.Mail;
 
 namespace HTB.v2.intranetx.customer
 {
@@ -128,7 +130,7 @@ namespace HTB.v2.intranetx.customer
                                 sb.Append(HTBUtils.FormatCurrency(paymentAmount));
                                 sb.Append("</td></tr>");
                                 body = body.Replace("[Payment_Info]", sb.ToString());
-                                var email = new HTBEmail {ReplyTo = "<kundenportal@ecp.or.at>"};
+                                var email = ServiceFactory.Instance.GetService<IHTBEmail>();
                                 email.SendGenericEmail(HTBUtils.GetConfigValue("From_Customer_Email"), "Direktzahlung: Interventionsakt " + aktID, body);
 
                                 ShowDirectPaymentInfoMsg(selectedRowIndex, "Direktzahlung gesendet!");
@@ -197,7 +199,7 @@ namespace HTB.v2.intranetx.customer
                                 sb.Append("</td></tr>");
                                 body = body.Replace("[EMail_Info]", sb.ToString());
 
-                                var email = new HTBEmail();
+                                var email = ServiceFactory.Instance.GetService<IHTBEmail>();
                                 email.SendGenericEmail(from, new[] { HTBUtils.GetConfigValue("From_Customer_Email") }, subject, body, true, 0, aktID);
 
                                 ShowEmailInfoMsg(selectedRowIndex, "Email gesendet!");

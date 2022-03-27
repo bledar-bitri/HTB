@@ -14,6 +14,8 @@ using HTBExcel;
 using HTBExtras;
 using HTBExtras.KingBill;
 using HTBReports;
+using HTBServices;
+using HTBServices.Mail;
 using HTBUtilities;
 
 namespace HTBKlientNotifications
@@ -225,7 +227,7 @@ namespace HTBKlientNotifications
 
             receipients.Add(HTBUtils.GetConfigValue("Default_EMail_Addr")); // send copy to office [this step MUST be performed AFTER we get the subject]
 
-            new HTBEmail().SendGenericEmail(receipients, subject, sb + GetKlientReceiptBody(klient, configValue), true, attachments, 0, 0);
+            ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(receipients, subject, sb + GetKlientReceiptBody(klient, configValue), true, attachments, 0, 0);
         }
 
         private void ShowReport(HTBEmailAttachment attachment)

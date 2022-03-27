@@ -6,6 +6,8 @@ using HTB.Database;
 using HTBUtilities;
 using System.Text;
 using HTB.v2.intranetx.global_files;
+using HTBServices;
+using HTBServices.Mail;
 
 namespace HTB.v2.intranetx.klienten
 {
@@ -392,7 +394,7 @@ namespace HTB.v2.intranetx.klienten
             sb.Append("<br/><p/>");
             sb.Append("Mit Freundlichen Gruessen, <br/>Ihr ECP Team");
 
-            new HTBEmail().SendGenericEmail(new [] { HTBUtils.GetConfigValue("Default_EMail_Addr") }, "ECP - HTB Login Information", sb.ToString());
+            ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(new [] { HTBUtils.GetConfigValue("Default_EMail_Addr") }, "ECP - HTB Login Information", sb.ToString());
         }
         
         #endregion

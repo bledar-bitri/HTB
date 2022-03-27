@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Net;
+using HTBUtilities;
 using Microsoft.Exchange.WebServices.Data;
 
-namespace HTBUtilities
+namespace HTBServices.Mail
 {
     public class EmailSenderExchange : IEmailSender
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         private readonly string defaultFromEmail;
         private readonly string defaultFromName;

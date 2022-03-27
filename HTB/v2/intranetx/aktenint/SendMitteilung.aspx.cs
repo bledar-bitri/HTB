@@ -9,7 +9,8 @@ using HTBUtilities;
 using System.Collections;
 using System.Text;
 using HTB.Database.Views;
-
+using HTBServices;
+using HTBServices.Mail;
 
 namespace HTB.v2.intranetx.aktenint
 {
@@ -55,7 +56,7 @@ namespace HTB.v2.intranetx.aktenint
 
         private void SendEmail()
         {
-            new HTBEmail().SendGenericEmail(aktInt.AKTIntKSVEMail, "Benachrichtigung: Interventionsakt " + aktInt.AktIntAZ, GetEmailBody(), false, aktInt.AktIntCustInkAktID);
+            ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(aktInt.AKTIntKSVEMail, "Benachrichtigung: Interventionsakt " + aktInt.AktIntAZ, GetEmailBody(), false, aktInt.AktIntCustInkAktID);
         }
         private string GetEmailBody()
         {

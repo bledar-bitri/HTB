@@ -5,6 +5,8 @@ using System.IO;
 using System.Reflection;
 using HTB.Database.Views;
 using HTBPdf;
+using HTBServices;
+using HTBServices.Mail;
 using HTBUtilities;
 using iTextSharp.text;
 
@@ -210,7 +212,7 @@ namespace HTBReports
         {
             string mahnungsDir = HTBUtils.GetConfigValue("DocumentsFolder");
             string emailTo = HTBUtils.GetConfigValue("Default_EMail_Addr");
-            var email = new HTBEmail();
+            var email = ServiceFactory.Instance.GetService<IHTBEmail>();
             foreach (object obj in recordList.MahnungsList)
             {
                 if (obj is EcpTerminverlustRec)

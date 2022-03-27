@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using HTB.Database;
 using HTBExtras;
 using HTBUtilities;
 using System.Reflection;
 using HTB.Database.Views;
+using HTBServices;
+using HTBServices.Mail;
 
 namespace HTBAktLayer
 {
@@ -45,7 +48,7 @@ namespace HTBAktLayer
                 InsertAktenIntPos(interventionAkt.AktIntID, balance, "CollectionInvoice Kosten ");
             */
             
-            HTBUtils.NotifySBAboutNewAkt(aktInt.AktIntID);
+            NotifySBAboutNewAkt(aktInt.AktIntID);
 
             return aktInt;
         }
@@ -223,6 +226,27 @@ namespace HTBAktLayer
                 
             }
             return amounts;
+        }
+
+        private static void NotifySBAboutNewAkt(int aktId)
+        {
+            var akt = HTBUtils.GetInterventionAktQry(aktId);
+            if (akt != null)
+            {
+                var to = new List<string>();
+                if (HTBUtils.IsValidEmail(akt.UserEMailOffice))
+                {
+                    to.Add(akt.UserEMailOffice);
+                }
+                if (HTBUtils.IsValidEmail(akt.UserEMailPrivate))
+                {
+                    to.Add(akt.UserEMailPrivate);
+                }
+                if (to.Count > 0)
+                {
+                    ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(to, "Neuer Akt: [" + aktId + "]", "Zur Info: Ein neuer Akt wurde Ihnen zugeteilt!<BR/>Bitte um Ihre Bearbeitung!<BR/><BR/>[PLZ: " + akt.GegnerLastZip + "]<BR/><BR/>Vielen Dank!<BR/>ECP");
+                }
+            }
         }
     }
 }

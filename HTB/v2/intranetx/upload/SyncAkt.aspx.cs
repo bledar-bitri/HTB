@@ -14,6 +14,8 @@ using HTB.v2.intranetx.util;
 using HTBExtras;
 using HTBExtras.XML;
 using HTBReports;
+using HTBServices;
+using HTBServices.Mail;
 using HTBUtilities;
 
 using ActionRecord = HTBExtras.ActionRecord;
@@ -587,7 +589,7 @@ namespace HTB.v2.intranetx.upload
                 Log.Info("SendInstallmentEmail: 8");
                 string body = _body.Replace("[akt]", akt.AktIntAZ);
                 Log.Info("SendInstallmentEmail: 9");
-                new HTBEmail().SendGenericEmail(to, _subjectOut, body, true, new List<HTBEmailAttachment> { new HTBEmailAttachment(File.OpenRead(attachment), fileName, "application/pdf") }, 0, akt.AktIntID);
+                ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(to, _subjectOut, body, true, new List<HTBEmailAttachment> { new HTBEmailAttachment(File.OpenRead(attachment), fileName, "application/pdf") }, 0, akt.AktIntID);
                 Log.Info("SendInstallmentEmail: 10");
             }
         }
@@ -610,7 +612,7 @@ namespace HTB.v2.intranetx.upload
                 Log.Info("[intAktId: " + intAktId + "] [sbAddress: " + sbAddress + "] [adAddress: " + adAddress + "] [_defaultEmailAddr: " + _defaultEmailAddr + "]");
 
                 const string body = "Siehe Anhang.";
-                new HTBEmail().SendGenericEmail(to, subject, body, true, new List<HTBEmailAttachment> { new HTBEmailAttachment(File.OpenRead(attachment), fileName, "application/pdf") }, 0, intAktId);
+                ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(to, subject, body, true, new List<HTBEmailAttachment> { new HTBEmailAttachment(File.OpenRead(attachment), fileName, "application/pdf") }, 0, intAktId);
             }
         }
 
@@ -703,7 +705,7 @@ namespace HTB.v2.intranetx.upload
                     using (FileStream fileStream = File.OpenRead(filepath))
                     {
                         var attachment = new HTBEmailAttachment(fileStream, "Protokoll_" + qryAktInt.AktIntAZ + ".pdf", "application/pdf");
-                        new HTBEmail().SendGenericEmail(null, to, null, bcc, subject, body, true, new List<HTBEmailAttachment> { attachment }, 0, qryAktInt.AktIntID);
+                        ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(null, to, null, bcc, subject, body, true, new List<HTBEmailAttachment> { attachment }, 0, qryAktInt.AktIntID);
                     }
 
                     
@@ -748,7 +750,7 @@ namespace HTB.v2.intranetx.upload
                     var attachment = new HTBEmailAttachment(new MemoryStream(officeMS.ToArray()),
                                                             "Protokoll_" + qryAktInt.AktIntAZ + ".pdf",
                                                             "application/pdf");
-                    new HTBEmail().SendGenericEmail(new List<string> {officeEmailAdr}, subject, body, true,
+                    ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(new List<string> {officeEmailAdr}, subject, body, true,
                                                     new List<HTBEmailAttachment> {attachment}, 0, qryAktInt.AktIntID);
 
                     #endregion
@@ -769,7 +771,7 @@ namespace HTB.v2.intranetx.upload
                 if (size == 0)
                 {
                     var body = string.Format("Akt ID: {0}\n<br/>Attachment: {1}\n<br>Size: {2}", aktId, filename, size);
-                    new HTBEmail().SendGenericEmail(_adminEmailAddress, "Corrupt Attachment: ", body);
+                    ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(_adminEmailAddress, "Corrupt Attachment: ", body);
                 }
             }
             catch (Exception ex)

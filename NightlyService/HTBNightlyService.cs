@@ -15,6 +15,8 @@ using log4net.Config;
 using HTB.Database;
 using HTBReports;
 using HTB.Database.Views;
+using HTBServices;
+using HTBServices.Mail;
 
 namespace NightlyService
 {
@@ -175,7 +177,7 @@ namespace NightlyService
 
                 Log.Info("[agList.Count = " + agList.Count + "]");
 
-                var email = new HTBEmail();
+                var email = ServiceFactory.Instance.GetService<IHTBEmail>();
                 var set = new RecordSet();
 
                 foreach (SingleValue agSB in agList)
@@ -252,7 +254,7 @@ namespace NightlyService
                     var user = (tblUser)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblUser WHERE UserID = " + missingRec.KbMissUser, typeof(tblUser));
                     user.UserStatus = 0;
                     RecordSet.Update(user);
-                    new HTBEmail().SendGenericEmail(new [] { HTBUtils.GetConfigValue("Default_EMail_Addr"), "b.bitri@ecp.or.at" }, "Login gesperrt für Benutzer: " + user.UserVorname + " " + user.UserNachname, "Belege fehlen");
+                    ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(new [] { HTBUtils.GetConfigValue("Default_EMail_Addr"), "b.bitri@ecp.or.at" }, "Login gesperrt für Benutzer: " + user.UserVorname + " " + user.UserNachname, "Belege fehlen");
                     #region Notify when last beleg in block gets used
 
                     #endregion

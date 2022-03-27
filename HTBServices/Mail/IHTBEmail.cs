@@ -4,7 +4,7 @@ using HTB.Database;
 using System.IO;
 using HTB.Database.Views;
 
-namespace HTBUtilities
+namespace HTBServices.Mail
 {
     public interface IHTBEmail
     {

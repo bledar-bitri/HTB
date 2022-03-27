@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using HTB.Database;
-using System.Net.Mail;
-using System.Reflection;
-using System.IO;
+﻿using HTB.Database;
 using HTB.Database.Views;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using HTBUtilities;
 using Tamir.SharpSsh.java.io;
 
-namespace HTBUtilities
+namespace HTBServices.Mail
 {
     public class HTBEmail : IHTBEmail
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
         private static readonly tblServerSettings serverSettings = (tblServerSettings)HTBUtils.GetSqlSingleRecord("Select * from tblServerSettings", typeof(tblServerSettings));
         private static readonly tblControl control = HTBUtils.GetControlRecord();
 
@@ -29,12 +29,11 @@ namespace HTBUtilities
             get { return _replyTo; }
             set { _replyTo = value; }
         }
-        public HTBEmail():this(
-            new EmailSenderExchange(serverSettings.ServerSystemMail, HTBUtils.GetConfigValue("From_Office_Name"), control.SMTPUser, control.SMTPPW)
-            ) { }
+        
         public HTBEmail(IEmailSender emailSender)
         {
             _emailSender = emailSender;
+            Log.Debug("Created New HTBEmail");
         }
 
         #region Lawyer
@@ -56,7 +55,7 @@ namespace HTBUtilities
             }
             catch(Exception ex)
             {
-                log.Error(ex.Message);
+                Log.Error(ex.Message);
                 return false;
             }
         }
@@ -78,8 +77,8 @@ namespace HTBUtilities
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
-                log.Error(ex.StackTrace);
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
                 return false;
             }
         }
@@ -108,7 +107,7 @@ namespace HTBUtilities
         #region Melde Research
         public bool SendMeldeResearchNotice(tblAktMelde melde)
         {
-            log.Info("Sending Research Notice");
+            Log.Info("Sending Research Notice");
             try
             {
                 var user = (tblUser)HTBUtils.GetSqlSingleRecord("SELECT * FROM tblUser WHERE UserID = " + control.MeldeResearchSB, typeof(tblUser));
@@ -124,8 +123,8 @@ namespace HTBUtilities
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
-                log.Error(ex.StackTrace);
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
                 return false;
             }
         } 
@@ -135,10 +134,10 @@ namespace HTBUtilities
         #region Mahnung
         public bool SendMahnung(string body, string attachment, string subject = null, string attachmentName = null)
         {
-            log.Info("Sending Mahnung");
+            Log.Info("Sending Mahnung");
             try
             {
-                log.Info("Mahnung Email TO: " + control.MahnungEmail);
+                Log.Info("Mahnung Email TO: " + control.MahnungEmail);
 
                 var to = new List<string>{ control.MahnungEmail };
                 subject = subject ?? control.MahnungEmailSubject;
@@ -153,11 +152,11 @@ namespace HTBUtilities
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
-                log.Error(ex.StackTrace);
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
                 if (ex.InnerException != null)
                 {
-                    log.Error("Inner: "+ex.InnerException.Message);
+                    Log.Error("Inner: "+ex.InnerException.Message);
                 }
                 return false;
             }
@@ -167,7 +166,7 @@ namespace HTBUtilities
         #region Klient Receipt
         public bool SendKlientReceipt(tblKlient klient, List<string> toEmailAddresses, string body, Stream attachment, bool includeAgb = true)
         {
-            log.Error("Sending Klient Receipt");
+            Log.Error("Sending Klient Receipt");
             try
             {
                 var to = toEmailAddresses;
@@ -198,25 +197,25 @@ namespace HTBUtilities
 
                 var ok = _emailSender.SendEmail(_fromOfficeName + " " + serverSettings.ServerSystemMail, to, ReplyTo, subject, sb.ToString(), true, attachments);
 
-                log.Info(ok
+                Log.Info(ok
                     ? $"Klient [ID: {klient.KlientID}] [Name: {klient.KlientName1}] Receipt sent to: [{string.Join("  ", to)}]"
                     : $"Could not send email to klient [ID: {klient.KlientID}] [Name: {klient.KlientName1}] Receipt sent to: [{string.Join("  ", to)}]");
                 return ok;
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
-                log.Error(ex.StackTrace);
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
                 if (ex.InnerException != null)
                 {
-                    log.Error("Inner: " + ex.InnerException.Message);
+                    Log.Error("Inner: " + ex.InnerException.Message);
                 }
                 return false;
             }
         }
         public bool SendAgReceipt(tblAuftraggeber ag, String body, Stream attachment, bool includeAgb = true)
         {
-            log.Info("Sending Klient Receipt");
+            Log.Info("Sending Klient Receipt");
             try
             {
                 // To
@@ -246,11 +245,11 @@ namespace HTBUtilities
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
-                log.Error(ex.StackTrace);
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
                 if (ex.InnerException != null)
                 {
-                    log.Error("Inner: " + ex.InnerException.Message);
+                    Log.Error("Inner: " + ex.InnerException.Message);
                 }
                 return false;
             }
@@ -286,22 +285,26 @@ namespace HTBUtilities
         {
             try
             {
+                Log.Info("Sending Generic Email");
                 var ok = _emailSender.SendEmail(from, to, ReplyTo, subject, body, ishtml, null);
+                Log.Info("Email was sent");
                 if (ok)
                     EmailSentSuccessfully(subject, to, null, inkAktId, intAktId);
                 
+                Log.Info("Email success OK");
+
                 return ok;
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
-                log.Error(ex.StackTrace);
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
                 if (ex.InnerException != null)
                 {
-                    log.Error(ex.InnerException.Message);
+                    Log.Error(ex.InnerException.Message);
                     if (ex.InnerException.InnerException != null)
                     {
-                        log.Error(ex.InnerException.InnerException.Message);
+                        Log.Error(ex.InnerException.InnerException.Message);
                     }
                 }
                 EmailSentError(subject, to, inkAktId, intAktId, ex);
@@ -327,7 +330,7 @@ namespace HTBUtilities
                 {
                     sender = from;
                 }
-                                var attachmentsToDispose = new List<Stream>();
+                var attachmentsToDispose = new List<Stream>();
                 if (attachments != null)
                 {
                     foreach (var attachment in attachments)
@@ -354,7 +357,7 @@ namespace HTBUtilities
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
+                Log.Error(ex.Message);
                 EmailSentError(subject, to, inkAktId, intAktId, ex);
                 return false;
             }

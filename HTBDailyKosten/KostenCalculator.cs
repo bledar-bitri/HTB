@@ -9,6 +9,8 @@ using HTBAktLayer;
 using HTBInvoiceManager;
 using System.Reflection;
 using HTB.Database.Views;
+using HTBServices;
+using HTBServices.Mail;
 
 namespace HTBDailyKosten
 {
@@ -134,7 +136,7 @@ namespace HTBDailyKosten
                     }
                     if (record.IsKlage || record.IsKlageErinnerung)
                     {
-                        var mail = new HTBEmail();
+                        var mail = ServiceFactory.Instance.GetService<IHTBEmail>();
                         if (record.IsKlageErinnerung)
                         {
                             mail.SendLawyerReminder(HTBUtils.GetInkassoAktQry(aktId));
@@ -277,7 +279,7 @@ namespace HTBDailyKosten
             aktUtils.SetInkassoStatusBasedOnWflAction(meldeKostenArtId, _control.AutoUserId, null, "", _control.MeldePeriod);
 
             Log.Info("MELDE CREATED");
-            new HTBEmail().SendGenericEmail(new string[] { HTBUtils.GetConfigValue("Melde_Email"), HTBUtils.GetConfigValue("Default_EMail_Addr") }, "Neu Meldeakt: " + meldeAktId + " Akt: " + aktId, "Melde: " + meldeAktId + " InkassoAkt: " + aktId);
+            ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(new string[] { HTBUtils.GetConfigValue("Melde_Email"), HTBUtils.GetConfigValue("Default_EMail_Addr") }, "Neu Meldeakt: " + meldeAktId + " Akt: " + aktId, "Melde: " + meldeAktId + " InkassoAkt: " + aktId);
         }
 
         private void SetWFLStatusDone(tblCustInkAkt akt)

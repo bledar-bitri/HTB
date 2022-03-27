@@ -21,7 +21,7 @@ namespace HTBUtilities
     public static class HTBUtils
     {
 
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
         private const double Epsilon = 0.001;
         public static DateTime DefaultDate = new DateTime(1900, 1, 1);
         public const string DefaultShortDate = "01.01.1900";
@@ -912,27 +912,6 @@ namespace HTBUtilities
         {
             var lastDayOfMonth = GetLastDayOfMonth(mainDate);
             return lastDayOfMonth.ToShortDateString() == dateToTest.ToShortDateString();
-        }
-        public static void NotifySBAboutNewAkt(int aktId)
-        {
-            qryAktenInt akt = GetInterventionAktQry(aktId);
-            if (akt != null)
-            {
-                var to = new List<string>();
-                if (IsValidEmail(akt.UserEMailOffice))
-                {
-                    to.Add(akt.UserEMailOffice);
-                }
-                if (IsValidEmail(akt.UserEMailPrivate))
-                {
-                    to.Add(akt.UserEMailPrivate);
-                }
-                if(to.Count > 0)
-                {
-                    new HTBEmail().SendGenericEmail(to, "Neuer Akt: [" + aktId + "]", "Zur Info: Ein neuer Akt wurde Ihnen zugeteilt!<BR/>Bitte um Ihre Bearbeitung!<BR/><BR/>[PLZ: " + akt.GegnerLastZip + "]<BR/><BR/>Vielen Dank!<BR/>ECP");
-                }
-            }
-
         }
         
         public static void AddInkassoAction(int aktId, string caption, string memo, int userId = 0)

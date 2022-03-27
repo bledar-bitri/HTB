@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
+using System.Net.Security;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
+using HTBUtilities;
 
-namespace HTBUtilities
+namespace HTBServices.Mail
 {
     public class EmailSenderSmtp : IEmailSender
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         private readonly string defaultFromEmail;
         private readonly string defaultFromName;
@@ -26,6 +30,8 @@ namespace HTBUtilities
             this.port = port;
             this.user = user;
             this.password = password;
+            ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => sslPolicyErrors == SslPolicyErrors.None;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
         public bool SendEmail(string from, IEnumerable<string> to, string replyTo, string subject, string body, bool ishtml, IEnumerable<HTBEmailAttachment> attachments)
@@ -34,14 +40,14 @@ namespace HTBUtilities
         }
         public bool SendEmail(string from, IEnumerable<string> to, IEnumerable<string> cc, IEnumerable<string> bcc, string replyTo, string subject, string body, bool ishtml, IEnumerable<HTBEmailAttachment> attachments)
         {
-            log.Info("Sending Generic Email");
+            Log.Info("Sending Generic Email");
             try
             {
                 var mailMsg = new MailMessage();
                 foreach (string toAddr in to)
                 {
                     mailMsg.To.Add(toAddr);
-                    log.Info("Generic Email TO: " + toAddr);
+                    Log.Info("Generic Email TO: " + toAddr);
                 }
 
                 if (cc != null)
@@ -49,7 +55,7 @@ namespace HTBUtilities
                     foreach (string ccAddr in cc)
                     {
                         mailMsg.CC.Add(ccAddr);
-                        log.Info("Generic Email CC [with attachments]: " + ccAddr);
+                        Log.Info("Generic Email CC [with attachments]: " + ccAddr);
                     }
                 }
 
@@ -58,22 +64,36 @@ namespace HTBUtilities
                     foreach (string bccAddr in bcc)
                     {
                         mailMsg.Bcc.Add(bccAddr);
-                        log.Info("Generic Email CC [with attachments]: " + bccAddr);
+                        Log.Info("Generic Email CC [with attachments]: " + bccAddr);
                     }
                 }
 
                 // From
                 var mailAddress = new MailAddress(defaultFromName + " " + defaultFromEmail);
                 mailMsg.From = mailAddress;
+                
+                Log.Info("Generic Email From: " + mailAddress);
 
                 // Subject and Body
                 mailMsg.Subject = subject;
                 mailMsg.IsBodyHtml = ishtml;
                 mailMsg.Body = body;
-                foreach (var attachment in attachments.Where(attachment => attachment != null))
+                Log.Info("Generic Adding Attachments: ");
+                var attachmentsToSend = attachments?.Where(attachment => attachment != null);
+
+
+                if (attachmentsToSend != null)
                 {
-                    mailMsg.Attachments.Add(new Attachment(attachment.AttachmentStream, attachment.AttachmentStreamNamePrefix + attachment.AttachmentStreamName, attachment.AttachmentStreamMime));
+                    var htbEmailAttachments = attachmentsToSend as HTBEmailAttachment[] ?? attachmentsToSend.ToArray();
+                    foreach (var attachment in htbEmailAttachments)
+                    {
+                        Log.Debug($"Adding Attachment: {attachment.AttachmentStreamName} ");
+                        mailMsg.Attachments.Add(new Attachment(attachment.AttachmentStream,
+                            attachment.AttachmentStreamNamePrefix + attachment.AttachmentStreamName,
+                            attachment.AttachmentStreamMime));
+                    }
                 }
+
                 if (from != null && HTBUtils.IsValidEmail(from))
                 {
                     mailMsg.From = new MailAddress(from);
@@ -82,29 +102,39 @@ namespace HTBUtilities
                 {
                     mailMsg.ReplyToList.Add(new MailAddress(replyTo));
                 }
+                
+                Log.Debug($"Creating SMTP Client [server: {server}]");
 
                 // Init SmtpClient and send
                 var smtpClient = new SmtpClient(server);
                 if (port > 0)
                 {
+                    Log.Debug($"SMTP Setting Port {port}");
                     smtpClient.Port = port;
                 }
-                var credentials = new System.Net.NetworkCredential(user, password);
+                var credentials = new NetworkCredential(user, password);
+                Log.Debug($"SMTP Credentials [{user}][{password}]");
+
+                smtpClient.EnableSsl = true;
                 smtpClient.Credentials = credentials;
+
+                Log.Info("Sending Mail");
                 smtpClient.Send(mailMsg);
-                log.Info("SMTP EMail Sent!");
+
+                Log.Info("SMTP EMail Sent!");
                 return true;
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
-                log.Error(ex.StackTrace);
+                Log.Error(ex);
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
                 if (ex.InnerException != null)
                 {
-                    log.Error(ex.InnerException.Message);
+                    Log.Error(ex.InnerException.Message);
                     if (ex.InnerException.InnerException != null)
                     {
-                        log.Error(ex.InnerException.InnerException.Message);
+                        Log.Error(ex.InnerException.InnerException.Message);
                     }
                 }
                 return false;

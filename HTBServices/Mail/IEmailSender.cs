@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HTBUtilities
+namespace HTBServices.Mail
 {
     public interface IEmailSender
     {

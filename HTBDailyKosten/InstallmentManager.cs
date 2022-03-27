@@ -7,6 +7,8 @@ using HTBAktLayer;
 using HTBUtilities;
 using HTB.Database;
 using HTB.Database.Views;
+using HTBServices.Mail;
+using HTBServices;
 
 namespace HTBDailyKosten
 {
@@ -46,14 +48,14 @@ namespace HTBDailyKosten
                                     qryCustInkAkt akt = HTBUtils.GetInkassoAktQry(installment.CustInkAktRateAktID);
                                     if (akt == null)
                                     {
-                                        new HTBEmail().SendGenericEmail(HTBUtils.GetConfigValue("Default_EMail_Addr"), "Rate ohne Akt!", "Rate: " + installment.CustInkAktRateID + " hatt einen falschen Aktenzahl: " + installment.CustInkAktRateAktID, true, installment.CustInkAktRateAktID);
+                                        ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(HTBUtils.GetConfigValue("Default_EMail_Addr"), "Rate ohne Akt!", "Rate: " + installment.CustInkAktRateID + " hatt einen falschen Aktenzahl: " + installment.CustInkAktRateAktID, true, installment.CustInkAktRateAktID);
                                     }
                                     else
                                     {
                                         var intAkt = (qryAktenInt) HTBUtils.GetSqlSingleRecord("SELECT * FROM qryAktenInt WHERE AktIntCustInkAktID = " + installment.CustInkAktRateAktID + " ORDER BY AktIntID DESC", typeof (qryAktenInt));
                                         if (intAkt == null)
                                         {
-                                            new HTBEmail().SendGenericEmail(HTBUtils.GetConfigValue("Default_EMail_Addr"), "Persönlichesinkasso ohne Intervenionsakt!",
+                                            ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(HTBUtils.GetConfigValue("Default_EMail_Addr"), "Persönlichesinkasso ohne Intervenionsakt!",
                                                                             "Rate: " + installment.CustInkAktRateID + " Inkassoakt: " + installment.CustInkAktRateAktID + " könte nicht im Interventionsbereich gefunden werden!", true, installment.CustInkAktRateAktID);
                                         }
                                         else if(HasPersonalCollectionAction(intAkt.AktIntID))
@@ -82,8 +84,8 @@ namespace HTBDailyKosten
                                                     user.UserEMailPrivate
                                                 });
 
-                                            
-                                            new HTBEmail().SendGenericEmail(toList.ToArray(), intAkt.GegnerLastName1 + " " + intAkt.GegnerLastName2 + " Terminverlust", adTvlText);
+
+                                            ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(toList.ToArray(), intAkt.GegnerLastName1 + " " + intAkt.GegnerLastName2 + " Terminverlust", adTvlText);
 
                                             RecordSet.Update(installment);
                                             new AktUtils(installment.CustInkAktRateAktID).CreateAktAktion(-1, _control.AutoUserId, "Email an AD über die Rate: " + installment.CustInkAktRateDueDate.ToShortDateString());

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace HTBUtilities
+namespace HTBServices.Mail
 {
     public class HTBEmailAttachment
     {

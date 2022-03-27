@@ -13,6 +13,8 @@ using System.Text;
 using HTB.v2.intranetx.util;
 using System.IO;
 using HTB.Database.Views;
+using HTBServices;
+using HTBServices.Mail;
 
 namespace HTB.v2.intranetx.auftraggeber
 {
@@ -228,7 +230,7 @@ namespace HTB.v2.intranetx.auftraggeber
                                         user.UserEMailPrivate,
                                         HTBUtils.GetConfigValue("AG_Extenssion_CC_EMail_Addr")
                                     });
-                            var email = new HTBEmail();
+                            var email = ServiceFactory.Instance.GetService<IHTBEmail>();
                             email.SendGenericEmail(toList.ToArray(), HTBUtils.GetConfigValue("SB_Extension_Email_Subject"), emailBody, true);
                         }
                     }

@@ -12,6 +12,8 @@ using HTB.Database.LookupRecords;
 using HTB.Database.StoredProcs;
 using HTB.Database.Views;
 using HTBExcel;
+using HTBServices;
+using HTBServices.Mail;
 using HTBUtilities;
 using HTBXmlToPdf;
 
@@ -68,7 +70,7 @@ namespace HTBAktLayer
 
                 if (to.Count > 0)
                     //new HTBEmail().SendLawyerPackage(to, akt, attachments,  GetLawyerEMailBody(akt, lawyer));
-                    new HTBEmail().SendLawyerPackage(to, akt, mailAttachment, GetLawyerEMailBody(akt, lawyer));
+                    ServiceFactory.Instance.GetService<IHTBEmail>().SendLawyerPackage(to, akt, mailAttachment, GetLawyerEMailBody(akt, lawyer));
                 #endregion
 
                 #region Attach Documents To Case

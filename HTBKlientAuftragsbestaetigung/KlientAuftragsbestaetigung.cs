@@ -10,6 +10,8 @@ using HTBReports;
 using HTBUtilities;
 using System.Diagnostics;
 using System.Threading;
+using HTBServices;
+using HTBServices.Mail;
 
 namespace HTBKlientAuftragsbestaetigung
 {
@@ -66,7 +68,7 @@ namespace HTBKlientAuftragsbestaetigung
 
         private static void GenerateAndSendClientReceipt(int clientId, tblUser user = null)
         {
-            var email = new HTBEmail();
+            var email = ServiceFactory.Instance.GetService<IHTBEmail>();
             List<string> emailAddresses = null;
             var paramaters = new ReportParameters
             {
@@ -114,7 +116,7 @@ namespace HTBKlientAuftragsbestaetigung
 
             ArrayList agList = HTBUtils.GetSqlRecords(agQuery, typeof(SingleValue));
 
-            var email = new HTBEmail();
+            var email = ServiceFactory.Instance.GetService<IHTBEmail>();
 
             foreach (SingleValue agId in agList)
             {

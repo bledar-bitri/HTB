@@ -13,6 +13,8 @@ using HTB.v2.intranetx.util;
 using HTBAktLayer;
 using HTBExtras.XML;
 using HTBReports;
+using HTBServices;
+using HTBServices.Mail;
 using HTBUtilities;
 using Tamir.SharpSsh.java.io;
 using File = System.IO.File;
@@ -180,7 +182,7 @@ namespace HTB.v2.intranetx.aktenint.tablet
                         }
                         
                         Response.Write(receipt.ToXmlString());
-                        new HTBEmail().SendGenericEmail(new string[] { HTBUtils.GetConfigValue("Office_Email") }, "Akt " + akt.AktIntID + " abgegeben", "Zur Info: Akt " + akt.AktIntID+" wurde abgegeben.");
+                        ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(new string[] { HTBUtils.GetConfigValue("Office_Email") }, "Akt " + akt.AktIntID + " abgegeben", "Zur Info: Akt " + akt.AktIntID+" wurde abgegeben.");
                     }
                     else
                     {
@@ -365,7 +367,7 @@ namespace HTB.v2.intranetx.aktenint.tablet
                 }
                 to.Add(_defaultEmailAddr);
                 string body = _body.Replace("[akt]", akt.AktIntAZ);
-                new HTBEmail().SendGenericEmail(to, _subjectOut, body, true, new List<HTBEmailAttachment> { new HTBEmailAttachment(new FileInputStream(attachment), fileName, "application/pdf") }, 0, akt.AktIntID);
+                ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(to, _subjectOut, body, true, new List<HTBEmailAttachment> { new HTBEmailAttachment(new FileInputStream(attachment), fileName, "application/pdf") }, 0, akt.AktIntID);
             }
         }
         #endregion
@@ -595,7 +597,7 @@ namespace HTB.v2.intranetx.aktenint.tablet
                     text = text.Replace("[Akt]", akt.AktIntAZ);
                 }
 
-                new HTBEmail().SendGenericEmail(receipients, subject, text);
+                ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(receipients, subject, text);
             }
         }
         

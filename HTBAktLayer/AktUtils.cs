@@ -8,6 +8,8 @@ using System.Collections;
 using HTBUtilities;
 using HTBInvoiceManager;
 using HTB.Database.Views;
+using HTBServices.Mail;
+using HTBServices;
 
 namespace HTBAktLayer
 {
@@ -307,7 +309,7 @@ namespace HTBAktLayer
             body = body.Replace("[gegner]", gegner.GegnerName1 + " " + gegner.GegnerName2 + " " + gegner.GegnerName3);
             sb.Append(body);
 
-            new HTBEmail().SendGenericEmail(
+            ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(
                 receipients,
                 subject + ": [" + InkAktId + "]",
                 sb.ToString(),

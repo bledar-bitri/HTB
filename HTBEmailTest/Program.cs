@@ -1,8 +1,9 @@
-﻿using System;
+﻿using HTBServices;
+using HTBServices.Mail;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using HTBUtilities;
 
 namespace HTBEmailTest
 {
@@ -34,7 +35,7 @@ namespace HTBEmailTest
                 to = args[0];
             Console.WriteLine($"Testing email [to: {to}]");
 
-            new HTBUtilities.HTBEmail().SendGenericEmail(to, subject, message);
+            ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(to, subject, message);
         }
 
         static void TestEmailWithAttachments(string[] args)
@@ -46,9 +47,9 @@ namespace HTBEmailTest
 
             if (args.Length > 0)
                 to = args[0];
-            var attachments = new List<HTBEmailAttachment>{ new HTBEmailAttachment(new MemoryStream(Encoding.Default.GetBytes("TEst File ...")), "Test File.txt", "")};
+            var attachments = new List<HTBEmailAttachment>{ new HTBEmailAttachment(new MemoryStream(Encoding.Default.GetBytes("Test File ...")), "Test File.txt", "")};
             Console.WriteLine($"Testing email with attachment [to: {to}]");
-            new HTBUtilities.HTBEmail().SendGenericEmail(null, new List<string>{to}, subject, message, true, attachments, 0,0);
+            ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail("office@ecp.or.at", new List<string>{to}, subject, message, true, attachments, 0,0);
         }
 
 

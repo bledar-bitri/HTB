@@ -12,6 +12,8 @@ using HTBAktLayer;
 using System.Text;
 using HTB.Database.Views;
 using HTBExtras;
+using HTBServices;
+using HTBServices.Mail;
 
 namespace HTB.v2.intranetx.aktenint
 {
@@ -625,7 +627,7 @@ namespace HTB.v2.intranetx.aktenint
             err.KassaBlockErrMessage = sb.ToString();
             RecordSet.Insert(err);
             if(!ok)
-                new HTBEmail().SendGenericEmail(new string[] { HTBUtils.GetConfigValue("Default_EMail_Addr"), HTBUtils.GetConfigValue("Office_Email"), "b.bitri@ecp.or.at" },
+                ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(new string[] { HTBUtils.GetConfigValue("Default_EMail_Addr"), HTBUtils.GetConfigValue("Office_Email"), "b.bitri@ecp.or.at" },
                                             _user.UserVorname + " " + _user.UserNachname + ":  Belegsnummer Fehler ",
                                             sb.ToString());
         

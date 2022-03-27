@@ -7,6 +7,7 @@ using System.Web.UI.WebControls;
 using HTB.v2.intranetx.util;
 using HTBAktLayer;
 using HTBReports;
+using HTBServices.Mail;
 using HTBUtilities;
 
 namespace HTB.v2.intranetx.test

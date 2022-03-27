@@ -10,6 +10,8 @@ using HTBAktLayer;
 using System.Collections;
 using System.Reflection;
 using HTB.Database.Views;
+using HTBServices.Mail;
+using HTBServices;
 
 namespace HTBDailyKosten
 {
@@ -339,8 +341,8 @@ namespace HTBDailyKosten
                 {
                     subject += " [an AD NICHT Geschickt ... keine Emailadresse]";
                 }
-                
-                new HTBEmail().SendGenericEmail(toList, subject, text, true);
+
+                ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(toList, subject, text, true);
                 intAkt.AktIntOverdueNotifiedDate = DateTime.Now;
                 RecordSet.Update(intAkt);
             }
@@ -372,8 +374,8 @@ namespace HTBDailyKosten
             subject.Append(" für Akt: ");
             subject.Append(aktId);
             subject.Append(" wurde generiert!");
-            
-            new HTBEmail().SendGenericEmail(HTBUtils.GetConfigValue("Default_EMail_Addr"), subject.ToString(), "Akt: " + aktId + "  Melde: "+meldeId, true, aktId);
+
+            ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(HTBUtils.GetConfigValue("Default_EMail_Addr"), subject.ToString(), "Akt: " + aktId + "  Melde: "+meldeId, true, aktId);
         }
         #endregion
 
@@ -509,7 +511,7 @@ namespace HTBDailyKosten
         }
         private void ProcessMeldeFurtherResearch(tblAktMelde aktMelde)
         {
-            new HTBEmail().SendMeldeResearchNotice(aktMelde);
+            ServiceFactory.Instance.GetService<IHTBEmail>().SendMeldeResearchNotice(aktMelde);
             Log.Info("SENT MAIL");
         }
         private void ProcessMeldePersonIsDead(tblCustInkAkt inkAkt)
@@ -535,7 +537,7 @@ namespace HTBDailyKosten
             subject.Append(_control.InkassoAktWaitForReMeldePeriod);
             subject.Append(" Tage warten auf eine neue Melde.");
 
-            new HTBEmail().SendGenericEmail(HTBUtils.GetConfigValue("Default_EMail_Addr"), subject.ToString(), "Akt: " + aktId + " wurde Kalendiert!", true,aktId);
+            ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(HTBUtils.GetConfigValue("Default_EMail_Addr"), subject.ToString(), "Akt: " + aktId + " wurde Kalendiert!", true,aktId);
         }
         #endregion
 

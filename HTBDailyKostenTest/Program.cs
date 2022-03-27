@@ -21,6 +21,8 @@ using HTB.v2.intranetx.routeplanter;
 using System.Collections.Generic;
 using HTB.v2.intranetx.util;
 using Microsoft.VisualBasic;
+using HTBServices;
+using HTBServices.Mail;
 
 namespace HTBDailyKosten
 {
@@ -170,7 +172,7 @@ namespace HTBDailyKosten
 
                 ArrayList klientsList = HTBUtils.GetSqlRecords(klientQuery, typeof (SingleValue));
 
-                var email = new HTBEmail();
+                var email = ServiceFactory.Instance.GetService<IHTBEmail>();
 
                 foreach (SingleValue klientId in klientsList)
                 {
@@ -316,7 +318,7 @@ namespace HTBDailyKosten
                                "\"> check params </a>" +
                                "</body>" +
                                "</html>";
-            HTBEmail email = new HTBEmail();
+            IHTBEmail email = ServiceFactory.Instance.GetService<IHTBEmail>();
             email.SendGenericEmail(HTBUtils.GetConfigValue("Default_EMail_Addr"), "test form data", htmlEmail);
         }
 
@@ -337,7 +339,7 @@ namespace HTBDailyKosten
 
                 ArrayList agList = HTBUtils.GetSqlRecords(agQuery, typeof (SingleValue));
 
-                HTBEmail email = new HTBEmail();
+                IHTBEmail email = ServiceFactory.Instance.GetService<IHTBEmail>();
                 RecordSet set = new RecordSet();
 
                 foreach (SingleValue agSB in agList)
@@ -586,7 +588,7 @@ namespace HTBDailyKosten
                     var user = (tblUser) HTBUtils.GetSqlSingleRecord("SELECT * FROM tblUser WHERE UserID = " + missingRec.KbMissUser, typeof (tblUser));
                     user.UserStatus = 0;
                     RecordSet.Update(user);
-                    new HTBEmail().SendGenericEmail(new string[] {HTBUtils.GetConfigValue("Default_EMail_Addr"), "b.bitri@ecp.or.at"}, "Login gesperrt für Benutzer: " + user.UserVorname + " " + user.UserNachname, "Belege fehlen");
+                    ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(new string[] {HTBUtils.GetConfigValue("Default_EMail_Addr"), "b.bitri@ecp.or.at"}, "Login gesperrt für Benutzer: " + user.UserVorname + " " + user.UserNachname, "Belege fehlen");
 
                     #region Notify when last beleg in block gets used
 

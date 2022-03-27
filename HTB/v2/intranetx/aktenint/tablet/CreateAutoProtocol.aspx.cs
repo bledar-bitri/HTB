@@ -12,6 +12,8 @@ using HTB.Database;
 using HTB.Database.Views;
 using HTB.v2.intranetx.util;
 using HTBReports;
+using HTBServices;
+using HTBServices.Mail;
 using HTBUtilities;
 
 namespace HTB.v2.intranetx.aktenint.tablet
@@ -182,7 +184,7 @@ namespace HTB.v2.intranetx.aktenint.tablet
                                 using (var fileStream = File.OpenRead(filepath))
                                 {
                                     var attachment = new HTBEmailAttachment(fileStream, "Uebergabe_Protokoll_" + akt.AktIntAZ +".pdf", "application/pdf");
-                                    new HTBEmail().SendGenericEmail(validEmails, "ECP Übergabe Protokoll", "Siehe Anhang", true, new List<HTBEmailAttachment> {attachment}, 0, akt.AktIntID);
+                                    ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(validEmails, "ECP Übergabe Protokoll", "Siehe Anhang", true, new List<HTBEmailAttachment> {attachment}, 0, akt.AktIntID);
                                     Log.Info($"Akt [{protocol.ProtokolAkt}]  Email Sent TO: [{string.Join(" ", validEmails)}]");
 
                                 }

@@ -5,6 +5,8 @@ using HTB.v2.intranetx.util;
 using HTBUtilities;
 using HTBAktLayer;
 using HTB.Database.Views;
+using HTBServices;
+using HTBServices.Mail;
 
 namespace HTB.v2.intranetx.aktenink
 {
@@ -87,7 +89,7 @@ namespace HTB.v2.intranetx.aktenink
         {
             int meldeAktId = _aktUtils.CreateMeldeAkt(_custInkAkt);
             _aktUtils.SetInkassoStatusBasedOnWflAction(_aktUtils.control.MeldeKostenArtId, GlobalUtilArea.GetUserId(Session), null, txtMemo.Text);
-            new HTBEmail().SendGenericEmail(new string[]{HTBUtils.GetConfigValue("Melde_Email"), HTBUtils.GetConfigValue("Default_EMail_Addr")}, "Neu Meldeakt: " + meldeAktId + " Akt: " + _custInkAkt.CustInkAktID, "Melde: " + meldeAktId + " InkassoAkt: " + _custInkAkt.CustInkAktID);
+            ServiceFactory.Instance.GetService<IHTBEmail>().SendGenericEmail(new string[]{HTBUtils.GetConfigValue("Melde_Email"), HTBUtils.GetConfigValue("Default_EMail_Addr")}, "Neu Meldeakt: " + meldeAktId + " Akt: " + _custInkAkt.CustInkAktID, "Melde: " + meldeAktId + " InkassoAkt: " + _custInkAkt.CustInkAktID);
         }
     }
 }
