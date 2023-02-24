@@ -21,8 +21,7 @@ namespace HTB.Database
         protected DbConnection Con;
         readonly CommittableTransaction _transaction = new CommittableTransaction();
         public readonly int ConnectionType = DbConnection.ConnectionType_SqlServer;
-        public static string DB2Schema;
-        
+       
 
         #region Property Declaration
         private ArrayList _lsttblMahnung = new ArrayList();
@@ -41,18 +40,12 @@ namespace HTB.Database
         #region Load
         public void LoadRecords(ArrayList list, string psqlCommand, Type recordName)
         {
-            if(ConnectionType == DbConnection.ConnectionType_DB2)
-                LoadListFromDB2DataReader(list, GetDB2DataReader(psqlCommand), recordName);
-            else
-                LoadListFromDataReader(list, GetDataReader(psqlCommand, false), recordName);
+            LoadListFromDataReader(list, GetDataReader(psqlCommand, false), recordName);
         }
 
         public void LoadRecords(string psqlCommand, Type recordName)
         {
-            if (ConnectionType == DbConnection.ConnectionType_DB2)
-                LoadListFromDB2DataReader(RecordsList, GetDB2DataReader(psqlCommand), recordName);
-            else
-                LoadListFromDataReader(RecordsList, GetDataReader(psqlCommand, false), recordName);
+            LoadListFromDataReader(RecordsList, GetDataReader(psqlCommand, false), recordName);
         }
         #endregion
 
@@ -137,10 +130,6 @@ namespace HTB.Database
         public string GetDbInsertStatement(Record record)
         {
             var sb = new StringBuilder("INSERT INTO ");
-            if (ConnectionType == DbConnection.ConnectionType_DB2)
-            {
-                sb.Append(GetDB2SchemaName());
-            }
             if (record.TableName != null && !record.TableName.Trim().Equals(String.Empty))
             {
                 sb.Append(record.TableName);
@@ -166,10 +155,6 @@ namespace HTB.Database
         public string GetDbUpdateStatement(Record record, string where)
         {
             var sb = new StringBuilder("UPDATE ");
-            if (ConnectionType == DbConnection.ConnectionType_DB2)
-            {
-                sb.Append(GetDB2SchemaName());
-            }
             if (record.TableName != null && !record.TableName.Trim().Equals(String.Empty))
             {
                 sb.Append(record.TableName);
@@ -396,10 +381,6 @@ namespace HTB.Database
             if (value == DateTime.MinValue || value.ToShortDateString() == "01.01.0001")
                 return GetDbDefaultDateString();
             
-            if(ConnectionType == DbConnection.ConnectionType_DB2)
-            {
-                return $"{value:u}".Replace("Z", ""); // remove the letter Z at the end of the date
-            }
             return value.ToString(DateFormat);
         }
         private static string GetDbDefaultDateString()
@@ -417,10 +398,6 @@ namespace HTB.Database
         private string GetDbDeleteStatement(Record record, string where)
         {
             var sb = new StringBuilder("DELETE ");
-            if (ConnectionType == DbConnection.ConnectionType_DB2)
-            {
-                sb.Append(GetDB2SchemaName());
-            }
             if (record.TableName != null && !record.TableName.Trim().Equals(String.Empty))
             {
                 sb.Append(record.TableName);
@@ -493,9 +470,6 @@ namespace HTB.Database
         [MethodImpl(MethodImplOptions.Synchronized)]
         public int ExecuteNonQuery(string psqlCommand, int connectToDatabase = DatabasePool.ConnectToHTB)
         {
-            if (ConnectionType == DbConnection.ConnectionType_DB2)
-                return DB2ExcecuteNonQuery(psqlCommand);
-            
             return SqlServerExcecuteNonQuery(psqlCommand, connectToDatabase);
         }
 
@@ -617,15 +591,6 @@ namespace HTB.Database
         public static bool Insert(Record rec)
         {
             return new RecordSet().InsertRecord(rec);
-        }
-        public static string GetDB2SchemaName(bool includeDot = true)
-        {
-            DB2Schema = ConfigurationManager.AppSettings["DB2Schema"]; // read it from web.config just to be sure we are getting the latest schema
-            
-            if (!string.IsNullOrEmpty(DB2Schema))
-                return "\"" + DB2Schema + "\"" + (includeDot ? "." : "");
-
-            return "";
         }
 
         protected void LogIfDebug(bool debug, string message)

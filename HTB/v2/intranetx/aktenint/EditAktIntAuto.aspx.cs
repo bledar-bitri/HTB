@@ -14,7 +14,6 @@ using HTBServices;
 using HTBServices.Mail;
 using HTBUtilities;
 using log4net;
-using log4net.Repository.Hierarchy;
 
 namespace HTB.v2.intranetx.aktenint
 {

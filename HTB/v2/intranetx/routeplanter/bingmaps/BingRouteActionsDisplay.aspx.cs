@@ -23,6 +23,7 @@ namespace HTB.v2.intranetx.routeplanter.bingmaps
         {
             if (!IsPostBack)
             {
+                Session["MM_UserID"] = "99";
                 GlobalUtilArea.LoadUserDropdownList(ddlUser, GlobalUtilArea.GetUsers(Session));
                 /*
                 var parameters = new ArrayList

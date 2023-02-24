@@ -12,7 +12,6 @@ namespace HTB.Database
     {
         public const int ConnectionType_SqlServer = 0;
         public const int ConnectionType_MySql = 1;
-        public const int ConnectionType_DB2 = 3;
 
         private readonly SqlConnection _conn = new SqlConnection();
         private readonly MySqlConnection _mySqlConn = new MySqlConnection();

@@ -27,7 +27,7 @@ namespace HTB.v2.intranetx.routeplanter.bingmaps
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            //Session["MM_UserID"] = "99";
+            Session["MM_UserID"] = "99";
             Server.ScriptTimeout = 3600 * 3;
             ctlMessage.Clear();
             _permissions.LoadPermissions(GlobalUtilArea.GetUserId(Session));

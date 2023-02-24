@@ -25,7 +25,7 @@ namespace HTB.v2.intranetx.global_files
                 {
                     file1.PostedFile.SaveAs(importFolder +"/" + file1.FileName);
                     msg = "SUCCESS";
-                    bdy.Attributes.Add("OnLoad", "window.opener.document.forms(0).item(\"" + Request.QueryString["fieldname"] + "\").value = \"" + file1.FileName + "\"; window.close();");
+                    bdy.Attributes.Add("OnLoad", "window.opener.document.forms[0].elements['" + Request.QueryString["fieldname"] + "'].value = \"" + file1.FileName + "\"; window.close();");
                 }
                 else
                 {

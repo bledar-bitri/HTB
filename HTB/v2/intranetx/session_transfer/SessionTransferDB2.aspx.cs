@@ -56,7 +56,7 @@ namespace HTB.session_transfer
         private string AddSessionToDatabase()
         {
 
-            var set = new RecordSet(DbConnection.ConnectionType_DB2);
+            var set = new RecordSet();
             string strSql, guidTemp = GetGuid();
             int i = 0;
             try

@@ -13,7 +13,7 @@ namespace HTB.Database
         public const int ConnectionToHTBRoads = 1;
         public const int ConnectionToHTBRoadsDB2 = 2;
 
-        private static readonly ArrayList DB2RoadsConnections = new ArrayList();
+        //private static readonly ArrayList DB2RoadsConnections = new ArrayList();
         private static readonly ArrayList HTBConnections = new ArrayList();
         private static readonly ArrayList HTBRoadsConnections = new ArrayList();
 
@@ -28,8 +28,8 @@ namespace HTB.Database
 
         public static DbConnection GetConnection(string cmd, int connectToDatabase, bool debugMode = false)
         {
-            if (connectToDatabase == ConnectionToHTBRoadsDB2)
-                return GetDB2Connection(cmd, connectToDatabase);
+            //if (connectToDatabase == ConnectionToHTBRoadsDB2)
+             //   return GetDB2Connection(cmd, connectToDatabase);
  
             return GetSqlServerConnection(cmd, connectToDatabase, debugMode);
         }
@@ -152,7 +152,7 @@ namespace HTB.Database
             return connToReturn;
             
         }
-
+        /*
         private static DbConnection GetDB2Connection(string cmd, int connectToDatabase)
         {
             lock (DB2RoadsConnString)
@@ -210,7 +210,7 @@ namespace HTB.Database
                 }
             }
         }
-    
+    */
         public static DbConnection GetHTBConnection2()
         {
 

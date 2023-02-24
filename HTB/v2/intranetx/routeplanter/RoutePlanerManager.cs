@@ -71,9 +71,9 @@ namespace HTB.v2.intranetx.routeplanter
         public long MaxTravelTime;
         public DateTime FirstAppointmentTime = DateTime.MinValue;
 
-        public TimeSpan _tspRunTime;
-        public double _tspBestTourValue;
-        public City currentLocation;
+        public TimeSpan TspRunTime;
+        public double TspBestTourValue;
+        public City CurrentLocation;
 
         #region Constructors
 
@@ -366,35 +366,35 @@ namespace HTB.v2.intranetx.routeplanter
             }
             
             
-            if (currentLocation == null) return;
+            if (CurrentLocation == null) return;
             /*
              * Add the location from tablet as the first city on the road
              */
             var found = false;
             foreach (var c in Cities)
             {
-                if (!c.Address.Address.Equals(currentLocation.Address.Address)) continue;
-                c.Location = currentLocation.Location;
+                if (!c.Address.Address.Equals(CurrentLocation.Address.Address)) continue;
+                c.Location = CurrentLocation.Location;
                 found = true;
                 Log.Info($"Current Location:{c.Location.DebuggerDisplay} ");
                 break;
             }
-            if (found || !currentLocation.Location.Locations.Any() ||
-                HTBUtils.IsZero(currentLocation.Location.Locations[0].Latitude) ||
-                HTBUtils.IsZero(currentLocation.Location.Locations[0].Longitude)) return;
+            if (found || !CurrentLocation.Location.Locations.Any() ||
+                HTBUtils.IsZero(CurrentLocation.Location.Locations[0].Latitude) ||
+                HTBUtils.IsZero(CurrentLocation.Location.Locations[0].Longitude)) return;
             foreach (var address in BadAddresses)
             {
-                if (!address.Address.Equals(currentLocation.Address.Address)) continue;
-                Cities.Add(currentLocation);
+                if (!address.Address.Equals(CurrentLocation.Address.Address)) continue;
+                Cities.Add(CurrentLocation);
                 BadAddresses.Remove(address);
                 found = true;
                 break;
             }
-            if (found || !currentLocation.Location.Locations.Any() ||
-                HTBUtils.IsZero(currentLocation.Location.Locations[0].Latitude) ||
-                HTBUtils.IsZero(currentLocation.Location.Locations[0].Longitude)) return;
+            if (found || !CurrentLocation.Location.Locations.Any() ||
+                HTBUtils.IsZero(CurrentLocation.Location.Locations[0].Latitude) ||
+                HTBUtils.IsZero(CurrentLocation.Location.Locations[0].Longitude)) return;
 
-            Cities.Add(currentLocation);
+            Cities.Add(CurrentLocation);
             
         }
 
@@ -445,7 +445,7 @@ namespace HTB.v2.intranetx.routeplanter
                 var thread = new Thread(() => RoadDistanceCalculatorThreadMonitor.LoadDistances(roadDistanceStateInfo, rdct));
                 threads.Add(rdct);
                 thread.Start();
-                //                Thread.Sleep(99999999);
+                // Thread.Sleep(99999999);
             }
             var dot = "";
             while (RoadDistanceCalculatorThreadMonitor.GetRunningThreadsCount(threads) > 0)
@@ -469,7 +469,7 @@ namespace HTB.v2.intranetx.routeplanter
 
             //Console.WriteLine("Load Distances Latitude: {0}", roads[0].From.Location.Locations[0].Latitude);
             var manualEvent = new ManualResetEvent(false);
-            RoadDistanceStateStaticsAccess.GetDistanceStatestatic(UserId).ResultsList.Clear();
+            RoadDistanceStateStaticsAccess.GetDistanceStateStatics(UserId).ResultsList.Clear();
             Log.Info("Distance Threads " + roads.Count);
             var threads = new List<RoadDistanceCalculatorThread>();
             int id = 0;
@@ -566,20 +566,6 @@ namespace HTB.v2.intranetx.routeplanter
                 }
             }
         }
-        
-        public void SaveDistances_old()
-        {
-            try
-            {
-                var set = new RecordSet(DbConnection.ConnectionType_DB2);
-//                set.ExcecuteNonQuery(RoadDistanceState.DistanceUpdateCommands.ToString());
-                set.ExecuteNonQuery(RoadDistanceStateStaticsAccess.GetDistanceStatestatic(UserId).DistanceUpdateCommands.ToString());
-            }
-            catch
-            {
-                // Ignore Any SQL ERRORS for now
-            }
-        }
 
         public void SaveDistances()
         {
@@ -587,7 +573,7 @@ namespace HTB.v2.intranetx.routeplanter
             {
                 if (RoadDistanceCalculatorThreadMonitor.DistanceUpdateCommands.ToString().Trim().Length > 0)
                 {
-                    var set = new RecordSet(DbConnection.ConnectionType_DB2);
+                    var set = new RecordSet();
                     set.ExecuteNonQuery(RoadDistanceCalculatorThreadMonitor.DistanceUpdateCommands.ToString());
                     RoadDistanceCalculatorThreadMonitor.DistanceUpdateCommands.Clear();
                 }
@@ -682,7 +668,7 @@ namespace HTB.v2.intranetx.routeplanter
             {
                 if (isTask)
                 {
-                    var msg = String.Format("Calculating Tour: [Best: {0}] [Time: {1} of {2}]" + dot, (int) _tspBestTourValue, HTBUtils.FormatTimeSpan(_tspRunTime), HTBUtils.FormatTimeSpan(new TimeSpan(0, 0, 0, 0, World.MaxOptimationTime)));
+                    var msg = String.Format("Calculating Tour: [Best: {0}] [Time: {1} of {2}]" + dot, (int) TspBestTourValue, HTBUtils.FormatTimeSpan(TspRunTime), HTBUtils.FormatTimeSpan(new TimeSpan(0, 0, 0, 0, World.MaxOptimationTime)));
                     UpdateProgressStatus(80, msg);
                     dot += ".";
                     if (dot == ".....") dot = "";
@@ -818,12 +804,12 @@ namespace HTB.v2.intranetx.routeplanter
 
         public void SetTotalTime(TimeSpan ts)
         {
-            _tspRunTime = ts;
+            TspRunTime = ts;
         }
 
         public void SetBestTourValue(double value)
         {
-            _tspBestTourValue = value;
+            TspBestTourValue = value;
         }
     }
 
@@ -878,7 +864,7 @@ namespace HTB.v2.intranetx.routeplanter
     }
     internal class AddressLookupThread
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
         private static string spName = "spGetGegnerAddressLatAndLgnByAktID";
         public volatile bool IsRunning;
         public volatile bool Stop = false;
@@ -933,46 +919,6 @@ namespace HTB.v2.intranetx.routeplanter
             IsRunning = false;
         }
         
-        /*
-         * Try Bing First and then GoogleMaps
-         */
-        private void LoadGeocodeAddressFromWebOld(object state)
-        {
-            var stateInfo = (AddressLookupState)state;
-            var geocodeRequest = new GeocodeRequest
-            {
-                // Set the credentials using a valid Bing Maps key
-                Credentials = new GeocodeService.Credentials { ApplicationId = RoutePlanerManager.BingMapsKey },
-                // Set the full address query
-                Query = stateInfo.Address.Address
-            };
-
-            // Set the options to only return high confidence results 
-            var filters = new ConfidenceFilter[1];
-            filters[0] = new ConfidenceFilter { MinimumConfidence = GeocodeService.Confidence.High };
-            // Add the filters to the options
-            geocodeRequest.Options = new GeocodeOptions { Filters = filters };
-            // Make the geocode request
-            /*var geocodeService = new GeocodeServiceClient("BasicHttpBinding_IGeocodeService");
-            GeocodeResponse geocodeResponse = geocodeService.Geocode(geocodeRequest);
-            
-            if (geocodeResponse.Results.Length == 1)
-            {
-                AddressLookupStateStaticsAccess.GetAddressStateStatic(stateInfo.UserId).Addresses.Add(new City(new AddressLocation(stateInfo.Address, geocodeResponse.Results[0].Locations), null));
-                SaveGegnerLocation(stateInfo.Address.ID, geocodeResponse.Results[0].Locations[0].Latitude, geocodeResponse.Results[0].Locations[0].Longitude);
-            }
-            else if (geocodeResponse.Results.Length > 1)
-            {
-                foreach (GeocodeResult r in geocodeResponse.Results)
-                    stateInfo.Address.SuggestedAddresses.Add(new AddressLocation(new AddressWithID(stateInfo.Address.ID, r.DisplayName), r.Locations));
-                AddressLookupStateStaticsAccess.GetAddressStateStatic(stateInfo.UserId).MultipleAddresses.Add(stateInfo.Address);
-            }
-            else
-            {*/
-            LoadGeocodeAddressFromGoogleMaps(state);
-            //}
-        }
-
         private void LoadGeocodeAddressFromWeb(object state)
         {
             try
@@ -1135,7 +1081,7 @@ namespace HTB.v2.intranetx.routeplanter
     internal static class RoadDistanceStateStaticsAccess
     {
         private static readonly Dictionary<int, RoadDistanceStateStatics> AccessDictionary = new Dictionary<int, RoadDistanceStateStatics>();
-        public static RoadDistanceStateStatics GetDistanceStatestatic(int id)
+        public static RoadDistanceStateStatics GetDistanceStateStatics(int id)
         {
             if(AccessDictionary.ContainsKey(id))
                 return AccessDictionary[id];
@@ -1192,31 +1138,29 @@ namespace HTB.v2.intranetx.routeplanter
 
         private void SetDistance(Road road, int tries)
         {
-            const string qry = "SELECT * FROM {0}tblRoad WHERE (FromLatitude = {1} AND FromLongitude = {2} AND ToLatitude = {3} AND ToLongitude = {4})";
+            const string qry = "SELECT * FROM tblRoad WITH(NOLOCK, READUNCOMMITTED) WHERE (FromLatitude = {0} AND FromLongitude = {1} AND ToLatitude = {2} AND ToLongitude = {3})";
             string query;
             if (road.From.Location.Locations[0].Latitude >= road.To.Location.Locations[0].Latitude)
 
-                query = string.Format(qry, 
-                                        RecordSet.GetDB2SchemaName()
-                                        ,road.From.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
-                                        ,road.From.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
-                                        ,road.To.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
-                                        ,road.To.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
+                query = string.Format(qry
+                                        ,road.From.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "").Replace(".", "")
+                                        ,road.From.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "").Replace(".", "")
+                                        , road.To.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "").Replace(".", "")
+                                        , road.To.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "").Replace(".", "")
                                         );
             else
 
-                query = string.Format(qry,
-                                        RecordSet.GetDB2SchemaName()
-                                        , road.To.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
-                                        , road.To.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
-                                        , road.From.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
-                                        , road.From.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "")
+                query = string.Format(qry
+                                        , road.To.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "").Replace(".", "")
+                                        , road.To.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "").Replace(".", "")
+                                        , road.From.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture).Replace(",", "").Replace(".", "")
+                                        , road.From.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture).Replace(",", "").Replace(".", "")
                                         );
             tblRoad roadDistance = null;
             Log.Info($"Setting Distances {road.From.Address.ID} - {road.To.Address.ID}");
             try
             {
-                roadDistance = (tblRoad) HTBUtils.GetSqlSingleRecord(query, typeof(tblRoad), DbConnection.ConnectionType_DB2);
+                roadDistance = (tblRoad) HTBUtils.GetSqlSingleRecord(query, typeof(tblRoad));
             }
             catch(Exception e)
             {
@@ -1232,7 +1176,7 @@ namespace HTB.v2.intranetx.routeplanter
             else if (DateTime.Now.Subtract(roadDistance.LookupDate).TotalDays > 180)
             {
                 if (!Stop)
-                    SetGeocodeDistance(road, tries, true);
+                    SetGeocodeDistance(road, tries);
             }
             else
             {
@@ -1242,75 +1186,7 @@ namespace HTB.v2.intranetx.routeplanter
                 road.TravelTimeInSeconds = roadDistance.TimeInSeconds;
             }
         }
-
-        private void SetGeocodeDistanceOld(Road road, int tries, bool updateDistance = false)
-        {
-            try
-            {
-                var routeRequest = new RouteRequest
-                {
-                    Credentials = new RouteService.Credentials
-                    {
-                        // Set the credentials using a valid Bing Maps key
-                        ApplicationId = RoutePlanerManager.BingMapsKey
-                    }
-                };
-                //Parse user data to create array of waypoints
-
-                var waypoints = new Waypoint[2];
-
-                waypoints[0] = new Waypoint { Location = new RouteService.Location { Latitude = road.From.Location.Locations[0].Latitude, Longitude = road.From.Location.Locations[0].Longitude } };
-                waypoints[1] = new Waypoint { Location = new RouteService.Location { Latitude = road.To.Location.Locations[0].Latitude, Longitude = road.To.Location.Locations[0].Longitude } };
-                Log.Info(string.Format("Setting Geocode Distance FROM: Latitude {0}, Longitude {1}", road.From.Location.Locations[0].Latitude, road.From.Location.Locations[0].Longitude));
-                routeRequest.Waypoints = waypoints;
-                routeRequest.Options = new RouteOptions { Optimization = RouteOptimization.MinimizeDistance };
-                
-                // Make the calculate route request
-                var routeService = new RouteServiceClient("BasicHttpBinding_IRouteService");
-                if (!Stop)
-                {
-                    RouteResponse routeResponse = routeService.CalculateRoute(routeRequest);
-                    road.Distance = routeResponse.Result.Summary.Distance;
-                    road.TravelTimeInSeconds = routeResponse.Result.Summary.TimeInSeconds;
-                    if (updateDistance)
-                    {
-                        if (!Stop)
-                            UpdateDistance(road);
-                    }
-                    else
-                    {
-                        if (!Stop)
-                            InsertDistance(road);
-                    }
-                }
-            }
-            catch (ThreadAbortException tae)
-            {
-                Log.Error("Cought ThreadAbortException [SetGeocodeDistance]");
-                IsRunning = false;
-                return;
-            }
-            catch (Exception e)
-            {
-//                Console.WriteLine("Trying to Recalculate Distance " + tries);
-                if (!Stop)
-                {
-                    if (tries > 0)
-                    {
-                        SetGeocodeDistance(road, tries - 1, updateDistance);
-                    }
-                    Log.Error(string.Format("Could Not Calculate Distance [FROM: {0}, {1}] TO [{2}, {3}] " +
-                        e.Message, 
-                        road.From.Location.Locations[0].Latitude.ToString().Replace(",", "."), 
-                        road.From.Location.Locations[0].Longitude.ToString().Replace(",", "."),
-                        road.To.Location.Locations[0].Latitude.ToString().Replace(",", "."), 
-                        road.To.Location.Locations[0].Longitude.ToString().Replace(",", "."))
-                        , e);
-                }
-            }
-        }
-
-        private void SetGeocodeDistance(Road road, int tries, bool updateDistance = false)
+        private void SetGeocodeDistance(Road road, int tries)
         {
             var fromLatitude = road.From.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture);
             var fromLongitude = road.From.Location.Locations[0].Longitude.ToString(CultureInfo.InvariantCulture);
@@ -1324,7 +1200,7 @@ namespace HTB.v2.intranetx.routeplanter
 
             try
             {
-                GetResponseAsync(geocodeRequest, road, updateDistance);
+                GetResponseAsync(geocodeRequest, road);
             }
             catch (Exception e)
             {
@@ -1333,7 +1209,7 @@ namespace HTB.v2.intranetx.routeplanter
                 {
                     if (tries > 0)
                     {
-                        SetGeocodeDistance(road, tries - 1, updateDistance);
+                        SetGeocodeDistance(road, tries - 1);
                     }
                     Log.Error(string.Format("Could Not Calculate Distance [FROM: {0}, {1}] TO [{2}, {3}] [URL: {4}] " +
                         e.Message,
@@ -1347,7 +1223,7 @@ namespace HTB.v2.intranetx.routeplanter
             }
         }
         
-        private void GetResponseAsync(Uri uri, Road road, bool updateDistance = false)
+        private void GetResponseAsync(Uri uri, Road road)
         {
             Log.Info(uri);
             var wc = new WebClient();
@@ -1357,7 +1233,7 @@ namespace HTB.v2.intranetx.routeplanter
                 {
                     var ser = new DataContractJsonSerializer(typeof(Response));
                     var result = ser.ReadObject(a.Result) as Response;
-                    SetGeocodeDistanceFromResponse(result, road, updateDistance);
+                    SetGeocodeDistanceFromResponse(result, road);
                 }
                 catch (Exception e)
                 {
@@ -1370,7 +1246,7 @@ namespace HTB.v2.intranetx.routeplanter
         }
 
 
-        private void SetGeocodeDistanceFromResponse(Response response, Road road, bool updateDistance)
+        private void SetGeocodeDistanceFromResponse(Response response, Road road)
         {
             try
             {
@@ -1382,7 +1258,6 @@ namespace HTB.v2.intranetx.routeplanter
                     Log.Info($"Found road: {road.DebuggerDisplay}  {road.From} - {road.To}  [Distance: {res.TravelDistance}]");
                     road.Distance = res.TravelDistance;
                     road.TravelTimeInSeconds = (long) res.TravelDuration;
-                    if (!updateDistance) continue;
                     if (!Stop)
                         UpdateDistance(road);
                 }
@@ -1418,7 +1293,6 @@ namespace HTB.v2.intranetx.routeplanter
                     rec.ToLatitude = RoutePlanerManager.GetIntFromCoordinate(road.From.Location.Locations[0].Latitude);
                     rec.ToLongitude = RoutePlanerManager.GetIntFromCoordinate(road.From.Location.Locations[0].Longitude);
                 }
-                //AppendToUpdateDistanceCommand(new RecordSet(DbConnection.ConnectionType_DB2).GetDbInsertStatement(rec));
                 AppendToUpdateDistanceCommand(rec);
             }
         }
@@ -1457,29 +1331,25 @@ namespace HTB.v2.intranetx.routeplanter
         {
 
             // TOTO incorporate the following statement:
-            var command = string.Format("MERGE INTO {0}tblRoad AS mt USING ( " +
-                                        "SELECT * FROM TABLE ( " +
-                                        "   VALUES  " +
-                                        "        ( {1}, {2}, {3}, {4}, {5}, {6}, '{7}') " +
-                                        ") " +
-                                        ") AS vt(FromLatitude, FromLongitude, ToLatitude, ToLongitude, TimeInSeconds, Distance, LookupDate) ON (" +
-                                        "(mt.FromLatitude = vt.FromLatitude AND mt.FromLongitude = vt.FromLongitude AND mt.ToLatitude = vt.ToLatitude AND mt.ToLongitude = vt.ToLongitude) " +
-                                        "OR  (mt.ToLatitude = vt.FromLatitude AND mt.ToLongitude = vt.FromLongitude AND mt.FromLatitude = vt.ToLatitude AND mt.FromLongitude = vt.ToLongitude) " +
-                                        ") " +
-                                        "WHEN MATCHED THEN " +
-                                        "    UPDATE SET LookupDate = vt.LookupDate, Distance = vt.Distance " +
-                                        "WHEN NOT MATCHED THEN " +
-                                        "    INSERT (FromLatitude, FromLongitude, ToLatitude, ToLongitude, TimeInSeconds, Distance, LookupDate) VALUES (vt.FromLatitude, vt.FromLongitude, vt.ToLatitude, vt.ToLongitude, vt.TimeInSeconds, vt.Distance, vt.LookupDate) " +
-                                        "; ", 
-                                        RecordSet.GetDB2SchemaName(),
-                                        road.FromLatitude,
-                                        road.FromLongitude,
-                                        road.ToLatitude,
-                                        road.ToLongitude,
-                                        road.TimeInSeconds,
-                                        road.Distance,
-                                        string.Format("{0:u}", road.LookupDate).Replace("Z", ""));
-            
+
+            var command = "MERGE tblRoad AS mt " +
+                          $"USING ( select " +
+                          $"{road.FromLatitude} as FromLatitude, " +
+                          $"{road.FromLongitude} as FromLongitude, " +
+                          $"{road.ToLatitude} as ToLatitude, " +
+                          $"{road.ToLongitude} as ToLongitude, " +
+                          $"{road.TimeInSeconds} as TimeInSeconds, " +
+                          $"{road.Distance.ToString().Replace(",", ".")} as Distance, " +
+                          $"{$"CONVERT(datetime, '{road.LookupDate:u}'".Replace("Z", "")}, 120) as LookupDate)  AS [vt] " +
+                          "ON ((mt.FromLatitude = vt.FromLatitude AND mt.FromLongitude = vt.FromLongitude AND mt.ToLatitude = vt.ToLatitude AND mt.ToLongitude = vt.ToLongitude) " +
+                          "OR  (mt.ToLatitude = vt.FromLatitude AND mt.ToLongitude = vt.FromLongitude AND mt.FromLatitude = vt.ToLatitude AND mt.FromLongitude = vt.ToLongitude) " +
+                          ") " +
+                          "WHEN MATCHED THEN " +
+                          "    UPDATE SET LookupDate = vt.LookupDate, Distance = vt.Distance " +
+                          "WHEN NOT MATCHED THEN " +
+                          "    INSERT (FromLatitude, FromLongitude, ToLatitude, ToLongitude, TimeInSeconds, Distance, LookupDate) VALUES (vt.FromLatitude, vt.FromLongitude, vt.ToLatitude, vt.ToLongitude, vt.TimeInSeconds, vt.Distance, vt.LookupDate)" +
+                          ";";
+
             if (Stop) return;
             if (RoadDistanceCalculatorThreadMonitor.DistanceUpdateCommands.ToString().IndexOf(command, StringComparison.Ordinal) < 0)
             {
@@ -1488,6 +1358,7 @@ namespace HTB.v2.intranetx.routeplanter
                     lock (lockObj)
                     {
                         RoadDistanceCalculatorThreadMonitor.DistanceUpdateCommands.Append(command);
+                        RoadDistanceCalculatorThreadMonitor.DistanceUpdateCommands.Append("\r\n");
                         RoadDistanceCalculatorThreadMonitor.NumberOfSQLCommands++;
                     }
                 }
@@ -1501,14 +1372,14 @@ namespace HTB.v2.intranetx.routeplanter
             {
                 lock (lockObj)
                 {
-                    var set = new RecordSet(DbConnection.ConnectionType_DB2);
+                    var set = new RecordSet();
                     if (!Stop)
                         set.ExecuteNonQuery(RoadDistanceCalculatorThreadMonitor.DistanceUpdateCommands.ToString());
                 }
             }
             catch (ThreadAbortException tae)
             {
-                Log.Error("Cought ThreadAbortException [AppendToUpdateDistanceCommand]", tae);
+                Log.Error("Caught ThreadAbortException [AppendToUpdateDistanceCommand]", tae);
                 IsRunning = false;
             }
             catch(Exception ex)

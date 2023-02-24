@@ -136,8 +136,8 @@ namespace HTB.v2.intranetx.routeplanter.bingmaps.tabletApp
                 };
                 _startAddress = "Standort";
                 
-                rpManager.currentLocation = new City(new AddressLocation(new AddressWithID(-1, _startAddress), new[] { location }), null);
-                Log.Info($"Setting current location to {rpManager.currentLocation.Address.DebuggerDisplay} Location: [{rpManager.currentLocation.Location.Locations[0].Latitude} {rpManager.currentLocation.Location.Locations[0].Longitude }]");
+                rpManager.CurrentLocation = new City(new AddressLocation(new AddressWithID(-1, _startAddress), new[] { location }), null);
+                Log.Info($"Setting current location to {rpManager.CurrentLocation.Address.DebuggerDisplay} Location: [{rpManager.CurrentLocation.Location.Locations[0].Latitude} {rpManager.CurrentLocation.Location.Locations[0].Longitude }]");
             }
 
             var aktenList = HTBUtils.GetSqlRecords(GetSqlQueryBasedOnInput(), typeof(qryAktenInt));

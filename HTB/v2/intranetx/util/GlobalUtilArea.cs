@@ -27,6 +27,7 @@ namespace HTB.v2.intranetx.util
         private const double Epsilon = 0.001;
 
         private static readonly bool PerformSessionValidation = StringToBool(HTBUtils.GetConfigValue("PERFORM_SESSION_VALIDATION"));
+        private static Dictionary<string, bool> userFunctionPermissionCache = new Dictionary<string, bool>();
 
         public static bool Rolecheck(int functionID, int userID)
         {
@@ -37,9 +38,18 @@ namespace HTB.v2.intranetx.util
         {
             if (userID >= 0)
             {
-                String wquery = "SELECT * FROM qryRoleCheck  WITH (NOLOCK) WHERE UserRoleUser = " + userID + " AND RoleDefinitionRoleFunction = " + functionID.Replace("'", "''");
-                var wroleDef = (tblRoleDefinition) HTBUtils.GetSqlSingleRecord(wquery, typeof (tblRoleDefinition));
-                return wroleDef != null && wroleDef.RoleDefinitionGranted == 1;
+                if (userFunctionPermissionCache.ContainsKey(userID + functionID))
+                {
+                    return userFunctionPermissionCache[userID + functionID];
+                }
+                else
+                {
+                    string query = "SELECT * FROM qryRoleCheck  WITH (NOLOCK) WHERE UserRoleUser = " + userID + " AND RoleDefinitionRoleFunction = " + functionID.Replace("'", "''");
+                    var roleDef = (tblRoleDefinition)HTBUtils.GetSqlSingleRecord(query, typeof(tblRoleDefinition));
+                    bool userPermissionGranted = roleDef != null && roleDef.RoleDefinitionGranted == 1;
+                    userFunctionPermissionCache[userID + functionID] = userPermissionGranted;
+                    return userPermissionGranted;
+                }
             }
             return false;
         }

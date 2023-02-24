@@ -21,10 +21,7 @@ namespace HTB.Database
 
         public void LoadFromSqlQuery(string psqlCommand, Type pclassName, bool debugMode = false)
         {
-            if (ConnectionType == DbConnection.ConnectionType_DB2)
-                LoadListFromDB2DataReader(GetDB2DataReader(psqlCommand), pclassName);
-            else
-                LoadListFromDataReader(GetDataReader(psqlCommand, debugMode), pclassName, debugMode);
+            LoadListFromDataReader(GetDataReader(psqlCommand, debugMode), pclassName, debugMode);
         }
 
         public void LoadFromStoredProcedure(string spName, ArrayList parameters, Type pclassName, int connectToDatabase = DatabasePool.ConnectToHTB)

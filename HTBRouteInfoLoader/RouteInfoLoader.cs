@@ -49,8 +49,7 @@ namespace HTBRouteInfoLoader
             _initializeSkipAfterThisManyRuns = Convert.ToInt32(ConfigurationManager.AppSettings["InitializeSkipAfterThisManyRuns"]);
             _timeToWaitTillRoadLoadingAbort = Convert.ToInt32(ConfigurationManager.AppSettings["TimeToWaitTillRoadLoadingAbort"]);
             _db2Schema = ConfigurationManager.AppSettings["DB2Schema"];
-            RecordSet.DB2Schema = _db2Schema;
-
+            
             RoutePlanerManager.TimeToSleepBetweenRefreshes = Convert.ToInt32(ConfigurationManager.AppSettings["RoutePlannerManager_TimeToSleepBetweenRefreshes"]);
             
             _maxAddresses = _initialMaxAddresses;
