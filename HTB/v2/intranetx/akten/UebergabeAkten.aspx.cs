@@ -34,7 +34,7 @@ namespace HTB.v2.intranetx.akten
                     foreach (qryAkten akt in aktList)
                     {
                         sql = "Update tblAkten Set AktStatus = 5, AKTVersandDatum = '" + DateTime.Now.ToShortDateString() + "' WHERE AKTId = " + akt.AktID;
-                        set.ExcecuteNonQueryInTransaction(sql);
+                        set.ExecuteNonQueryInTransaction(sql);
                     }
                     set.CommitTransaction();
                 }

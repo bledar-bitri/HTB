@@ -7,7 +7,6 @@ using System.Data.SqlClient;
 using System;
 using System.Reflection;
 using System.Collections;
-using IBM.Data.DB2;
 using MySql.Data.MySqlClient;
 
 namespace HTB.Database
@@ -293,138 +292,7 @@ namespace HTB.Database
         }
         #endregion
 
-        #region DB2
-        /*
-         * Loads records from a (DB2) datareader to into a list
-         * 
-         * @param DB2SqlDataReader dr  [DataReader to load the data from]
-         * @param ArrayList<object> resultsList [List to lists to be loaded]
-         * @param ArrayList<string> classNameList  [List of class names to use for the load]
-         * @param DbConnection dbConnection  [database connection to free up]
-         */
-        public static void LoadRecordsFromMultipleDB2Resultsets(DB2DataReader dr, ArrayList[] resultsList, Type[] ptypeList, DbConnection dbConnection)
-        {
-            if (resultsList.Length != ptypeList.Length)
-            {
-                throw new FieldAccessException("ResultsList and ClassName List must contain the same number of elements [resultsList: " + resultsList.Length + "] [classNameList: " + ptypeList.Length + "]");
-            }
-            for (int i = 0; i < ptypeList.Length; i++)
-            {
-                resultsList[i].Clear();
-
-                LoadRecordsFromDB2DataReader(dr, resultsList[i], ptypeList[i], dbConnection, false);
-                if (!dr.NextResult()) // close db if for some reason we have more classes than resultsets
-                {
-                    CloseAndDispose(dr, dbConnection);
-                    i = ptypeList.Length;
-                }
-            }
-            CloseAndDispose(dr, dbConnection);
-        }
         
-        /*
-         * Loads records from a (DB2) datareader to into a list
-         * 
-         * @param DB2SqlDataReader dr  [DataReader to load the data from]
-         * @param List<object> list [List to load the data into]
-         * @param string className  [the name of datatype to use]
-         * @param DbConnection dbConnection  [database connection to set free up]
-         * @param Boolean closeAndDispose  [indicates whether or not to dispose of the connection and free it for future use]
-         */
-        public static void LoadRecordsFromDB2DataReader(DB2DataReader dr, ArrayList list, Type ptype, DbConnection dbConnection, Boolean closeAndDispose = true)
-        {
-            list.Clear();
-            while (dr.Read())
-            {
-                object record = Activator.CreateInstance(ptype);
-                Type recordType = record.GetType();
-                PropertyInfo[] fieldInf = recordType.GetProperties();
-
-                #region Set Member Values
-                foreach (PropertyInfo t in fieldInf)
-                {
-                    if (t.MemberType == MemberTypes.Property)
-                    {
-                        string fieldName = t.Name;
-                        object value = null;
-                        string dataType = t.PropertyType.Name.ToLower();
-                        object[] attrs = t.GetCustomAttributes(typeof(MappingAttribute), false);
-                        if (attrs.Length > 0)
-                        {
-                            var attr = (MappingAttribute)attrs[0];
-                            if (attr.FieldName != null && !attr.FieldName.Equals(string.Empty))
-                            {
-                                fieldName = attr.FieldName;
-                            }
-                        }
-                        try
-                        {
-                            value = dr[fieldName];
-                        }
-                        catch
-                        {
-                            value = null;
-                        }
-                        if (value != null)
-                        {
-                            bool valueSet = false;
-                            if (attrs != null && attrs.Length > 0)
-                            {
-                                var attr = (MappingAttribute)attrs[0];
-                                if (attr.FieldName != null && !attr.FieldName.Equals(string.Empty))
-                                {
-                                    fieldName = attr.FieldName;
-                                    if (attr.MappingClass != null && !attr.MappingClass.Equals(string.Empty) &&
-                                        attr.MappingMethodName != null && !attr.MappingMethodName.Equals(string.Empty))
-                                    {
-                                        LoadField(t, attr, record, value);
-                                        valueSet = true;
-                                    }
-                                }
-                            }
-                            if (!valueSet)
-                            {
-                                if (dataType.StartsWith("int")) // use startswith to catch different types of int
-                                {
-                                    t.SetValue(record, DbUtil.FixInt(value), null);
-                                }
-                                else if (dataType.Equals("string"))
-                                {
-                                    t.SetValue(record, DbUtil.FixString(value), null);
-                                }
-                                else if (dataType.Equals("decimal"))
-                                {
-                                    t.SetValue(record, DbUtil.FixDecimal(value), null);
-                                }
-                                else if (dataType.Equals("float") || dataType.Equals("single") || dataType.Equals("double"))
-                                {
-                                    t.SetValue(record, DbUtil.FixFloat(value), null);
-                                }
-                                else if (dataType.StartsWith("date"))
-                                {
-                                    t.SetValue(record, DbUtil.FixDate(value), null);
-                                }
-                                else if (dataType.StartsWith("bool"))
-                                {
-                                    t.SetValue(record, DbUtil.FixBoolean(value), null);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                #endregion
-                list.Add(record);
-            }
-            if (closeAndDispose)
-            {
-                CloseAndDispose(dr, dbConnection);
-            }
-
-        }
-        #endregion
-
-
         /*
          * Set Field value to a field (name - value as parameters)
          */
@@ -540,17 +408,5 @@ namespace HTB.Database
             if (dbConnection != null)
                 dbConnection.IsInUse = false;
         }
-        
-        /*
-         * Close and Dispose the datareader and set free up the connection 
-         */
-        private static void CloseAndDispose(DB2DataReader dr, DbConnection dbConnection)
-        {
-            dr.Close();
-            dr.Dispose();
-            if (dbConnection != null)
-                dbConnection.IsInUse = false;
-        }
-        
     }
 }

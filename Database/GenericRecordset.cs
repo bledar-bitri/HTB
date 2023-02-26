@@ -8,7 +8,6 @@
 using System.Data.SqlClient;
 using System.Data;
 using System.Collections;
-using IBM.Data.DB2;
 using System;
 
 namespace HTB.Database
@@ -115,15 +114,6 @@ namespace HTB.Database
                 presults,
                 ptypes, 
                 Con);
-        }
-
-        private void LoadListFromDB2DataReader(DB2DataReader dr, Type ptype)
-        {
-            RecordsList.Clear();
-            RecordLoader.LoadRecordsFromDB2DataReader(
-                dr,
-                RecordsList,
-                ptype, Con);
         }
     }
 }

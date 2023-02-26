@@ -149,7 +149,7 @@ namespace HTB.v2.intranetx.aktenint
                     var lblAkt = (Label)row.FindControl("lblAkt");
                     var lblSbId = (Label)row.FindControl("lblSbId");
                     if (lblSbId.Text.Trim() != "")
-                        set.ExcecuteNonQueryInTransaction("UPDATE tblAktenInt SET AktIntSb = " + lblSbId.Text + " WHERE AktIntID = " + lblAkt.Text);
+                        set.ExecuteNonQueryInTransaction("UPDATE tblAktenInt SET AktIntSb = " + lblSbId.Text + " WHERE AktIntID = " + lblAkt.Text);
                 }
                 set.CommitTransaction();
                 ctlMessage.ShowSuccess("Die Akten sind &uuml;bernohmen!");

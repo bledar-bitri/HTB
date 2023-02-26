@@ -123,7 +123,7 @@ namespace HTB.v2.intranetx.aktenintprovfix
                             }
                             sb.Append(", AktIntActionHonorar = 0");
                             sb.Append(" WHERE AktIntActionID = " + action.ActionID);
-                            set.ExcecuteNonQueryInTransaction(sb.ToString());
+                            set.ExecuteNonQueryInTransaction(sb.ToString());
                             count++;
                         }
                     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data.SqlClient;
-using IBM.Data.DB2;
 using MySql.Data.MySqlClient;
 
 
@@ -15,7 +14,6 @@ namespace HTB.Database
 
         private readonly SqlConnection _conn = new SqlConnection();
         private readonly MySqlConnection _mySqlConn = new MySqlConnection();
-        private readonly DB2Connection _db2Conn = new DB2Connection();
 
         public int ConnectionType = ConnectionType_SqlServer;
 
@@ -42,11 +40,6 @@ namespace HTB.Database
         {
             get { return _mySqlConn; }
         }
-        public DB2Connection DB2Connection
-        {
-            get { return _db2Conn; }
-        }
-        
         public double GetAliveTime()
         {
             TimeSpan ts = DateTime.Now.Subtract(lastUsedTime);

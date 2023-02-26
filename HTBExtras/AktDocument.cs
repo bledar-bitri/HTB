@@ -1,6 +1,6 @@
-﻿using System;
-using HTB.Database;
+﻿using HTB.Database;
 using HTB.Database.Views;
+using System;
 
 namespace HTBExtras
 {
@@ -44,10 +44,11 @@ namespace HTBExtras
             DocTypeCaption = rec.DokTypeCaption;
             DocCaption = rec.DokCaption;
             DocAttachment = rec.DokAttachment;
-            if (!rec.DokAttachment.StartsWith("http"))
-                DocURL = scheme + "://" + host + "/v2/intranet/documents/files/" + DocAttachment;
+            if (rec.DokAttachment.StartsWith("http") || rec.DokAttachment.StartsWith("https"))
+                DocURL = DocAttachment; 
             else
-                DocURL = DocAttachment;
+                DocURL = scheme + "://" + host + "/v2/intranet/documents/files/" + DocAttachment;
+
             DocChangeDate = rec.DokChangeDate;
             DocTimestamp = rec.DokTimestamp;
             DocSourceIsIPad = rec.DokSourceIsIPad;

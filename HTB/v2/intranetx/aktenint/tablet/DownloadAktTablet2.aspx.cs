@@ -14,7 +14,7 @@ namespace HTB.v2.intranetx.aktenint.tablet
 {
     public partial class DownloadAktTablet2 : System.Web.UI.Page
     {
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
         
         protected void Page_Load(object sender, EventArgs e)
         {

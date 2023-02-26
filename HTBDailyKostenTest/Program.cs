@@ -19,6 +19,7 @@ using HTBExtras;
 using System.Diagnostics;
 using HTB.v2.intranetx.routeplanter;
 using System.Collections.Generic;
+using System.Net;
 using HTB.v2.intranetx.util;
 using Microsoft.VisualBasic;
 using HTBServices;
@@ -41,11 +42,11 @@ namespace HTBDailyKosten
             //TestPayments();
             //TestEmail();
             //TestSystem();
-//            TestMahnung();
+            //            TestMahnung();
             //            TestMahnungPdf();
             //            TestAuftragReceipt();
             //TestExtensionRequest();
-//            TestZwischenbericht();
+            //            TestZwischenbericht();
             //TestKlientbericht();
             //TestUebergabeAkten();
             //            TestExcel();
@@ -56,24 +57,27 @@ namespace HTBDailyKosten
             //            TestSerilization();
             //            ProcessDir("C:\\NintendoDS");
             //            ProcessDir2("C:\\NintendoDS\\Unzip");
-//                        TestFtp();
+            //                        TestFtp();
             //            FixAllAE();
-//            TestProtokol();
-                        TestWebServiceNewAkt_Debug();
-//                        TestWebServiceNewAkt();
-//                        TestWebServiceNewAktProduction();
+            //            TestProtokol();
+            //TestWebServiceNewAkt_Debug();
+            //                        TestWebServiceNewAkt();
+            //                        TestWebServiceNewAktProduction();
             //            TestWebServiceAktStatus();
-//                        TestWebServiceAktStatusProduction();
+            //                        TestWebServiceAktStatusProduction();
             //TestFinancialPmt();
             //TestFinanacial_NumberOfInstallments();
-//             ObjectiveCSql.GenerateSql();
+            //             ObjectiveCSql.GenerateSql();
             // TestLogFileConverssion();
-//            TestErlagschein();
-//            TestSmallLinesOfCode();
-//            TestInterverntionAction();
+            //            TestErlagschein();
+            //            TestSmallLinesOfCode();
+            //            TestInterverntionAction();
             //TestLawyerMahnung();
 
-            //Console.Read();
+
+            Console.WriteLine(Uri.EscapeUriString("BE Pröll.txt"));
+            
+            Console.Read();
         }
 
         private static void TestSmallLinesOfCode()

@@ -66,7 +66,7 @@ namespace HTB.session_transfer
                     strSql = "INSERT INTO tblASPSessionState (GUID, SessionKey, SessionValue) " +
                              "VALUES ('" + guidTemp + "', '" + Session.Contents.Keys[i].ToString() + "', '" +
                              Session.Contents[i].ToString() + "')";
-                    set.ExcecuteNonQueryInTransaction(strSql);
+                    set.ExecuteNonQueryInTransaction(strSql);
                     i++;
                 }
                 set.CommitTransaction();

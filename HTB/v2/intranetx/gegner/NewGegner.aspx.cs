@@ -252,9 +252,9 @@ namespace HTB.v2.intranetx.gegner
             var sbUrl =
                 new StringBuilder(
                     "https://www.deltavista-online.at/oks/app?exactSearchButton=Exakte%20Suche&txtPLZ=&includePrivatePool=on&txtStrasse=&Form0=txtName,birthDate,exactSearchButton,txtStrasse,includePrivatePool,fuzzySearchButton,txtPLZ,txtOrt,includeCompanyPool,zmrSearchButton,txtCompanyRegistrationNumber,txtTel&service=direct/1/Search/$Form&txtOrt=&txtTel=&includeCompanyPool=on&txtCompanyRegistrationNumber=&sp=S0&txtName=");
-            sbUrl.Append(HTBUtils.ReplaceHtmlUmlauten(txtName1.Text));
+            sbUrl.Append(HTBUtils.ReplaceUmlautsWithHtmlCodes(txtName1.Text));
             sbUrl.Append("%20");
-            sbUrl.Append(HTBUtils.ReplaceHtmlUmlauten(txtName2.Text));
+            sbUrl.Append(HTBUtils.ReplaceUmlautsWithHtmlCodes(txtName2.Text));
             sbUrl.Append("&birthDate=");
             if(HTBUtils.IsDateValid(GlobalUtilArea.GetDefaultDateIfConvertToDateError(txtGebDat)))
             {
@@ -263,7 +263,7 @@ namespace HTB.v2.intranetx.gegner
             var sb = new StringBuilder("/v2/intranetx/aktenint/ResearchRedirect.aspx?Source=DeltaVista&UserID=");
             sb.Append(GlobalUtilArea.GetUserId(Session));
             sb.Append("&URL=");
-            sb.Append(GlobalUtilArea.EncodeURL(HTBUtils.ReplaceHtmlUmlauten(sbUrl.ToString())));
+            sb.Append(GlobalUtilArea.EncodeURL(HTBUtils.ReplaceUmlautsWithHtmlCodes(sbUrl.ToString())));
 //            sb.Append("'");
 
             ClientScript.RegisterStartupScript(this.GetType(), "newWindow", String.Format("<script>window.open('{0}', 'popWindow', 'menubar=yes,scrollbars=yes,resizable=yes,width=900,height=800');</script>", sb));

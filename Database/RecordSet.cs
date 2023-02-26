@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Configuration;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Collections;
+using System.Data;
 using System.Data.SqlClient;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Transactions;
-using System.Data;
-using IBM.Data.DB2;
 
 namespace HTB.Database
 {
@@ -439,16 +437,7 @@ namespace HTB.Database
             LogIfDebug(debugMode, "Returning Results");
             return _Results;
         }
-
-        public DB2DataReader GetDB2DataReader(string psqlCommand, int connectToDatabase = DatabasePool.ConnectionToHTBRoadsDB2)
-        {
-            DB2DataReader _Results;
-            Con = DatabasePool.GetConnection(psqlCommand, connectToDatabase);
-            var cmd = new DB2Command(psqlCommand, Con.DB2Connection);
-            _Results = cmd.ExecuteReader();
-            return _Results;
-        }
-
+        
         private void LoadListFromDataReader(ArrayList list, SqlDataReader dr, Type ptype)
         {
             RecordsList.Clear();
@@ -457,20 +446,11 @@ namespace HTB.Database
                 list,
                 ptype, Con);
         }
-
-        private void LoadListFromDB2DataReader(ArrayList list, DB2DataReader dr, Type ptype)
-        {
-            RecordsList.Clear();
-            RecordLoader.LoadRecordsFromDB2DataReader(
-                dr,
-                list,
-                ptype, Con);
-        }
-
+        
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public int ExecuteNonQuery(string psqlCommand, int connectToDatabase = DatabasePool.ConnectToHTB)
+        public int ExecuteNonQuery(string sqlCommand, int connectToDatabase = DatabasePool.ConnectToHTB)
         {
-            return SqlServerExcecuteNonQuery(psqlCommand, connectToDatabase);
+            return SqlServerExecuteNonQuery(sqlCommand, connectToDatabase);
         }
 
         public void ExecuteStoredProcedure(string spName, ArrayList parameters, int connectToDatabase = DatabasePool.ConnectToHTB)
@@ -505,7 +485,7 @@ namespace HTB.Database
             Con.IsInUse = false;
         }
         
-        private int SqlServerExcecuteNonQuery(string psqlCommand, int connectToDatabase = DatabasePool.ConnectToHTB)
+        private int SqlServerExecuteNonQuery(string psqlCommand, int connectToDatabase = DatabasePool.ConnectToHTB)
         {
             try
             {
@@ -517,34 +497,14 @@ namespace HTB.Database
             }
             catch (Exception e)
             {
-                //TODO: do soemthing with the exception
-                throw new Exception(string.Format("Error while executing sql command: <br/>{0}",psqlCommand), e);
-            }
-        }
-
-        private int DB2ExcecuteNonQuery(string psqlCommand)
-        {
-            if (psqlCommand == null) return -100;
-            if (psqlCommand.Trim() == "") return -101;
-            try
-            {
-                Con = DatabasePool.GetConnection(psqlCommand, DatabasePool.ConnectionToHTBRoadsDB2);
-                var cmd = new DB2Command(psqlCommand, Con.DB2Connection);
-                cmd.CommandText = psqlCommand;
-                int ret = cmd.ExecuteNonQuery();
-                Con.IsInUse = false;
-                return ret;
-            }
-            catch (Exception e)
-            {
-                //TODO: do soemthing with the exception
-                throw new Exception("Exception while executing command: "+psqlCommand, e);
+                //TODO: do something with the exception
+                throw new Exception($"Error while executing sql command: <br/>{psqlCommand}", e);
             }
         }
         
-        public void ExcecuteNonQueryInTransaction(string psqlCommand)
+        public void ExecuteNonQueryInTransaction(string sqlCommand)
         {
-            ExecSqlInTransaction(psqlCommand);
+            ExecSqlInTransaction(sqlCommand);
         }
 
         public void StartTransaction(int connectToDatabase = DatabasePool.ConnectToHTB)

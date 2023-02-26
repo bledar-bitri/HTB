@@ -674,7 +674,7 @@ namespace HTBUtilities
                 .Replace("<BR/>", "\n");
         }
 
-        public static string ReplaceHtmlUmlauten(string str)
+        public static string ReplaceUmlautsWithHtmlCodes(string str)
         {
             str = str.Replace("ß", "&szlig;");
             str = str.Replace("Ä", "&Auml;");
@@ -684,11 +684,10 @@ namespace HTBUtilities
             str = str.Replace("ö", "&ouml;");
             return str.Replace("ü", "&uuml;");
         }
-
+        
         public static string FormatTimeSpan(TimeSpan ts)
         {
-            return String.Format("{0:00}:{1:00}:{2:00}",
-                ts.Hours, ts.Minutes, ts.Seconds);
+            return $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}";
         }
         #endregion
 

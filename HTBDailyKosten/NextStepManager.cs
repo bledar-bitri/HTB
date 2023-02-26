@@ -323,7 +323,7 @@ namespace HTBDailyKosten
             {
                 string adName = HTBUtils.GetADSalutationAndName(intAkt.AktIntID);
                 string text = HTBUtils.GetFileText(HTBUtils.GetConfigValue("AD_Overdue_Akt_Text"));
-                text = text.Replace("[name]", HTBUtils.ReplaceHtmlUmlauten(adName));
+                text = text.Replace("[name]", HTBUtils.ReplaceUmlautsWithHtmlCodes(adName));
                 text = text.Replace("[date]", DateTime.Now.AddDays(_control.GracePeriod).ToShortDateString());
                 text = text.Replace("[akt]", intAkt.AktIntID + " [" + intAkt.AktIntAZ + "]<br/><br/>"+HTBUtils.GetAktGegnerNameAndAddress(intAkt.AktIntID, true, 8)+"<br/><br/>");
                 var subject = "Akt überfälig: " + intAkt.AktIntID;
