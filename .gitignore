@@ -241,6 +241,7 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/Lib/
 /HTB/v2/intranet
 /.idea/.idea.HTB/.idea
 /.idea/config
