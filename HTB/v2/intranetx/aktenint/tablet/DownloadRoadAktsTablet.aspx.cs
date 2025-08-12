@@ -6,10 +6,11 @@ using System.Reflection;
 using System.Text;
 using HTB.Database;
 using HTB.Database.Views;
-using HTB.v2.intranetx.routeplanter;
+using HTB.v2.intranetx.routeplanner;
 using HTB.v2.intranetx.util;
 using HTBExtras.XML;
 using HTBUtilities;
+using Road = HTB.v2.intranetx.routeplanner.dto.Road;
 
 namespace HTB.v2.intranetx.aktenint.tablet
 {

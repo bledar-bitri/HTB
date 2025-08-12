@@ -142,7 +142,7 @@
         public const string ZIP_CODE_RANGE = "ZCR";
         public const string REVERSE_ROUTE = "RevRoute";
 
-        public const string BingRouteRecalculate = "BingRouteRecalculate";
+        public const string RecalculateRoute = "RecalculateRoute";
         public const string RoutePlanner = "RoutePlanner";
 
         public const string SessionRoutePlannerManager = "RoutePlannerManager";

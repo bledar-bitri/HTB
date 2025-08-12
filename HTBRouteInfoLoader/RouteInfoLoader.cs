@@ -9,9 +9,11 @@ using System.Text;
 using System.Threading;
 using HTB.Database;
 using HTB.Database.Views;
-using HTB.v2.intranetx.routeplanter;
+using HTB.v2.intranetx.routeplanner;
+using HTB.v2.intranetx.routeplanner.dto;
 using HTBUtilities;
 using log4net.Config;
+using Road = HTB.v2.intranetx.routeplanner.dto.Road;
 
 namespace HTBRouteInfoLoader
 {

@@ -2,7 +2,7 @@
 using System.Configuration;
 using System.Reflection;
 using HTB.Database;
-using HTB.v2.intranetx.routeplanter;
+using HTB.v2.intranetx.routeplanner;
 
 namespace HTB
 {

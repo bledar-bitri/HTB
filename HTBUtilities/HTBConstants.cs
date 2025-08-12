@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace HTBUtilities
+﻿namespace HTBUtilities
 {
-    class HTBConstants
+    public class HtbConstants
     {
+        public const string AddressFixAndRecalculationAutomaticTaskStatus = ":FARRAT";
+        public const string RoutePlannerAutomaticTaskStatus = ":BRPA";
     }
 }

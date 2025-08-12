@@ -76,18 +76,50 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.7, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.9.0.7\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Pipelines, Version=9.0.0.7, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Pipelines.9.0.7\lib\net462\System.IO.Pipelines.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Text.Encodings.Web, Version=9.0.0.7, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.9.0.7\lib\net462\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=9.0.0.7, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.9.0.7\lib\net462\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Web.DataVisualization" />
     <Reference Include="System.Web.DynamicData" />
@@ -447,6 +479,7 @@
     <Content Include="includes\widgets\utils.asp" />
     <Content Include="includes\widgets\widgets_start.asp" />
     <Content Include="packages.config" />
+    <None Include="Web.config" />
     <None Include="Properties\PublishProfiles\ECP-HTB.pubxml" />
     <None Include="Properties\PublishProfiles\localhost.pubxml" />
     <None Include="Service References\TabletService\GetData.disco" />
@@ -565,6 +598,7 @@
     <Content Include="v2\intranetx\aktenint\ImportGeneral.aspx" />
     <Content Include="v2\intranetx\aktenint\Protocol2.aspx" />
     <Content Include="v2\intranetx\aktenint\EditBooking.aspx" />
+    <Content Include="v2\intranetx\aktenint\tablet\DownloadAddressesToFixTablet.aspx" />
     <Content Include="v2\intranetx\aktenint\tablet\DownloadAktTablet2.aspx" />
     <Content Include="v2\intranetx\aktenint\tablet\DownloadJournalTablet.aspx" />
     <Content Include="v2\intranetx\aktenint\tablet\DownloadChangedAktsTablet.aspx" />
@@ -675,26 +709,14 @@
     <Content Include="v2\intranetx\progress\ContextSens.aspx" />
     <Content Include="v2\intranetx\progress\SyncTask.aspx" />
     <Content Include="v2\intranetx\progress\SyncTaskCallback.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRouteAddressFix.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRouteDisplay.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRouteLoader.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlanerForAkten.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlaner.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRoutePrintRouteDirections.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRoutePrintRouteAddresses.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlanerAutomatic.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\BingRouteActionsDisplay.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRouteDisplayTabletApp.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerAutomaticTabletApp.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerTabletApp.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerProgressTabletApp.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRouteAddressFixTablet.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRouteDisplayTablet.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePrintRouteAddressesTablet.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePlanerAutomaticTablet.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePlanerTablet.aspx" />
-    <Content Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePrintRouteDirectionsTablet.aspx" />
-    <Content Include="v2\intranetx\routeplanter\googlemaps\RoutePlaner.aspx" />
+    <Content Include="v2\intranetx\routeplanner\BingRouteActionsDisplay.aspx" />
+    <Content Include="v2\intranetx\routeplanner\BingRouteDisplay.aspx" />
+    <Content Include="v2\intranetx\routeplanner\BingRouteLoader.aspx" />
+    <Content Include="v2\intranetx\routeplanner\BingRoutePlaner.aspx" />
+    <Content Include="v2\intranetx\routeplanner\BingRoutePlanerAutomatic.aspx" />
+    <Content Include="v2\intranetx\routeplanner\BingRoutePlanerForAkten.aspx" />
+    <Content Include="v2\intranetx\routeplanner\BingRoutePrintRouteAddresses.aspx" />
+    <Content Include="v2\intranetx\routeplanner\BingRoutePrintRouteDirections.aspx" />
     <Content Include="v2\intranetx\kassablock\MissingBeleg.aspx" />
     <Content Include="v2\intranetx\klienten\KlientBericht.aspx" />
     <Content Include="v2\intranetx\global_forms\Zwischenbericht.aspx" />
@@ -706,6 +728,20 @@
     <Content Include="v2\intranetx\klienten\KlientBrowser.aspx" />
     <Content Include="v2\intranetx\klienten\NewKlient.aspx" />
     <Content Include="v2\intranetx\reports\ADStatistic.aspx" />
+    <Content Include="v2\intranetx\routeplanner\RouteAddressFix.aspx" />
+    <Content Include="v2\intranetx\routeplanner\tabletApp\BingRouteDisplayTabletApp.aspx" />
+    <Content Include="v2\intranetx\routeplanner\tabletApp\LeafletRouteDisplayTabletApp.aspx" />
+    <Content Include="v2\intranetx\routeplanner\tabletApp\RouteAddressFixTabletApp.aspx" />
+    <Content Include="v2\intranetx\routeplanner\tabletApp\FixAddressesAndRecalculateRouteAutomaticTabletApp.aspx" />
+    <Content Include="v2\intranetx\routeplanner\tabletApp\RoutePlannerAutomaticTabletApp.aspx" />
+    <Content Include="v2\intranetx\routeplanner\tabletApp\RoutePlannerProgressTabletApp.aspx" />
+    <Content Include="v2\intranetx\routeplanner\tabletApp\RoutePlannerTabletApp.aspx" />
+    <Content Include="v2\intranetx\routeplanner\tablet\bing\BingRouteDisplayTablet.aspx" />
+    <Content Include="v2\intranetx\routeplanner\tablet\bing\BingRoutePrintRouteAddressesTablet.aspx" />
+    <Content Include="v2\intranetx\routeplanner\tablet\bing\BingRoutePrintRouteDirectionsTablet.aspx" />
+    <Content Include="v2\intranetx\routeplanner\tablet\RouteAddressFixTablet.aspx" />
+    <Content Include="v2\intranetx\routeplanner\tablet\RoutePlanerAutomaticTablet.aspx" />
+    <Content Include="v2\intranetx\routeplanner\tablet\RoutePlanerTablet.aspx" />
     <Content Include="v2\intranetx\scripts\AjaxHacks.js" />
     <Content Include="Test.html" />
     <Content Include="v2\intranetx\scripts\jquery-1.3.2.js" />
@@ -1114,16 +1150,16 @@
     <Content Include="v2\intranet\styles\inksys.css" />
     <Content Include="v2\intranet\styles\inksysv2.css" />
     <Content Include="v2\intranetx\aktenint\Test.aspx" />
-    <Content Include="Web.config">
+    <Content Include="Web.old.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
+    <Content Include="Web.old.Debug.config">
+      <DependentUpon>Web.old.config</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
+    <Content Include="Web.old.Release.config">
+      <DependentUpon>Web.old.config</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Service References\TabletService\GetData.wsdl" />
@@ -1352,6 +1388,13 @@
     </Compile>
     <Compile Include="v2\intranetx\aktenint\EditBooking.aspx.designer.cs">
       <DependentUpon>EditBooking.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadAddressesToFixTablet.aspx.cs">
+      <DependentUpon>DownloadAddressesToFixTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\aktenint\tablet\DownloadAddressesToFixTablet.aspx.designer.cs">
+      <DependentUpon>DownloadAddressesToFixTablet.aspx</DependentUpon>
     </Compile>
     <Compile Include="v2\intranetx\aktenint\tablet\DownloadAktTablet2.aspx.cs">
       <DependentUpon>DownloadAktTablet2.aspx</DependentUpon>
@@ -2047,151 +2090,79 @@
     </Compile>
     <Compile Include="v2\intranetx\progress\Task.cs" />
     <Compile Include="v2\intranetx\progress\TaskStatus.cs" />
-    <Compile Include="v2\intranetx\routeplanter\AddressLocation.cs" />
-    <Compile Include="v2\intranetx\routeplanter\AddressWithID.cs" />
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteAddressFix.aspx.cs">
-      <DependentUpon>BingRouteAddressFix.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteAddressFix.aspx.designer.cs">
-      <DependentUpon>BingRouteAddressFix.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteDisplay.aspx.cs">
-      <DependentUpon>BingRouteDisplay.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteDisplay.aspx.designer.cs">
-      <DependentUpon>BingRouteDisplay.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteLoader.aspx.cs">
-      <DependentUpon>BingRouteLoader.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteLoader.aspx.designer.cs">
-      <DependentUpon>BingRouteLoader.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlanerForAkten.aspx.cs">
-      <DependentUpon>BingRoutePlanerForAkten.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlanerForAkten.aspx.designer.cs">
-      <DependentUpon>BingRoutePlanerForAkten.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlaner.aspx.cs">
-      <DependentUpon>BingRoutePlaner.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlaner.aspx.designer.cs">
-      <DependentUpon>BingRoutePlaner.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePrintRouteDirections.aspx.cs">
-      <DependentUpon>BingRoutePrintRouteDirections.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePrintRouteDirections.aspx.designer.cs">
-      <DependentUpon>BingRoutePrintRouteDirections.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePrintRouteAddresses.aspx.cs">
-      <DependentUpon>BingRoutePrintRouteAddresses.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePrintRouteAddresses.aspx.designer.cs">
-      <DependentUpon>BingRoutePrintRouteAddresses.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlanerAutomatic.aspx.cs">
-      <DependentUpon>BingRoutePlanerAutomatic.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRoutePlanerAutomatic.aspx.designer.cs">
-      <DependentUpon>BingRoutePlanerAutomatic.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteActionsDisplay.aspx.cs">
+    <Compile Include="v2\intranetx\routeplanner\BingRouteActionsDisplay.aspx.cs">
       <DependentUpon>BingRouteActionsDisplay.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\BingRouteActionsDisplay.aspx.designer.cs">
+    <Compile Include="v2\intranetx\routeplanner\BingRouteActionsDisplay.aspx.designer.cs">
       <DependentUpon>BingRouteActionsDisplay.aspx</DependentUpon>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRouteDisplayTabletApp.aspx.cs">
-      <DependentUpon>BingRouteDisplayTabletApp.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRouteDisplay.aspx.cs">
+      <DependentUpon>BingRouteDisplay.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRouteDisplayTabletApp.aspx.designer.cs">
-      <DependentUpon>BingRouteDisplayTabletApp.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRouteDisplay.aspx.designer.cs">
+      <DependentUpon>BingRouteDisplay.aspx</DependentUpon>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerAutomaticTabletApp.aspx.cs">
-      <DependentUpon>BingRoutePlanerAutomaticTabletApp.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRouteLoader.aspx.cs">
+      <DependentUpon>BingRouteLoader.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerAutomaticTabletApp.aspx.designer.cs">
-      <DependentUpon>BingRoutePlanerAutomaticTabletApp.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRouteLoader.aspx.designer.cs">
+      <DependentUpon>BingRouteLoader.aspx</DependentUpon>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerTabletApp.aspx.cs">
-      <DependentUpon>BingRoutePlanerTabletApp.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRoutePlaner.aspx.cs">
+      <DependentUpon>BingRoutePlaner.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerTabletApp.aspx.designer.cs">
-      <DependentUpon>BingRoutePlanerTabletApp.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRoutePlaner.aspx.designer.cs">
+      <DependentUpon>BingRoutePlaner.aspx</DependentUpon>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerProgressTabletApp.aspx.cs">
-      <DependentUpon>BingRoutePlanerProgressTabletApp.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRoutePlanerAutomatic.aspx.cs">
+      <DependentUpon>BingRoutePlanerAutomatic.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tabletApp\BingRoutePlanerProgressTabletApp.aspx.designer.cs">
-      <DependentUpon>BingRoutePlanerProgressTabletApp.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRoutePlanerAutomatic.aspx.designer.cs">
+      <DependentUpon>BingRoutePlanerAutomatic.aspx</DependentUpon>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRouteAddressFixTablet.aspx.cs">
-      <DependentUpon>BingRouteAddressFixTablet.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRoutePlanerForAkten.aspx.cs">
+      <DependentUpon>BingRoutePlanerForAkten.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRouteAddressFixTablet.aspx.designer.cs">
-      <DependentUpon>BingRouteAddressFixTablet.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRoutePlanerForAkten.aspx.designer.cs">
+      <DependentUpon>BingRoutePlanerForAkten.aspx</DependentUpon>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRouteDisplayTablet.aspx.cs">
-      <DependentUpon>BingRouteDisplayTablet.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRoutePrintRouteAddresses.aspx.cs">
+      <DependentUpon>BingRoutePrintRouteAddresses.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRouteDisplayTablet.aspx.designer.cs">
-      <DependentUpon>BingRouteDisplayTablet.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRoutePrintRouteAddresses.aspx.designer.cs">
+      <DependentUpon>BingRoutePrintRouteAddresses.aspx</DependentUpon>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePrintRouteAddressesTablet.aspx.cs">
-      <DependentUpon>BingRoutePrintRouteAddressesTablet.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRoutePrintRouteDirections.aspx.cs">
+      <DependentUpon>BingRoutePrintRouteDirections.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePrintRouteAddressesTablet.aspx.designer.cs">
-      <DependentUpon>BingRoutePrintRouteAddressesTablet.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\BingRoutePrintRouteDirections.aspx.designer.cs">
+      <DependentUpon>BingRoutePrintRouteDirections.aspx</DependentUpon>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePlanerAutomaticTablet.aspx.cs">
-      <DependentUpon>BingRoutePlanerAutomaticTablet.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\dto\AddressLocation.cs" />
+    <Compile Include="v2\intranetx\routeplanner\dto\AddressWithID.cs" />
+    <Compile Include="v2\intranetx\routeplanner\dto\City.cs" />
+    <Compile Include="v2\intranetx\routeplanner\dto\IRouteEventHandler.cs" />
+    <Compile Include="v2\intranetx\routeplanner\dto\Map.cs" />
+    <Compile Include="v2\intranetx\routeplanner\dto\OpenRouteService.cs" />
+    <Compile Include="v2\intranetx\routeplanner\dto\Road.cs" />
+    <Compile Include="v2\intranetx\routeplanner\dto\RouteFileRecord.cs" />
+    <Compile Include="v2\intranetx\routeplanner\exceptions\AddressNotFoundException.cs" />
+    <Compile Include="v2\intranetx\routeplanner\RouteAddressFix.aspx.cs">
+      <DependentUpon>RouteAddressFix.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePlanerAutomaticTablet.aspx.designer.cs">
-      <DependentUpon>BingRoutePlanerAutomaticTablet.aspx</DependentUpon>
+    <Compile Include="v2\intranetx\routeplanner\RouteAddressFix.aspx.designer.cs">
+      <DependentUpon>RouteAddressFix.aspx</DependentUpon>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePlanerTablet.aspx.cs">
-      <DependentUpon>BingRoutePlanerTablet.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePlanerTablet.aspx.designer.cs">
-      <DependentUpon>BingRoutePlanerTablet.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePrintRouteDirectionsTablet.aspx.cs">
-      <DependentUpon>BingRoutePrintRouteDirectionsTablet.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\bingmaps\tablet\BingRoutePrintRouteDirectionsTablet.aspx.designer.cs">
-      <DependentUpon>BingRoutePrintRouteDirectionsTablet.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\RoutePlanerManagerAutomatic.cs" />
-    <Compile Include="v2\intranetx\routeplanter\IRouteEventHandler.cs" />
-    <Compile Include="v2\intranetx\routeplanter\City.cs" />
-    <Compile Include="v2\intranetx\routeplanter\googlemaps\RoutePlaner.aspx.cs">
-      <DependentUpon>RoutePlaner.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="v2\intranetx\routeplanter\googlemaps\RoutePlaner.aspx.designer.cs">
-      <DependentUpon>RoutePlaner.aspx</DependentUpon>
-    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\RoutePlanerManagerAutomatic.cs" />
     <Compile Include="v2\intranetx\kassablock\MissingBeleg.aspx.cs">
       <DependentUpon>MissingBeleg.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2265,6 +2236,97 @@
       <DependentUpon>NewKlient.aspx</DependentUpon>
     </Compile>
     <Compile Include="v2\intranetx\KTFunctions.cs" />
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\BingRouteDisplayTabletApp.aspx.cs">
+      <DependentUpon>BingRouteDisplayTabletApp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\BingRouteDisplayTabletApp.aspx.designer.cs">
+      <DependentUpon>BingRouteDisplayTabletApp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\LeafletRouteDisplayTabletApp.aspx.cs">
+      <DependentUpon>LeafletRouteDisplayTabletApp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\LeafletRouteDisplayTabletApp.aspx.designer.cs">
+      <DependentUpon>LeafletRouteDisplayTabletApp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\RouteAddressFixTabletApp.aspx.cs">
+      <DependentUpon>RouteAddressFixTabletApp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\RouteAddressFixTabletApp.aspx.designer.cs">
+      <DependentUpon>RouteAddressFixTabletApp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\FixAddressesAndRecalculateRouteAutomaticTabletApp.aspx.cs">
+      <DependentUpon>FixAddressesAndRecalculateRouteAutomaticTabletApp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\FixAddressesAndRecalculateRouteAutomaticTabletApp.aspx.designer.cs">
+      <DependentUpon>FixAddressesAndRecalculateRouteAutomaticTabletApp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\RoutePlannerAutomaticTabletApp.aspx.cs">
+      <DependentUpon>RoutePlannerAutomaticTabletApp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\RoutePlannerAutomaticTabletApp.aspx.designer.cs">
+      <DependentUpon>RoutePlannerAutomaticTabletApp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\RoutePlannerProgressTabletApp.aspx.cs">
+      <DependentUpon>RoutePlannerProgressTabletApp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\RoutePlannerProgressTabletApp.aspx.designer.cs">
+      <DependentUpon>RoutePlannerProgressTabletApp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\RoutePlannerTabletApp.aspx.cs">
+      <DependentUpon>RoutePlannerTabletApp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tabletApp\RoutePlannerTabletApp.aspx.designer.cs">
+      <DependentUpon>RoutePlannerTabletApp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tablet\bing\BingRouteDisplayTablet.aspx.cs">
+      <DependentUpon>BingRouteDisplayTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tablet\bing\BingRouteDisplayTablet.aspx.designer.cs">
+      <DependentUpon>BingRouteDisplayTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tablet\bing\BingRoutePrintRouteAddressesTablet.aspx.cs">
+      <DependentUpon>BingRoutePrintRouteAddressesTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tablet\bing\BingRoutePrintRouteAddressesTablet.aspx.designer.cs">
+      <DependentUpon>BingRoutePrintRouteAddressesTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tablet\bing\BingRoutePrintRouteDirectionsTablet.aspx.cs">
+      <DependentUpon>BingRoutePrintRouteDirectionsTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tablet\bing\BingRoutePrintRouteDirectionsTablet.aspx.designer.cs">
+      <DependentUpon>BingRoutePrintRouteDirectionsTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tablet\RouteAddressFixTablet.aspx.cs">
+      <DependentUpon>RouteAddressFixTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tablet\RouteAddressFixTablet.aspx.designer.cs">
+      <DependentUpon>RouteAddressFixTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tablet\RoutePlanerAutomaticTablet.aspx.cs">
+      <DependentUpon>RoutePlanerAutomaticTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tablet\RoutePlanerAutomaticTablet.aspx.designer.cs">
+      <DependentUpon>RoutePlanerAutomaticTablet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tablet\RoutePlanerTablet.aspx.cs">
+      <DependentUpon>RoutePlanerTablet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="v2\intranetx\routeplanner\tablet\RoutePlanerTablet.aspx.designer.cs">
+      <DependentUpon>RoutePlanerTablet.aspx</DependentUpon>
+    </Compile>
     <Compile Include="v2\intranetx\test\Test.aspx.cs">
       <DependentUpon>Test.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2299,9 +2361,7 @@
     <Compile Include="v2\intranetx\reports\ADStatistic.aspx.designer.cs">
       <DependentUpon>ADStatistic.aspx</DependentUpon>
     </Compile>
-    <Compile Include="v2\intranetx\routeplanter\Map.cs" />
-    <Compile Include="v2\intranetx\routeplanter\Road.cs" />
-    <Compile Include="v2\intranetx\routeplanter\RoutePlanerManager.cs" />
+    <Compile Include="v2\intranetx\routeplanner\RoutePlanerManager.cs" />
     <Compile Include="v2\intranetx\search\LoginAndSearch.aspx.cs">
       <DependentUpon>LoginAndSearch.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2785,17 +2845,6 @@
     <WCFMetadataStorage Include="Service References\RouteService\" />
     <WCFMetadataStorage Include="Service References\SearchService\" />
     <WCFMetadataStorage Include="Service References\TabletService\" />
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="TripOptimizerLib">
-      <Guid>{C1000CF7-74C6-4576-A0DC-67540A187138}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="v2\intranetx\documents\" />

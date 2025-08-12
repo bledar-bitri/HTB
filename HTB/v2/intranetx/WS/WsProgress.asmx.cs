@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Web.Services;
+using FileHelpers;
 using HTB.v2.intranetx.progress;
+using HTBUtilities;
 
 namespace HTB.v2.intranetx.WS
 {
@@ -12,6 +14,7 @@ namespace HTB.v2.intranetx.WS
     [System.Web.Script.Services.ScriptService]
     public class WsProgress : WebService
     {
+        private const string Delimiter = ";";
 
         [WebMethod]
         public string GetProgress(string taskId)
@@ -24,35 +27,46 @@ namespace HTB.v2.intranetx.WS
         [WebMethod()]
         public TaskStatus GetBingRoutePlannerTaskStatus()
         {
-            string taskID = Context.User.Identity.Name + ":BingRoutePlanner";
+            string taskId = Context.User.Identity.Name + ":BingRoutePlanner";
 
-            return Context.Cache[taskID] as TaskStatus;
+            return Context.Cache[taskId] as TaskStatus;
         }
 
         [WebMethod()]
         public TaskStatus GetBingRoutePlannerForAktenTaskStatus()
         {
-            string taskID = Context.User.Identity.Name + ":BingRoutePlanerForAkten";
+            string taskId = Context.User.Identity.Name + ":BingRoutePlanerForAkten";
 
-            return Context.Cache[taskID] as TaskStatus;
+            return Context.Cache[taskId] as TaskStatus;
         }
 
         [WebMethod()]
         public TaskStatus GetBingRoutePlannerAutomaticTaskStatus()
         {
-            string taskID = Context.User.Identity.Name + ":BingRoutePlannerAutomatic";
+            string taskId = Context.User.Identity.Name + ":BingRoutePlannerAutomatic";
 
-            return Context.Cache[taskID] as TaskStatus;
+            return Context.Cache[taskId] as TaskStatus;
         }
 
         [WebMethod()]
-        public string GetBingRoutePlannerAutomaticTaskStatusTabletApp(string userId)
+        public string GetRoutePlanerTaskStatus(string userId)
         {
-            string taskID = userId + ":BRPA";
-            var ts = (TaskStatus) Context.Cache[taskID];
+            var taskId = userId + HtbConstants.RoutePlannerAutomaticTaskStatus;
+            var ts = (TaskStatus) Context.Cache[taskId];
             if(ts != null)
             {
-                return ts.Progress + "  " + ts.ProgressText + "  " + ts.ProgressTextLong;
+                return ts.Progress + Delimiter + ts.ProgressText + Delimiter + ts.ProgressTextLong;
+            }
+            return "NOTHING";
+        }
+        [WebMethod()]
+        public string GetAddressFixAndRecalculationTaskStatus(string userId)
+        {
+            var taskId = userId + HtbConstants.AddressFixAndRecalculationAutomaticTaskStatus;
+            var ts = (TaskStatus) Context.Cache[taskId];
+            if(ts != null)
+            {
+                return ts.Progress + Delimiter + ts.ProgressText + Delimiter + ts.ProgressTextLong;
             }
             return "NOTHING";
         }
@@ -60,9 +74,9 @@ namespace HTB.v2.intranetx.WS
         [WebMethod()]
         public TaskStatus GetAktReassignmentTaskStatus()
         {
-            string taskID = Context.User.Identity.Name + ":AktReassignment";
+            string taskId = Context.User.Identity.Name + ":AktReassignment";
 
-            return Context.Cache[taskID] as TaskStatus;
+            return Context.Cache[taskId] as TaskStatus;
         }
         #endregion
     }

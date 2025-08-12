@@ -22,7 +22,7 @@ namespace TransferTables
             var watch = new Stopwatch();
             Console.WriteLine("Loading Records");
             watch.Start();
-            ArrayList roads = HTBUtilities.HTBUtils.GetSqlRecords("SELECT * FROM " + tableName, typeof(tblRoadInfo), DbConnection.ConnectionType_DB2);
+            ArrayList roads = HTBUtilities.HTBUtils.GetSqlRecords("SELECT * FROM " + tableName, typeof(tblRoadInfo), DbConnection.ConnectionType_SqlServer);
 
             Console.WriteLine(string.Format("Transferring Records [ total read time {0} ]",watch.Elapsed));
             watch.Restart();

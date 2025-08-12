@@ -1,34 +1,40 @@
-﻿using System;
-using System.Data;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using HTB.Database;
-using System.Collections;
+﻿using HTB.Database;
 using HTB.Database.HTB.StoredProcs;
+using HTB.Database.Views;
 using HTB.GeocodeService;
+using HTB.SearchService;
+using HTB.v2.intranetx.routeplanner;
+using HTB.v2.intranetx.routeplanner.dto;
+using HTB.v2.intranetx.util;
 using HTBAktLayer;
 using HTBExtras.KingBill;
-using HTBUtilities;
-using System.Net.Mail;
+using HTBExtras.XML;
 using HTBReports;
-using System.IO;
-using HTB.Database.Views;
-using HTBExtras;
-using System.Diagnostics;
-using HTB.v2.intranetx.routeplanter;
-using System.Collections.Generic;
-using System.Net;
-using HTB.v2.intranetx.util;
-using Microsoft.VisualBasic;
 using HTBServices;
 using HTBServices.Mail;
+using HTBUtilities;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Net.Mail;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Xml.Linq;
+using System.Xml.Serialization;
+using Road = HTB.v2.intranetx.routeplanner.dto.Road;
 
 namespace HTBDailyKosten
 {
     internal class Program
     {
+        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
+
         private static tblControl control = HTBUtils.GetControlRecord();
 
         private static void Main(string[] args)
@@ -52,7 +58,7 @@ namespace HTBDailyKosten
             //            TestExcel();
             //            TestMissingBeleg();
             //            TestRV();
-            //            TestRoutePlanner();
+            // TestRoutePlanner();
             //            Console.WriteLine("OUTPUT: " + HTBUtils.ReplaceStringBetween(HTBUtils.ReplaceStringBetween("Rennbahnstrasse 4 Top 10, 5020, Salzburg, Österreich", " top ", ",", ","), "/", ",", ","));
             //            TestSerilization();
             //            ProcessDir("C:\\NintendoDS");
@@ -73,10 +79,9 @@ namespace HTBDailyKosten
             //            TestSmallLinesOfCode();
             //            TestInterverntionAction();
             //TestLawyerMahnung();
+            TestRouteAddressFix();
 
 
-            Console.WriteLine(Uri.EscapeUriString("BE Pröll.txt"));
-            
             Console.Read();
         }
 
@@ -620,20 +625,74 @@ namespace HTBDailyKosten
 
         #region RoutePlaner
 
+
+
+        private static void TestRouteAddressFix()
+        {
+
+            Log.Info("Starting Recalculation");
+
+            var routeName = "Test";
+            var userId = 493;
+
+            Log.Info("Getting RpManager");
+
+            var rpManager = FileSerializer<RoutePlanerManager>.DeSerialize(RoutePlanerManager.GetRouteFilePath(userId, routeName));
+            Log.Info("Getting Addresses");
+
+            var xmlData = File.ReadAllText("C:/Temp/HTB/routes/addressestofix.txt");
+            var serializer = new XmlSerializer(typeof(List<XmlAddressRecord>), new XmlRootAttribute("Root"));
+            var wrapped = "<Root>" + xmlData + "</Root>";
+            using (var reader = new StringReader(wrapped))
+            {
+                var addresses = (List<XmlAddressRecord>)serializer.Deserialize(reader);
+
+                Log.Info("Got Addresses");
+
+                Log.Info("Replacing Addresses");
+                foreach (var addr in addresses)
+                {
+                    Log.Info($"Replacing {addr.AddressId} ==> {addr.Address}");
+                    rpManager.ReplaceAddress(int.Parse(addr.AddressId), addr.Address);
+                }
+            }
+
+            rpManager.ClearBadAddresses();
+
+            rpManager.Run();
+        }
+
+
         private static readonly RoutePlanerManager rpManager = new RoutePlanerManager(9999, true, "123");
 
         private static void TestRoutePlanner()
         {
             rpManager.Clear();
-            string aktIdList = "146241,146240,146239,146238,146237,146236,146235,146234,146233,146232,146231,146230,146229,146228,146227,146226,146225,146221,146220,146219,146218,146217,146216,146215,146214,146213,146212,146205,146204,146203";
+            rpManager.RouteUser = 1;
+            rpManager.RouteName = "Test";
+
+            string xml = File.ReadAllText("C:/Temp/HTB/routes/addressestofix.txt");
+            var serializer = new XmlSerializer(typeof(List<XmlAddressRecord>), new XmlRootAttribute("Root"));
+            var wrapped = "<Root>" + xml + "</Root>";
+            using (StringReader reader = new StringReader(wrapped))
+            {
+                List<XmlAddressRecord> records = (List<XmlAddressRecord>)serializer.Deserialize(reader);
+
+                foreach (var record in records)
+                {
+                    Console.WriteLine($"ID: {record.AddressId}, Text: {record.Address}");
+                }
+            }
+
+            string aktIdList = "244598,244597,244596,244595";
 
             //            string aktIdList = "146241,146240,146239,146238,146237,146236,146235,146234,146233,146232,146231,146230,146229";
             if (aktIdList.Trim().Length > 0)
             {
                 string qryAktCommand = "SELECT * FROM dbo.qryAktenInt WHERE AktIntID in (" + aktIdList + ")";
-                ArrayList aktenList = HTBUtils.GetSqlRecords(qryAktCommand, typeof (qryAktenInt));
+                var aktenList = HTBUtils.GetSqlRecords(qryAktCommand, typeof (qryAktenInt));
                 LoadAddresses(aktenList);
-                rpManager.CalculateBestRoute();
+                rpManager.Run();
                 Console.WriteLine("LOCATIONS\n===========================\n");
                 foreach (City city in rpManager.Cities)
                 {
@@ -645,6 +704,8 @@ namespace HTBDailyKosten
                 {
                     Console.WriteLine(road.From.Address.ID + "&nbsp;&nbsp;" + road.From.Address.Address + " =====> " + road.To.Address.ID + "&nbsp;&nbsp;" + road.To.Address + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + road.Distance);
                 }
+
+                Console.WriteLine(rpManager.GetJsCoordinates(0, 0));
             }
         }
 
@@ -665,26 +726,6 @@ namespace HTBDailyKosten
         }
 
         #endregion
-
-        private static void TestLawyerEmail()
-        {
-
-        }
-
-        private static void TestSerilization()
-        {
-            var addr = new AddressWithID(100, "some street");
-            addr.SuggestedAddresses.Add(new AddressLocation(new AddressWithID(200, "bla bla"), new GeocodeLocation[]
-                                                                                                   {
-                                                                                                       new GeocodeLocation
-                                                                                                           {
-                                                                                                               Latitude = 0,
-                                                                                                               Longitude = 1
-                                                                                                           }
-                                                                                                   }));
-            string str = HTBUtils.SerializeObject(addr, typeof (AddressWithID));
-        }
-
 
         public static void ProcessDir(string sourceDir)
         {

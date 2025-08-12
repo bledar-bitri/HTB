@@ -1,16 +1,15 @@
-﻿using System;
+﻿using HTB.Database;
+using HTB.v2.intranetx.routeplanner;
+using HTB.v2.intranetx.routeplanner.dto;
+using HTB.v2.intranetx.util;
+using HTBExtras.XML;
+using HTBUtilities;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using HTB.Database;
-using HTB.v2.intranetx.routeplanter;
-using HTB.v2.intranetx.routeplanter.bingmaps;
-using HTB.v2.intranetx.util;
-using HTBExtras.XML;
-using HTBUtilities;
 
 namespace HTB.v2.intranetx.aktenint.tablet
 {

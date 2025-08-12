@@ -12,7 +12,7 @@ using System.Collections;
 using System.Text;
 using HTB.Database.Views;
 using HTB.GeocodeService;
-using HTB.v2.intranetx.routeplanter;
+using HTB.v2.intranetx.routeplanner;
 using HTBAktLayer;
 using HTBExtras;
 using HTBUtilities;

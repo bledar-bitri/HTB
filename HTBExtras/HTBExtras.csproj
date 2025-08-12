@@ -98,6 +98,7 @@
     <Compile Include="XML\XmlInterventionAkt2.cs" />
     <Compile Include="XML\XmlFieldPerson.cs" />
     <Compile Include="XML\XmlJournalRecord.cs" />
+    <Compile Include="XML\XmlAddressRecord.cs" />
     <Compile Include="XML\XmlSearchResponseRecord.cs" />
     <Compile Include="XML\XmlChangedAktsResponseRecord.cs" />
     <Compile Include="XML\XmlChangedAktsRequestRecord.cs" />
