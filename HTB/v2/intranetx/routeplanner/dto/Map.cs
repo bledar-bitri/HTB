@@ -390,7 +390,7 @@ namespace HTB.v2.intranetx.routeplanner.dto
             sb.Append(", ");
             sb.Append(city.Location.Locations[0].Latitude.ToString(CultureInfo.InvariantCulture));
             sb.Append("], name: \"");
-            sb.Append(city.Address.Address);
+            sb.Append(city.Address.ID);
             sb.Append("\"}");
 
             return sb.ToString();

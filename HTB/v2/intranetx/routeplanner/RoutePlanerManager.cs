@@ -20,6 +20,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Xml.Serialization;
@@ -974,12 +975,12 @@ namespace HTB.v2.intranetx.routeplanner
             lock (LockerObj)
             {
                 var stateInfo = (AddressLookupState)state;
+                var url = $"{GeoCodeUrl}?q={Uri.EscapeDataString(stateInfo.Address.Address)}&format=json&limit=1";
                 using (var client = new HttpClient())
                 {
                     try
                     {
                         client.DefaultRequestHeaders.UserAgent.ParseAdd("HTB/1.0");
-                        var url = $"{GeoCodeUrl}?q={Uri.EscapeDataString(stateInfo.Address.Address)}&format=json&limit=1";
                         var response = client.GetAsync(url).Result;
                         var json = response.Content.ReadAsStringAsync().Result;
                         var result = JsonSerializer.Deserialize<GeoResult[]>(json);
@@ -996,7 +997,7 @@ namespace HTB.v2.intranetx.routeplanner
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(ex);
+                        Log.Error($"Error parsing GeoCoordinates from URl: [{url}]", ex);
                         return false;
                     }
                 }

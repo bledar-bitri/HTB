@@ -115,7 +115,7 @@ namespace AddressAndDistanceLookup
         public int PlaceId { get; set; }
         public string licence { get; set; }
         public string osm_type { get; set; }
-        public int osm_id { get; set; }
+        public long osm_id { get; set; }
         public string @class { get; set; }
         public string type { get; set; }
         public int place_rank { get; set; }

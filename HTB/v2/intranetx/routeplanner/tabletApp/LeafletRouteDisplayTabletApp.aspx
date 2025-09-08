@@ -24,24 +24,32 @@
     }
 
     /* Custom marker style */
-    .leaflet-marker-icon-number {
-      background-color: #d62828; /* RED */
-      color: white;
-      border-radius: 50%;
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      width: 36px;
-      height: 36px;
-      line-height: 36px;
-      border: 2px solid white;
-      box-shadow: 0 0 4px rgba(0,0,0,0.5);
+    .emoji-marker-box {
+        background-color: white;
+        border: 1px solid #2a9d8f;
+        border-radius: 4px;
+        padding: 1px 3px;
+        text-align: center;
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+        font-family: sans-serif;
     }
+
+    .emoji {
+        font-size: 10px; /* was 16px */
+        line-height: 1;
+    }
+
+    .label {
+        font-size: 8px; /* was 10px */
+        font-weight: bold;
+        color: #1c1c1c;
+        margin-top: 1px;
+    }
+
   </style>
 </head>
 <body>
 
-<h2>Leaflet + OpenRouteService with Numbered Red Markers</h2>
 <div id="map"></div>
 <div id="directions"></div>
 
@@ -61,19 +69,60 @@
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Add numbered red markers
-    waypoints.forEach((wp, index) => {
-        const icon = L.divIcon({
-            className: 'leaflet-marker-icon-number',
-            html: index + 1,
-            iconSize: [20, 20],
-            iconAnchor: [10, 10],
+    function getCustomIcon(type, index, name) {
 
-        });
+        if (type === "start") {
+            return L.divIcon({
+                className: 'emoji-marker-dynamic',
+                html: `
+                        <div class="emoji-marker-box">
+                            <div class="emoji">🟢</div>
+                            <div class="label">Start</div>
+                        </div>
+                    `,
+                iconSize: [40, 40],   // was 70,70
+                iconAnchor: [25, 25]
+
+            });
+        }
+        else if (type === "end") {
+            return L.divIcon({
+                className: 'emoji-marker-dynamic',
+                html: `
+                        <div class="emoji-marker-box">
+                            <div class="emoji">🏁</div>
+                            <div class="label">${index}</div>
+                        </div>
+                    `,
+                iconSize: [40, 40],   // was 70,70
+                iconAnchor: [25, 25]
+            });
+
+        }
+        else {
+            return L.divIcon({
+                className: 'emoji-marker-dynamic',
+                html: `
+                        <div class="emoji-marker-box">
+                            <div class="emoji">💰</div>
+                            <div class="label">${index}</div>
+                        </div>
+                    `,
+                iconSize: [40, 40],   // was 70,70
+                iconAnchor: [25, 25]
+            });
+        }
+    }
+
+    for (var i = 0; i < waypoints.length; i++) {
+        const wp = waypoints[i];
+        const iconType = (i === 0) ? "start" : (i === waypoints.length - 1) ? "end" : "waypoint";
+        const icon = getCustomIcon(iconType, i);
+        // Add marker for each waypoint
         L.marker([wp.coords[1], wp.coords[0]], { icon: icon })
             .addTo(map)
-            .bindPopup(`<strong>Stop ${index + 1}</strong>: ${wp.name}`);
-    });
+            .bindPopup(`<strong>${wp.name}</strong>`);
+    }
 
     // Extract coordinates in [lon, lat] order
     const coords = waypoints.map(wp => wp.coords);

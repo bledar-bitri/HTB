@@ -1,4 +1,10 @@
-﻿using System;
+﻿using HTB.Database;
+using HTB.Database.Views;
+using HTB.v2.intranetx.util;
+using HTBAktLayer;
+using HTBExtras.XML;
+using HTBUtilities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -7,20 +13,12 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using HTB.Database;
-using HTB.Database.Views;
-using HTB.v2.intranetx.util;
-using HTBAktLayer;
-using HTBExtras.XML;
-using HTBReports;
-using HTBUtilities;
 
 namespace HTB.v2.intranetx.aktenint.tablet
 {
     public partial class DownloadChangedAktsTablet : System.Web.UI.Page
     {
-       private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+       private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         protected void Page_Load(object sender, EventArgs e)
         {
